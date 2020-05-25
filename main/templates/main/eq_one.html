@@ -1,0 +1,90 @@
+{% extends "main/wrapper.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <div class="container">
+        <form action="/main/equipment/{{eqs.eq_id}}/q" method="post">
+            {% csrf_token %}
+            <table class="table2">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Наименование: </td><td>{{eqs.eq_name}}</td></tr>
+                    <tr><td>Тип оборудования: </td><td>{{eqs.eq_type}}</td></tr>
+                    <tr><td>Инвентарный №: </td><td>{{eqs.invnum}}</td></tr>
+                    <tr><td>Участок: </td><td>{{eqs.area}}</td></tr>
+                    <tr><td>Статус оборудования: </td>
+                        <td>
+                            <select name="eq_status_select">
+                                <option value="{{eqs.eq_status}}" selected>{{eqs.eq_status}}</option>
+                                <option value="Остановлено">Остановлено</option>
+                                <option value="Работает">Работает</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr><td>Количество смен: </td>
+                        <td>
+                            <select name="shift_select">
+                                <option value="{{eqs.shift}}" selected>{{eqs.shift}}</option>
+                                <option value=1>1</option>
+                                <option value=2>2</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr><td>Примечание: </td><td><textarea name="eq_comment" rows="5" cols="70">{{eqs.eq_comment}}</textarea></td></tr>
+                    <tr><td>QR-код: </td><td><!-- Button trigger modal -->
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">Показать QR-код</button>
+                </tbody>
+
+
+            </table>
+        <input type="submit" class="btn btn-success btn-info" value="Сохранить">
+
+<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <img src="/static/images/qr_codes/{{eqs.eq_id}}.png" height="800" width="800" align="center">
+    </div>
+  </div>
+</div>
+
+
+        </form>
+
+        <h3 align="center">История заявок с этим оборудованием: </h3>
+
+        <table class="table3">
+            <thead>
+                <th>
+                    <tr></tr>
+                    <tr class="table_head"><td>Дата подачи</td><td>Причина</td><td>Сообщение</td><td>Статус заявки</td><td></td></tr>
+                </th>
+            </thead>
+            <tbody>
+                {% for i in queries %}
+                    <tr class="tr"><td>{{i.1|date:"d-m-Y в H:i"}}</td><td>{{i.2}}</td><td>{{i.3}}</td><td>{{i.4}}</td>
+                        <td><p></p><a class="btn btn-success btn-info" href="/main/{{i.0}}">Подробнее</a><p></p></td>
+
+                    </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+        <br>
+        <br>
+        <p>Простой оборудования за все время: {{mean.0}}</p>
+        <p>Простой оборудования за месяц: {{mean_m.0}}</p>
+
+
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
+{% endblock %}

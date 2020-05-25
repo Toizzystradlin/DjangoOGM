@@ -1,0 +1,54 @@
+{% extends "main/wrapper.html" %}
+
+
+{% block content %}
+
+<div class="jumbotron">
+    <div class="container">
+        <form action="new_eq" method="post">
+            {% csrf_token %}
+            <table class="table2">
+                <tr><td>Наименование</td><td><input type="text" name="new_name"></td></tr>
+                <tr><td>Инв.№:</td><td><input type="text" name="new_num"></td></tr>
+                <tr><td>Тип оборудования</td>
+                    <td>
+                        <select name="type_select">
+                            <option value="Токарный">Токарный</option>
+                            <option value="Фрезерный">Фрезерный</option>
+                            <option value="Токарный с ЧПУ">Токарный с ЧПУ</option>
+                            <option value="Фрезерный с ЧПУ">Фрезерный с ЧПУ</option>
+                            <option value="Сварочный аппарат">Сварочный аппарат</option>
+                            <option value="Сверлильный станок">Сверлильный станок</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr><td>Участок: </td>
+                    <td>
+                        <select name="area_select">
+                            <option></option>
+                            <option value="Механической обработки">Механической обработки</option>
+                            <option value="Слесарный">Слесарный</option>
+                            <option value="Сварочный">Сварочный</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr><td>Количество смен: </td>
+                        <td>
+                            <select name="shift_select">
+                                <option value=1 selected>Одна смена</option>
+                                <option value=2>Две смены</option>
+                            </select>
+                        </td>
+                    </tr>
+
+            </table>
+            <p>QR-код будет создан автоматически</p>
+            <input type="submit" class="btn btn-success btn-info" value="Создать оборудование">
+        </form>
+
+
+    </div>
+</div>
+
+
+{% endblock %}

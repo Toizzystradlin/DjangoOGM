@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="56de9908-72e5-4632-b812-e4a4cf45ac64" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+        <option value="HTML File" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectId" id="1ZnhlR52VIoAj7glZkEYYsh0oXI" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$USER_HOME$/PycharmProjects/OGMBOT2" />
+    <property name="run.code.analysis.last.selected.profile" value="aDefault" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\User\Django\OGM\main\templates\pc_query" />
+      <recent name="C:\Users\User\Django\OGM\main\static" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.jsontest">
+    <configuration name="funcs" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="OGM" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/main" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main/funcs.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="jsontest" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="OGM" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/main" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main/jsontest.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="qr_code" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="OGM" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/main" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main/qr_code.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="setup" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="OGM" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$USER_HOME$/Downloads/mysqlclient-python-master/mysqlclient-python-master" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$USER_HOME$/Downloads/mysqlclient-python-master/mysqlclient-python-master/setup.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="setup_windows" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="OGM" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$USER_HOME$/Downloads/mysqlclient-python-master/mysqlclient-python-master" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$USER_HOME$/Downloads/mysqlclient-python-master/mysqlclient-python-master/setup_windows.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.jsontest" />
+        <item itemvalue="Python.funcs" />
+        <item itemvalue="Python.qr_code" />
+        <item itemvalue="Python.setup" />
+        <item itemvalue="Python.setup_windows" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="56de9908-72e5-4632-b812-e4a4cf45ac64" name="Default Changelist" comment="" />
+      <created>1585480915703</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1585480915703</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="494" y="298" key="#Inspections" timestamp="1587724999832">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="494" y="298" key="#Inspections/0.0.1920.1040@0.0.1920.1040" timestamp="1587724999832" />
+    <state x="1104" y="311" width="816" height="729" key="#Intentions" timestamp="1586078165592">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="1104" y="311" width="816" height="729" key="#Intentions/0.0.1920.1040@0.0.1920.1040" timestamp="1586078165592" />
+    <state x="660" y="510" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1585487169669">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="660" y="510" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.0.1920.1040@0.0.1920.1040" timestamp="1585487169669" />
+    <state x="888" y="352" key="FileChooserDialogImpl" timestamp="1589982498996">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="888" y="352" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1589982498996" />
+    <state width="1727" height="116" key="GridCell.Tab.0.bottom" timestamp="1588110295872">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1727" height="116" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1588110295872" />
+    <state width="1727" height="116" key="GridCell.Tab.0.center" timestamp="1588110295872">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1727" height="116" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1588110295872" />
+    <state width="1727" height="116" key="GridCell.Tab.0.left" timestamp="1588110295872">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1727" height="116" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1588110295872" />
+    <state width="1727" height="116" key="GridCell.Tab.0.right" timestamp="1588110295872">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1727" height="116" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1588110295872" />
+    <state x="388" y="191" key="SettingsEditor" timestamp="1588523053796">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="388" y="191" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1588523053796" />
+    <state x="599" y="463" width="607" height="351" key="com.intellij.ide.util.TipDialog" timestamp="1590148873057">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="599" y="463" width="607" height="351" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1590148873057" />
+    <state x="857" y="125" width="1079" height="519" key="dock-window-1" timestamp="1585563328291">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="857" y="125" width="1079" height="519" key="dock-window-1/0.0.1920.1040@0.0.1920.1040" timestamp="1585563328291" />
+    <state x="951" y="140" width="926" height="503" key="dock-window-2" timestamp="1585578581582">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="951" y="140" width="926" height="503" key="dock-window-2/0.0.1920.1040@0.0.1920.1040" timestamp="1585578581582" />
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1588105775378">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1588105775378" />
+  </component>
+</project>

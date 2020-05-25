@@ -1,0 +1,58 @@
+<script>
+    var areaSelect = document.querySelector('#area_select');
+    var eq_nameSelect = document.querySelector('#eq_name');
+    var data = {
+        1: {{area1.0.0}},
+        2: ['as', 'dolls'],
+    }
+    areaSelect.addEventListener('change', function() {
+        var names = data[this.value];
+        eq_nameSelect.length = 0;
+        for (var i=0; i < names.length; i++) {
+            eq_nameSelect.add(new Option(names[i]));
+        }
+    });
+</script>
+
+<table class="table" align="center">
+  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" type="text/css">
+<nav>
+  <UL>
+   <li class="var_nav">
+      <div class="link_bg"></div>
+      <div class="link_title">
+        <div class=icon>
+        <i class="icon-mobile-phone icon-2x"></i>
+        </div>
+        <a href="#"><span>О нас</span></a>
+      </div>
+   </li>
+   <li class="var_nav">
+      <div class="link_bg"></div>
+      <div class="link_title">
+        <div class=icon>
+        <i class="icon-lightbulb icon-2x"></i>
+        </div>
+        <a href="#"><span>Товары</span></a>
+      </div>
+   </li>
+   <li class="var_nav">
+      <div class="link_bg"></div>
+      <div class="link_title">
+        <div class=icon>
+        <i class="icon-wrench icon-2x"></i>
+        </div>
+        <a href="#"><span>Услуги</span></a>
+      </div>
+   </li>
+   <li class="var_nav">
+      <div class="link_bg"></div>
+      <div class="link_title">
+        <div class=icon>
+        <i class="icon-briefcase icon-2x"></i>
+        </div>
+      <a href="#"><span>Контакты</span></a>
+      </div>
+   </li>
+  </UL>
+</nav>

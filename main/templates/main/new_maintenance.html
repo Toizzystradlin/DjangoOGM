@@ -1,0 +1,109 @@
+{% extends "main/wrapper.html" %}
+
+{% block content %}
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.3/css/bootstrap-select.min.css" />
+<div class="jumbotron">
+<form action="/main/maintenance/new_maintenance/new_maintenance_save" method="post">
+            {% csrf_token %}
+            <table class="table2">
+                <tr><td>Выбор участка: </td>
+                <td>
+                    <select name="area_select" id="area_select">
+                            <option value="Механической обработки">Механической обработки</option>
+                            <option value="Слесарный">Слесарный</option>
+                            <option value="Сварочный">Сварочный</option>
+                    </select>
+                </td>
+                </tr>
+                <tr><td>Выбор оборудования</td><td>
+                    <div id="div1">
+                        <select class="selectpicker" data-live-search="true" data-style="btn-info" name="area1" id="area1" >
+                            <option selected></option>
+                        {% for i in area1 %}
+                        <option value="{{i.eq_id}}">{{i.eq_name}} - {{i.invnum}}</option>
+                        {% endfor %}
+                    </select>
+                    </div>
+
+                    <div style="display: none" id="div2">
+                        <select class="selectpicker" data-live-search="true" data-style="btn-info" name="area2" id="area2">
+                            <option selected></option>
+                        {% for i in area2 %}
+                        <option value="{{i.eq_id}}">{{i.eq_name}} - {{i.invnum}}</option>
+                        {% endfor %}
+                        </select>
+                    </div>
+                    <div style="display: none" id="div3">
+                        <select class="selectpicker" data-live-search="true" data-style="btn-info" name="area3" id="area3">
+                            <option selected></option>
+                        {% for i in area3 %}
+                        <option value="{{i.eq_id}}">{{i.eq_name}} - {{i.invnum}}</option>
+                        {% endfor %}
+                    </select>
+                    </div>
+
+                </td></tr>
+
+                <tr><td>Дата: </td>
+                    <td>
+                        <input type="date" id="date" name="date">
+                    </td>
+                </tr>
+
+                <tr><td>Назначить на ТО: </td><td>
+                    <select name="employee_select" multiple>
+                        {% for j in emps %}
+                        <option value={{j.0}}>{{j.1}}</option>
+                        {%endfor%}
+                    </select>
+                </td></tr>
+                <tr>
+                    <td>Комментарий: </td>
+                    <td><textarea name="comment" rows="5" cols="70"></textarea></td>
+                </tr>
+
+            </table>
+            <input type="submit" class="btn btn-success btn-info" value="Сохранить">
+        </form>
+    </div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.3/js/bootstrap-select.min.js"></script>
+
+<script>
+    var areas = document.querySelector('#area_select');
+    var area1 = document.getElementById('div1');
+    var area2 = document.getElementById('div2');
+    var area3 = document.getElementById('div3');
+        areas.addEventListener('change', function() {
+        if(this.value == 'Механической обработки') {
+            area1.style.display = "block";
+            area2.style.display = "none";
+            area3.style.display = "none";
+            area1.disabled=false;
+            area2.disabled=true;
+            area3.disabled=true;
+
+            }
+        if(this.value == 'Слесарный') {
+            area1.style.display = 'none';
+            area2.style.display = 'block';
+            area3.style.display = 'none';
+            area1.disabled=true;
+            area2.disabled=false;
+            area3.disabled=true;
+            }
+        if(this.value == 'Сварочный') {
+            area1.style.display = 'none';
+            area2.style.display = 'none';
+            area3.style.display = 'block';
+            area1.disabled=true;
+            area2.disabled=true;
+            area3.disabled=false;
+            }
+
+    });
+</script>
+{% endblock %}

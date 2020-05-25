@@ -1,0 +1,144 @@
+{% extends "main/wrapper.html" %}
+
+{% block content %}
+<div class="jumbotron">
+    <div class="container">
+        <form action="edit_query" method="post">
+            {% csrf_token %}
+            <table class="table2">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr><td>ID заявки: </td><td>{{ query.query_id }}</td></tr>
+                <tr><td>Статус заявки: </td>
+                    <td>
+                        <select name="query_status_select">
+                            <option value={{query.query_status}} selected>{{query.query_status}}</option>
+                            <option value="Новая">Новая</option>
+                            <option value="Принята">Принята</option>
+                            <option value="В процессе">В процессе</option>
+                            <option value="Приостановлена">Приостановлена</option>
+                            <option value="Отложена мастером">Отложена мастером</option>
+                            <option value="Отложена исполнителем">Отложена исполнителем</option>
+                            <option value="Завершена">Завершена</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr><td>Оборудование: </td><td>{{equipment.eq_name}}</td></tr>
+                <tr><td>Инв.№: </td><td>{{equipment.invnum}}</td></tr>
+                <tr><td>Причина поломки: </td>
+                    <td>
+                        <select name="query_reason_select">
+                            <option value="{{query.reason}}" selected>{{query.reason}}</option>
+                            <option value="Механика">Механика</option>
+                            <option value="Электрика">Электрика</option>
+                            <option value="СОЖ">СОЖ</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr><td>Сообщение: </td><td>{{query.msg}}</td></tr>
+                <tr><td>Статус оборудования: </td>
+                    <td><select name="eq_status_select">
+                            <option value="{{equipment.eq_status}}" selected>{{equipment.eq_status}}</option>
+                            <option value="Остановлено">Остановлено</option>
+                            <option value="Работает">Работает</option>
+                        </select></td>
+                </tr>
+                <tr><td>Назначен на заявку: </td>
+                    <td>
+                        <select name="emp_select" multiple>
+                            {%for i in final_emps %}
+                                        <option value="{{i.0}}"
+                                                {% if i.2 == True %} selected="selected" {%endif%}
+                                        >{{i.1}}</option>
+                            {%endfor%}
+                        </select>
+                    </td>
+                </tr>
+                <tr><td>Комментарий ИТР: </td><td><textarea name="comment" rows="5" cols="70">{{query.comment}}</textarea></td></tr>
+                </tbody>
+            </table>
+
+            <div align="left" style= "float: left;"><input type="submit" class="btn btn-success btn-info" value="Сохранить"></div>
+            <div align="right"><!-- Button trigger modal -->
+<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModal">
+  Удалить заявку
+</button></div>
+
+            <!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Удаление заявки</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Вы действительно хотите удалить эту заявку?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Нет</button>
+        <a class="btn btn-success btn-danger" href="/{{query.query_id}}/delete_query">Да, удалить</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+            <div class="container" align="center">
+            <table class="table3">
+                <thead>
+                <th>
+                    <tr></tr>
+                    <tr class="table_head"><td>Автор</td><td>Дата/время</td><td>Текст</td></tr>
+                </th>
+                </thead>
+                <tbody>
+                <br>
+                <br>
+                <h1>Комментарии по заявке от исполнителей: </h1>
+                {% for i in coms %}
+                    <tr class="tr">
+                        <td class="td">{{i.4}}</td><td class="td">{{i.3|date:"d-m-Y в H:i"}}</td><td class="td">{{i.2}}<p></p></td>
+                    </tr>
+                {%endfor%}
+                </tbody>
+            </table>
+            </div>
+
+            <br>
+            <br>
+            <h1>Работы по заявке велись:</h1>
+
+            <div class="container" align="center">
+            <table class="table3">
+                <thead>
+                <th>
+                    <tr></tr>
+                    <tr class="table_head"><td>Исполнитель</td><td>Начало</td><td>Конец</td></tr>
+                </th>
+                </thead>
+                <tbody>
+                {% for i in works %}
+                    <tr class="tr">
+                        <td class="td">{{i.3}}</td><td class="td">{{i.1|date:"d-m-Y в H:i"}}</td><td class="td">{{i.2|date:"d-m-Y в H:i"}}</td>
+                    </tr>
+                {%endfor%}
+                </tbody>
+            </table>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
+{% endblock %}

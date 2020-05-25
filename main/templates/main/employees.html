@@ -1,0 +1,37 @@
+{% extends "main/wrapper.html" %}
+
+{% block content %}
+<div class="container" align="center">
+    <h1>Сотрудники</h1>
+</div>
+
+<table class="table" id="myTable3">
+    <thead>
+    <tr class="table_head">
+        <th class="th">ФИО</th>
+        <th class="th">Должность</th>
+        <th class="th"></th>
+        <th class="th"></th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for i in emps %}
+    <tr class="tr">
+        <td class="td">{{i.1}}</td>
+        <td class="td">{{i.2}}</td>
+        <td><a class="btn btn-success btn-info" href="employees/{{i.0}}">Подробнее</a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<p></p><p></p>
+
+<p><a class="btn btn-success btn-info" href="employees/add_new">Добавить нового сотрудника</a></p>
+<script>$(document).ready( function () {
+    $('#myTable3').DataTable({
+    "order": [[0, "desc"]]
+    });
+} );
+</script>
+
+{% endblock %}

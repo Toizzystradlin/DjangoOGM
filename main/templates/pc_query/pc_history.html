@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>История заявок</title>
+    {% load static %}
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href= "{% static 'style.css' %}" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Kaushan+Script|Montserrat&display=swap&subset=cyrillic"
+          rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/jquery-3.3.1.js">
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js">
+
+    <script
+  src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="/static/js/mjs.js"></script>
+
+
+</head>
+<body>
+
+<header class="header">
+    <div class="containerX">
+        <div class="intro__inner">
+            <h1 class="intro__title">Welcome to OGM</h1>
+        </div>
+
+    <div class="container">
+
+        <div class="header__inner">
+
+
+        </div>
+    </div>
+</header>
+
+<div class="intro" >
+
+</div>
+<div class="container">
+    <br>
+<p align="right"><a class="btn btn-success btn-info" href="pc_query">Новая заявка</a></p>
+<br>
+    <table class="table" id="myTable">
+        <thead>
+        <tr class="table_head">
+            <th class="my_th">№ заявки</th>
+            <th class="th">Оборудование</th>
+            <th class="th">Причина поломки</th>
+            <th class="th">Сообщение</th>
+            <th class="th">статус оборудования</th>
+            <th class="th">Дата и время</th>
+            <th class="th">Статус заявки</th>
+            <th class="th">Участок</th>
+        </tr>
+        </thead>
+<tbody>
+{% for i in dict %}
+        <tr class="tr">
+            <td class="td">{{i.0}}</td>
+            <td class="td">{{i.2}}</td>
+            <td class="td">{{i.3}}</td>
+            <td class="td">{{i.4|truncatechars:50}}</td>
+            <td class="td">{{i.5}}</td>
+            <td class="td">{{i.1|date:"d-m-Y в H:i"}}</td>
+            <td class="td">{{i.6}}</td>
+            <td class="td">{{i.7}} </td>
+        </tr>
+    {% endfor %}
+</tbody>
+        <tfoot class="text-primary">
+        <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+    </tfoot>
+    </table>
+
+<script>
+    $('td').each(function(){
+	var x = $(this).text();
+    if (x == 'Новая') $(this).css({color: 'red'});
+    if (x == 'Завершена') $(this).css({color: 'green'});
+	});
+
+</script>
+
+<script>$(document).ready( function () {
+    $('#myTable').DataTable({
+    "order": [[0, "desc"]],
+    initComplete: function () {
+            this.api().columns([0,1,2,4,6,7]).every( function () {
+                var column = this;
+                var select = $('<select><option value=""></option></select>')
+                    .click( function(e) {
+                        e.stopPropagation();
+                    })
+                    .appendTo( $(column.header()) )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+
+
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append('<option value="' + d + '">' + d.substr(0,20) + '</option>')
+                } );
+            } );
+        }
+    });
+
+} );
+</script>
+
+
+</div>
+
+
+
+</body>

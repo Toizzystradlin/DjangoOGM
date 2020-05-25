@@ -1,0 +1,113 @@
+{% extends "main/wrapper.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <div class="container">
+        <form action="#" method="post">
+            {% csrf_token %}
+            <table class="table2">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Имя: </td><td>{{emp.fio}}</td></tr>
+                    <tr><td>Должность: </td><td>{{emp.rank}}</td></tr>
+                </tbody>
+            </table>
+
+        <input type="submit" class="btn btn-success btn-info" value="Сохранить">
+<p></p>
+            <p>            </p>
+
+
+        </form>
+
+<h3 align="center">Список ТЕКУЩИХ заявок сотрудника:</h3>
+
+        <table class="table3">
+            <thead>
+                <th>
+                    <tr></tr>
+                    <tr class="table_head"><td>Оборудование</td><td>Дата подачи заявки</td><td>Сообщение</td><td>Статус заявки</td><td></td></tr>
+                </th>
+            </thead>
+            <tbody>
+                {% for i in queries %}
+                    <tr class="tr"><td>{{i.0}}</td><td>{{i.1|date:"d-m-Y в H:i"}}</td><td>{{i.2}}</td><td>{{i.3}}</td>
+                        <td><p></p><a class="btn btn-success btn-info" href="/main/{{i.4}}">Подробнее</a><p></p></td>
+
+                    </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+        <p></p>
+        <br>
+        <br>
+        <br>
+        <br>
+        <h3 align="center">Список ЗАВЕРШЕННЫХ заявок сотрудника:</h3>
+
+        <table class="table3" id="table_done">
+            <thead>
+                <th>
+                    <tr></tr>
+                    <tr class="table_head"><td>Оборудование</td><td>Дата подачи заявки</td><td>Сообщение</td><td>Статус заявки</td><td></td></tr>
+                </th>
+            </thead>
+            <tbody>
+                {% for i in done_queries %}
+                    <tr class="tr"><td>{{i.0}}</td><td>{{i.1|date:"d-m-Y в H:i"}}</td><td>{{i.2}}</td><td>{{i.3}}</td>
+                        <td><p></p><a class="btn btn-success btn-info" href="/main/{{i.4}}">Подробнее</a><p></p></td>
+
+                    </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+
+        <p></p>
+        <br>
+        <br>
+        <br>
+        <br>
+        <h3 align="center">Список ТО сотрудника:</h3>
+
+        <table class="table3" id="table_to">
+            <thead>
+                <th>
+                    <tr></tr>
+                    <tr class="table_head"><td>Оборудование</td><td>Дата ТО</td><td>Статус ТО</td><td></td></tr>
+                </th>
+            </thead>
+            <tbody>
+                {% for i in my_tos %}
+                    <tr class="tr"><td>{{i.4}}</td><td>{{i.0|date:"d-m-Y в H:i"}}</td><td>{{i.3}}</td>
+                        <td><p></p><a class="btn btn-success btn-info" href="/main/maintenance/{{i.5}}">Подробнее</a><p></p></td>
+
+                    </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+
+
+    </div>
+</div>
+
+<script>$(document).ready( function () {
+    $('#table_done').DataTable({
+    "order": [[0, "desc"]]
+    });
+} );
+</script>
+
+<script>$(document).ready( function () {
+    $('#table_to').DataTable({
+    "order": [[0, "desc"]]
+    });
+} );
+</script>
+
+{% endblock %}

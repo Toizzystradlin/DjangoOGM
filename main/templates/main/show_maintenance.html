@@ -1,0 +1,50 @@
+{% extends "main/wrapper.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <div class="container">
+
+        <form action="/main/maintenance/new_maintenance/{{to.id}}/maintenance_edit" method="post">
+            {% csrf_token %}
+            <table class="table2">
+
+                <tr><td>Оборудование: </td><td>
+                    {{eq.eq_name}}, {{eq.invnum}}
+                </td></tr>
+
+                <tr><td>Дата начала: </td>
+                    <td>
+                        <input type="date" id="date" name="date" value="{{to.start_time|date:"Y-m-d"}}">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Дата завершения: </td>
+                    <td><input type="date" id="date2" name="date2" value="{{to.end_time|date:"Y-m-d"}}"></td>
+                </tr>
+
+                <tr><td>Назначен на заявку: </td>
+                    <td>
+                        <select name="emp_select" multiple>
+                            {%for i in final_emps %}
+                                        <option value="{{i.0}}"
+                                                {% if i.2 == True %} selected="selected" {%endif%}
+                                        >{{i.1}}</option>
+                            {%endfor%}
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Комментарий: </td>
+                    <td><textarea name="comment" rows="5" cols="70">{{to.comment}}</textarea></td>
+                </tr>
+
+            </table>
+            <input type="submit" class="btn btn-success btn-info" value="Сохранить">
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

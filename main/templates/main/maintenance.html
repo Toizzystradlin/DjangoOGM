@@ -1,0 +1,70 @@
+{% extends "main/wrapper.html" %}
+
+{% block content %}
+
+<div class="container" align="center">
+    <h1>Запланированные ТО</h1>
+    <p align="right"> <a class="btn btn-success btn-info" href="maintenance/new_maintenance">Запланировать ТО</a></p>
+</div>
+
+<table class="table" id="myTable2">
+    <thead>
+    <tr class="table_head">
+        <th class="th">Наименование</th>
+        <th class="th">Тип</th>
+        <th class="th">Инвентарный номер</th>
+        <th class="th">Участок</th>
+        <th class="th">Дата</th>
+        <th class="th"></th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for i in tos %}
+    <tr class="tr">
+        <td class="td">{{i.0}}</td>
+        <td class="td">{{i.2}}</td>
+        <td class="td">{{i.1}}</td>
+        <td class="td">{{i.3}}</td>
+        <td class="td">{{i.4|date:"d-m-Y"}}</td>
+
+        <td><a class="btn btn-success btn-info" href="maintenance/{{i.7}}">Подробнее</a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<br>
+<br>
+<h1>Завершенные ТО</h1>
+<br>
+
+
+<table class="table" id="myTable3">
+    <thead>
+    <tr class="table_head">
+        <th class="th">Наименование</th>
+        <th class="th">Тип</th>
+        <th class="th">Инвентарный номер</th>
+        <th class="th">Участок</th>
+        <th class="th">Время начала</th>
+        <th class="th>">Время завершения</th>
+        <th class="th"></th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for i in tos2 %}
+    <tr class="tr">
+        <td class="td">{{i.0}}</td>
+        <td class="td">{{i.2}}</td>
+        <td class="td">{{i.1}}</td>
+        <td class="td">{{i.3}}</td>
+        <td class="td">{{i.4|date:"d-m-Y в H-i"}}</td>
+        <td class="td">{{i.5|date:"d-m-Y в H-i"}}</td>
+
+        <td><a class="btn btn-success btn-info" href="maintenance/{{i.8}}">Подробнее</a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends "main/wrapper.html" %}
+
+
+{% block content %}
+
+<div class="form-group">
+    <div class="container">
+            <table class="table4">
+                <tr>
+                    <td>Список причин:</td>
+                    <td>
+                        <ul>
+                            {%for i in reasons%}
+                                <li>{{i.reason}}</li>
+                            {%endfor%}
+                        </ul>
+                    </td>
+                    <td><div>
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#exampleModal">
+                          Добавить причину
+                        </button>
+                        <br>
+                        <br>
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModal2">
+                          Удалить причину
+                        </button>
+                        </div>
+                    </td>
+                </tr>
+
+            </table>
+            <!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <form action="/main/settings/add_reason" method="post">
+            {% csrf_token %}
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Напишите название причины</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <input type="text" name="new_reason">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+                        <!-- Modal -->
+<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <form action="delete_reasons" method="post">
+            {% csrf_token %}
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel2">Выберите причины для удаления</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          {%for i in reasons%}
+                <input type="checkbox" value="{{i.id}}" name="delete_list"> {{i.reason}}<br>
+          {%endfor%}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+        <button type="submit" class="btn btn-danger">Удалить причины</button>
+      </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+
+
+
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
+
+
+
+{% endblock %}

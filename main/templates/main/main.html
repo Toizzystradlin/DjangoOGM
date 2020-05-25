@@ -1,0 +1,92 @@
+{% extends "main/wrapper.html" %}
+
+{% block content %}
+<br>
+<p align="right"><a class="btn btn-success btn-info" href="/main/new_query">Новая заявка</a></p>
+<br>
+    <table class="table" id="myTable">
+        <thead>
+        <tr class="table_head">
+            <th class="my_th">№ заявки</th>
+            <th class="th">Оборудование</th>
+            <th class="th">Причина поломки</th>
+            <th class="th">Сообщение</th>
+            <th class="th">статус оборудования</th>
+            <th class="th">Дата и время</th>
+            <th class="th">Статус заявки</th>
+            <th class="th"></th>
+        </tr>
+        </thead>
+<tbody>
+{% for i in dict %}
+        <tr class="tr">
+            <td class="td">{{i.0}}</td>
+            <td class="td">{{i.2}}</td>
+            <td class="td">{{i.3}}</td>
+            <td class="td">{{i.4|truncatechars:50}}</td>
+            <td class="td">{{i.5}}</td>
+            <td class="td">{{i.1|date:"d-m-Y в H:i"}}</td>
+            <td class="td">{{i.6}}</td>
+            <td class="td"><a class="btn btn-success btn-info" href="/main/{{i.0}}">Подробнее</a> </td>
+        </tr>
+    {% endfor %}
+</tbody>
+        <tfoot class="text-primary">
+        <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+    </tfoot>
+    </table>
+
+<script>
+    $('td').each(function(){
+	var x = $(this).text();
+    if (x == 'Новая') $(this).css({color: 'red'});
+    if (x == 'Завершена') $(this).css({color: 'green'});
+	});
+
+</script>
+
+<script>$(document).ready( function () {
+    $('#myTable').DataTable({
+    "order": [[0, "desc"]],
+    initComplete: function () {
+            this.api().columns([0,1,2,4,6]).every( function () {
+                var column = this;
+                var select = $('<select><option value=""></option></select>')
+                    .click( function(e) {
+                        e.stopPropagation();
+                    })
+                    .appendTo( $(column.header()) )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append('<option value="' + d + '">' + d.substr(0,20) + '</option>')
+                } );
+            } );
+        }
+    });
+
+} );
+</script>
+
+
+
+{% endblock %}
+
+

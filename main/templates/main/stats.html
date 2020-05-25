@@ -1,0 +1,384 @@
+{% extends "main/wrapper.html" %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<hr>
+<div class="container">
+    <br>
+    <h1 align="center">Заявки</h1>
+
+    <canvas id="bar-chart"></canvas>
+</div>
+<br>
+<br>
+<br>
+<hr>
+<br>
+<br>
+<br>
+<br>
+
+
+<div>
+    <br>
+    <h1 align="center">Оборудование</h1>
+    <canvas id="PieChart"></canvas>
+</div>
+<br>
+<br>
+<br>
+<hr>
+<br>
+<br>
+<br>
+<br>
+    <select name="plain_all_select" id="plain_all_select" class="area active">
+        <option value="all">За все время</option>
+        <option value="month">За месяц</option>
+    </select>
+
+
+<div id="div1">
+    <br>
+    <h1 align="center">Простой оборудования <b>за все время</b> (топ 10)</h1>
+    <canvas id="plain_all"></canvas>
+</div>
+
+<div style="display: none" id="div2">
+    <br>
+    <h1 align="center">Простой оборудования <b>за месяц</b> (топ 10)</h1>
+    <canvas id="plain_all_month"></canvas>
+</div>
+<br>
+<br>
+<br>
+<hr>
+<br>
+<br>
+<br>
+<br>
+
+    <select name="plain_area_select" id="plain_area_select">
+        <option>Выберите участок</option>
+        <option value="mech">Механический</option>
+        <option value="smith">Слесарный</option>
+        <option value="weld">Сварочный</option>
+    </select>
+ - Статистика по участкам
+<div style="display: block" id="div3">
+    <br>
+    <h1 align="center">Простой оборудования <b>за все время</b> Мех участок (топ 10)</h1>
+    <canvas id="plain_all_mech"></canvas>
+</div>
+
+<div style="display: block" id="div4">
+    <br>
+    <h1 align="center">Простой оборудования <b>за месяц</b> Мех участок (топ 10)</h1>
+    <canvas id="plain_mech_month"></canvas>
+</div>
+
+<div style="display: none" id="div5">
+    <br>
+    <h1 align="center">Простой оборудования <b>за все время</b> Слесарный участок (топ 10)</h1>
+    <canvas id="plain_all_smith"></canvas>
+</div>
+
+<div style="display: none" id="div6">
+    <br>
+    <h1 align="center">Простой оборудования <b>за месяц</b> Слесарный участок (топ 10)</h1>
+    <canvas id="plain_smith_month"></canvas>
+</div>
+
+<div style="display: none" id="div7">
+    <br>
+    <h1 align="center">Простой оборудования <b>за все время</b> Сварочный участок (топ 10)</h1>
+    <canvas id="plain_all_weld"></canvas>
+</div>
+
+<div style="display: none" id="div8">
+    <br>
+    <h1 align="center">Простой оборудования <b>за месяц</b> Сварочный участок (топ 10)</h1>
+    <canvas id="plain_weld_month"></canvas>
+</div>
+
+<div>
+    <br>
+    <h1 align="center">Время на ТО</h1>
+    <canvas id="To_time"></canvas>
+</div>
+
+<script>
+    var ctx = document.getElementById('To_time').getContext('2d');
+    var myLineChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+    labels: ["{{to_names.0}}","{{to_names.1}}","{{to_names.2}}","{{to_names.3}}","{{to_names.4}}","{{to_names.5}}","{{to_names.6}}","{{to_names.7}}","{{to_names.8}}","{{to_names.9}}","{{to_names.10}}","{{to_names.11}}","{{to_names.12}}","{{to_names.13}}","{{to_names.14}}","{{to_names.15}}","{{to_names.16}}","{{to_names.17}}","{{to_names.18}}", "{{to_names.19}}"],
+    datasets: [{
+        data: [{{to_times.0}}, {{to_times.1}}, {{to_times.2}}, {{to_times.3}}, {{to_times.4}}],
+        label: "Время ТО в часах (последние 20)",
+        borderColor: "#3e95cd",
+        fill: false
+      }
+    ]
+  },
+    options: {
+  }
+});
+</script>
+
+
+<script>
+    var areas = document.querySelector('#plain_all_select');
+    var plain_all = document.getElementById('div1')
+    var plain_all_month = document.getElementById('div2')
+    areas.addEventListener('change', function() {
+        if(this.value == 'all') {
+            plain_all.style.display = "block";
+            plain_all_month.style.display = "none";
+            }
+        if(this.value == 'month') {
+            plain_all.style.display = "none";
+            plain_all_month.style.display = "block";
+            }
+    });
+</script>       //скрипт селектора простоя всего оборудования
+
+<script>
+    var areas = document.querySelector('#plain_area_select');
+    var plain_mech = document.getElementById('div3')
+    var plain_mech_month = document.getElementById('div4')
+    var plain_smith = document.getElementById('div5')
+    var plain_smith_month = document.getElementById('div6')
+    var plain_weld = document.getElementById('div7')
+    var plain_weld_month = document.getElementById('div8')
+
+    areas.addEventListener('change', function() {
+        if(this.value == 'mech') {
+            plain_mech.style.display = "block";
+            plain_mech_month.style.display = "block";
+            plain_smith.style.display = "none";
+            plain_smith_month.style.display = "none";
+            plain_weld.style.display = "none";
+            plain_weld_month.style.display = "none";
+            }
+        if(this.value == 'smith') {
+            plain_mech.style.display = "none";
+            plain_mech_month.style.display = "none";
+            plain_smith.style.display = "block";
+            plain_smith_month.style.display = "block";
+            plain_weld.style.display = "none";
+            plain_weld_month.style.display = "none";
+            }
+        if(this.value == 'weld') {
+            plain_mech.style.display = "none";
+            plain_mech_month.style.display = "none";
+            plain_smith.style.display = "none";
+            plain_smith_month.style.display = "none";
+            plain_weld.style.display = "block";
+            plain_weld_month.style.display = "block";
+            }
+    });
+</script>       #скрипт селектора простоя всего оборудования
+
+<script>
+var ctx = document.getElementById('PieChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: ['Работает', 'Остановлено', 'ТО'],
+        datasets: [{
+            label: 'Статус оборудования',
+            data: [{{work_count}}, {{stop_count}}, {{to_count}}],
+            backgroundColor: [
+            'rgba(19, 235, 148, 1)',
+            'rgba(237, 55, 91, 1)',
+            'rgba(67, 158, 232, 1)'
+            ],
+            borderColor: [
+            'rgba(19, 235, 148, 1)',
+            'rgba(237, 55, 91, 1)',
+            'rgba(67, 158, 232, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+</script>       # скрипт пайчарта
+
+
+
+<script>new Chart(document.getElementById("bar-chart"), {
+    type: 'bar',
+    data: {
+      labels: ["Новые","Принято","Отложена", "В процессе"],
+      datasets: [
+        {
+          label: "Population (millions)",
+          backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+          data: [{{new_count}}, {{got_count}}, {{postpone_count}}, {{go_count}}, 0]
+        }
+      ]
+    },
+    options: {
+      legend: { display: false },
+
+    }
+});</script>      # скрипт бар чарта заявок
+
+<script>new Chart(document.getElementById("plain_all"), {
+    type: 'bar',
+    data: {
+      labels: ["{{names.0}}. Смен: {{shifts.0}}","{{names.1}}. Смен: {{shifts.1}}","{{names.2}}. Смен: {{shifts.2}}", "{{names.3}}. Смен: {{shifts.3}}", "{{names.4}}. Смен: {{shifts.4}}", "{{names.5}}. Смен: {{shifts.5}}", "{{names.6}}. Смен: {{shifts.6}}", "{{names.7}}. Смен: {{shifts.7}}", "{{names.8}}. Смен: {{shifts.8}}", "{{names.9}}. Смен: {{shifts.9}}"],
+      datasets: [
+        {
+          label: "Простой в часах",
+          backgroundColor: ["#DC143C", "#FF4500","#FF8C00","#FFD700","#9ACD32", "#9ACD32", "#9ACD32", "#9ACD32", "#9ACD32", "#9ACD32"],
+          data: [{{means.0}}, {{means.1}}, {{means.2}}, {{means.3}}, {{means.4}}, {{means.5}}, {{means.6}}, {{means.7}}, {{means.8}}, {{means.9}}]
+        }
+      ]
+    },
+    options: {
+      legend: { display: false },
+
+    }
+});</script>      # скрипт бар чарта простоя всего оборудования
+
+<script>new Chart(document.getElementById("plain_all_month"), {
+    type: 'bar',
+    data: {
+      labels: ["{{names_m.0}}. Смен: {{shifts_m.0}}","{{names_m.1}}. Смен: {{shifts_m.1}}","{{names_m.2}}. Смен: {{shifts_m.2}}", "{{names_m.3}}. Смен: {{shifts_m.3}}", "{{names_m.4}}. Смен: {{shifts_m.4}}", "{{names_m.5}}. Смен: {{shifts_m.5}}", "{{names_m.6}}. Смен: {{shifts_m.6}}", "{{names_m.7}}. Смен: {{shifts_m.7}}", "{{names_m.8}}. Смен: {{shifts_m.8}}", "{{names_m.9}}. Смен: {{shifts_m.9}}"],
+      datasets: [
+        {
+          label: "Простой в часах",
+          backgroundColor: ["#DC143C", "#FF4500","#FF8C00","#FFD700","#9ACD32", "#9ACD32", "#9ACD32", "#9ACD32", "#9ACD32", "#9ACD32"],
+          data: [{{means_m.0}}, {{means_m.1}}, {{means_m.2}}, {{means_m.3}}, {{means_m.4}}, {{means_m.5}}, {{means_m.6}}, {{means_m.7}}, {{means_m.8}}, {{means_m.9}}]
+        }
+      ]
+    },
+    options: {
+      legend: { display: false },
+
+    }
+});</script>      # скрипт бар чарта простоя всего оборудования за месяц
+
+<script>new Chart(document.getElementById("plain_all_mech"), {
+    type: 'bar',
+    data: {
+      labels: ["{{names_mech.0}}. Смен: {{shifts_mech.0}}","{{names_mech.1}}. Смен: {{shifts_mech.1}}","{{names_mech.2}}. Смен: {{shifts_mech.2}}", "{{names_mech.3}}. Смен: {{shifts_mech.3}}", "{{names_mech.4}}. Смен: {{shifts_mech.4}}", "{{names_mech.5}}. Смен: {{shifts_mech.5}}", "{{names_mech.6}}. Смен: {{shifts_mech.6}}", "{{names_mech.7}}. Смен: {{shifts_mech.7}}", "{{names_mech.8}}. Смен: {{shifts_mech.8}}", "{{names_mech.9}}. Смен: {{shifts_mech.9}}"],
+      datasets: [
+        {
+          label: "Простой в часах",
+          backgroundColor: ["#DC143C", "#FF4500","#FF8C00","#FFD700","#9ACD32", "#9ACD32", "#9ACD32", "#9ACD32", "#9ACD32", "#9ACD32"],
+          data: [{{means_mech.0}}, {{means_mech.1}}, {{means_mech.2}}, {{means_mech.3}}, {{means_mech.4}}, {{means_mech.5}}, {{means_mech.6}}, {{means_mech.7}}, {{means_mech.8}}, {{means_mech.9}}]
+        }
+      ]
+    },
+    options: {
+      legend: { display: false },
+
+    }
+});</script>
+
+<script>new Chart(document.getElementById("plain_mech_month"), {
+    type: 'bar',
+    data: {
+      labels: ["{{names_mech_month.0}}. Смен: {{shifts_mech_month.0}}","{{names_mech_month.1}}. Смен: {{shifts_mech_month.1}}","{{names_mech_month.2}}. Смен: {{shifts_mech_month.2}}", "{{names_mech_month.3}}. Смен: {{shifts_mech_month.3}}", "{{names_mech_month.4}}. Смен: {{shifts_mech_month.4}}", "{{names_mech_month.5}}. Смен: {{shifts_mech_month.5}}", "{{names_mech_month.6}}. Смен: {{shifts_mech_month.6}}", "{{names_mech_month.7}}. Смен: {{shifts_mech_month.7}}", "{{names_mech_month.8}}. Смен: {{shifts_mech_month.8}}", "{{names_mech_month.9}}. Смен: {{shifts_mech_month.9}}"],
+      datasets: [
+        {
+          label: "Простой в часах",
+          backgroundColor: ["#DC143C", "#FF4500","#FF8C00","#FFD700","#9ACD32", "#9ACD32", "#9ACD32", "#9ACD32", "#9ACD32", "#9ACD32"],
+          data: [{{means_mech_month.0}}, {{means_mech_month.1}}, {{means_mech_month.2}}, {{means_mech_month.3}}, {{means_mech_month.4}}, {{means_mech_month.5}}, {{means_mech_month.6}}, {{means_mech_month.7}}, {{means_mech_month.8}}, {{means_mech_month.9}}]
+        }
+      ]
+    },
+    options: {
+      legend: { display: false },
+
+    }
+});</script>
+
+<script>new Chart(document.getElementById("plain_all_smith"), {
+    type: 'bar',
+    data: {
+      labels: ["{{names_smith.0}}. Смен: {{shifts_smith.0}}","{{names_smith.1}}. Смен: {{shifts_smith.1}}","{{names_smith.2}}. Смен: {{shifts_smith.2}}", "{{names_smith.3}}. Смен: {{shifts_smith.3}}", "{{names_smith.4}}. Смен: {{shifts_smith.4}}", "{{names_smith.5}}. Смен: {{shifts_smith.5}}", "{{names_smith.6}}. Смен: {{shifts_smith.6}}", "{{names_smith.7}}. Смен: {{shifts_smith.7}}", "{{names_smith.8}}. Смен: {{shifts_smith.8}}", "{{names_smith.9}}. Смен: {{shifts_smith.9}}"],
+      datasets: [
+        {
+          label: "Простой в часах",
+          backgroundColor: ["#DC143C", "#FF4500","#FF8C00","#FFD700","#9ACD32", "#9ACD32", "#9ACD32", "#9ACD32", "#9ACD32", "#9ACD32"],
+          data: [{{means_smith.0}}, {{means_smith.1}}, {{means_smith.2}}, {{means_smith.3}}, {{means_smith.4}}, {{means_smith.5}}, {{means_smith.6}}, {{means_smith.7}}, {{means_smith.8}}, {{means_smith.9}}]
+        }
+      ]
+    },
+    options: {
+      legend: { display: false },
+
+    }
+});</script>
+
+<script>new Chart(document.getElementById("plain_smith_month"), {
+    type: 'bar',
+    data: {
+      labels: ["{{names_smith_month.0}}. Смен: {{shifts_smith_month.0}}","{{names_smith_month.1}}. Смен: {{shifts_smith_month.1}}","{{names_smith_month.2}}. Смен: {{shifts_smith_month.2}}", "{{names_smith_month.3}}. Смен: {{shifts_smith_month.3}}", "{{names_smith_month.4}}. Смен: {{shifts_smith_month.4}}", "{{names_smith_month.5}}. Смен: {{shifts_smith_month.5}}", "{{names_smith_month.6}}. Смен: {{shifts_smith_month.6}}", "{{names_smith_month.7}}. Смен: {{shifts_smith_month.7}}", "{{names_smith_month.8}}. Смен: {{shifts_smith_month.8}}", "{{names_smith_month.9}}. Смен: {{shifts_smith_month.9}}"],
+      datasets: [
+        {
+          label: "Простой в часах",
+          backgroundColor: ["#DC143C", "#FF4500","#FF8C00","#FFD700","#9ACD32", "#9ACD32", "#9ACD32", "#9ACD32", "#9ACD32", "#9ACD32"],
+          data: [{{means_smith_month.0}}, {{means_smith_month.1}}, {{means_smith_month.2}}, {{means_smith_month.3}}, {{means_smith_month.4}}, {{means_smith_month.5}}, {{means_smith_month.6}}, {{means_smith_month.7}}, {{means_smith_month.8}}, {{means_smith_month.9}}]
+        }
+      ]
+    },
+    options: {
+      legend: { display: false },
+
+    }
+});</script>
+
+<script>new Chart(document.getElementById("plain_all_weld"), {
+    type: 'bar',
+    data: {
+      labels: ["{{names_weld.0}}. Смен: {{shifts_weld.0}}","{{names_weld.1}}. Смен: {{shifts_weld.1}}","{{names_weld.2}}. Смен: {{shifts_weld.2}}", "{{names_weld.3}}. Смен: {{shifts_weld.3}}", "{{names_weld.4}}. Смен: {{shifts_weld.4}}", "{{names_weld.5}}. Смен: {{shifts_weld.5}}", "{{names_weld.6}}. Смен: {{shifts_weld.6}}", "{{names_weld.7}}. Смен: {{shifts_weld.7}}", "{{names_weld.8}}. Смен: {{shifts_weld.8}}", "{{names_weld.9}}. Смен: {{shifts_weld.9}}"],
+      datasets: [
+        {
+          label: "Простой в часах",
+          backgroundColor: ["#DC143C", "#FF4500","#FF8C00","#FFD700","#9ACD32", "#9ACD32", "#9ACD32", "#9ACD32", "#9ACD32", "#9ACD32"],
+          data: [{{means_weld.0}}, {{means_weld.1}}, {{means_weld.2}}, {{means_weld.3}}, {{means_weld.4}}, {{means_weld.5}}, {{means_weld.6}}, {{means_weld.7}}, {{means_weld.8}}, {{means_weld.9}}]
+        }
+      ]
+    },
+    options: {
+      legend: { display: false },
+
+    }
+});</script>
+
+<script>new Chart(document.getElementById("plain_weld_month"), {
+    type: 'bar',
+    data: {
+      labels: ["{{names_weld_month.0}}. Смен: {{shifts_weld_month.0}}","{{names_weld_month.1}}. Смен: {{shifts_weld_month.1}}","{{names_weld_month.2}}. Смен: {{shifts_weld_month.2}}", "{{names_weld_month.3}}. Смен: {{shifts_weld_month.3}}", "{{names_weld_month.4}}. Смен: {{shifts_weld_month.4}}", "{{names_weld_month.5}}. Смен: {{shifts_weld_month.5}}", "{{names_weld_month.6}}. Смен: {{shifts_weld_month.6}}", "{{names_weld_month.7}}. Смен: {{shifts_weld_month.7}}", "{{names_weld_month.8}}. Смен: {{shifts_weld_month.8}}", "{{names_weld_month.9}}. Смен: {{shifts_weld_month.9}}"],
+      datasets: [
+        {
+          label: "Простой в часах",
+          backgroundColor: ["#DC143C", "#FF4500","#FF8C00","#FFD700","#9ACD32", "#9ACD32", "#9ACD32", "#9ACD32", "#9ACD32", "#9ACD32"],
+          data: [{{means_weld_month.0}}, {{means_weld_month.1}}, {{means_weld_month.2}}, {{means_weld_month.3}}, {{means_weld_month.4}}, {{means_weld_month.5}}, {{means_weld_month.6}}, {{means_weld_month.7}}, {{means_weld_month.8}}, {{means_weld_month.9}}]
+        }
+      ]
+    },
+    options: {
+      legend: { display: false },
+
+    }
+});</script>
+
+
+
+
+{% endblock %}

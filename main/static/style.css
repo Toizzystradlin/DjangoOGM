@@ -1,0 +1,214 @@
+body {
+    margin: 0 !important;
+    font-family: 'Montserrat', sans-serif !important;
+    font-size: 15px !important;
+    line-height: 1.6 !important;
+    color: #333 !important;
+}
+
+*,
+*:before,
+*:after {
+    box-sizing: border-box !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0 !important;
+}
+
+.container {
+    width: 100% !important;
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+}
+
+.containerX {
+    width: 100% !important;
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+}
+
+.intro {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 20vh !important;
+    background: url("/static/images/intro.jpg") center no-repeat !important;
+    -webkit-background-size: cover !important;
+    background-size: cover !important;
+}
+
+.intro__inner {
+    width: 100% !important;
+    max-width: 1080px !important;
+    margin:0 auto !important;
+    color: #fff !important;
+}
+
+.intro__title {
+    font-size: 72px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    text-align: center !important;
+    line-height: 1 !important;
+}
+
+.intro__suptitle {
+    font-family: 'Kaushan Script', cursive !important;
+    font-size: 72px !important;
+    color: #fff !important;
+    text-align: center !important;
+}
+
+.header {
+    width: 100% !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000 !important;
+    padding-top: 30px !important;
+}
+
+.header__inner {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    position: relative !important;
+    top: 30px !important;
+}
+
+.header__logo {
+    font-size: 30px !important;
+    font-weight: 700 !important;
+    color: #fff !important;
+}
+
+.nav {
+    font-size: 25px !important;
+    text-transform: uppercase !important;
+    font-weight: 500 !important;
+    position: center !important;
+}
+
+.nav__link {
+    display: inline-block !important;
+    vertical-align: top !important;
+    margin: 0 15px !important;
+    position: relative !important;
+    color: #fff !important;
+    text-decoration: none !important;
+    transition: color 0.1s linear !important;
+}
+
+.nav__link:after {
+    content: "" !important;
+    display: block !important;
+    width: 100% !important;
+    height: 3px !important;
+    background-color: #fce38a !important;
+    opacity: 0 !important;
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    z-index: 1 !important;
+    transition: opacity 0.1s !important;
+}
+
+.nav__link:hover {
+    color: #fce38a;
+}
+
+.nav__link:hover:after {
+    display: block !important;
+    opacity: 1 !important;
+}
+
+.table {
+	width: 1200px !important;
+	border-collapse: collapse !important;
+	margin: 25px 0 !important;
+	border-radius: 5px 5px 0 0 !important;
+	overflow: hidden !important;
+	box-shadow: 0 0 20px rgba(0,0,0,0.15) !important;
+
+}
+
+
+.table3 {
+	width: 1000px;
+	border-collapse: collapse;
+	margin: 25px 0;
+	border-radius: 5px 5px 0 0;
+	overflow: hidden;
+	box-shadow: 0 0 20px rgba(0,0,0,0.15);
+
+}
+
+.table2 {
+    width: 60%;
+    border-collapse: separate; border-spacing: 10px 10px;
+	border-radius: 5px 5px 0 0;
+	overflow: hidden;
+    font-size: 20px;
+
+}
+
+.table4 {
+    width: 600px;
+	border-collapse: collapse;
+	margin: 25px 0;
+	border-radius: 5px 5px 0 0;
+	overflow: hidden;
+	box-shadow: 0 0 20px rgba(0,0,0,0.15);
+}
+
+
+.th2 {
+    width: 500px;
+}
+
+.td2 {
+    width: 500px;
+}
+
+.table_head {
+    background-color: #20B2AA;
+    color: #ffffff;
+
+}
+
+.my_th {
+    padding: 12px 15px;
+    items-align: top;
+    text-align: top;
+    position: center;
+}
+
+.my_td {
+    padding: 12px 15px;
+}
+
+.tr {
+    border-bottom: 1px solid #dddddd;
+    text-align: left;
+}
+
+.tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+.tr:last-of-type {
+    border-bottom: 3px solid #009879
+}
+
+.area {
+    display: none;
+    disabled;
+}
+
+.active.area {
+    display: inline-block;
+}
+

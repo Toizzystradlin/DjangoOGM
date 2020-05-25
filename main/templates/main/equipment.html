@@ -1,0 +1,76 @@
+{% extends "main/wrapper.html" %}
+
+{% block content %}
+<div class="container" align="center">
+    <h1>Оборудование</h1>
+</div>
+
+<table class="table" id="myTable2">
+    <thead>
+    <tr class="table_head">
+        <th class="th">Наименование</th>
+        <th class="th">Тип</th>
+        <th class="th">Инвентарный номер</th>
+        <th class="th">Участок</th>
+        <th class="th">Статус оборудования</th>
+        <th class="th"></th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for i in eqs %}
+    <tr class="tr">
+        <td class="td">{{i.2}}</td>
+        <td class="td">{{i.3}}</td>
+        <td class="td">{{i.1}}</td>
+        <td class="td">{{i.4}}</td>
+        <td class="td">{{i.5}}</td>
+        <td><a class="btn btn-success btn-info" href="equipment/{{i.0}}">Подробнее</a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+    <tfoot class="text-primary">
+        <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+    </tfoot>
+</table>
+<p></p><p></p>
+
+<p><a class="btn btn-success btn-warning" href="equipment/new_eq">Создать новое оборудование</a></p>
+<script>$(document).ready( function () {
+    $('#myTable2').DataTable({
+    "order": [[0, "desc"]],
+    initComplete: function () {
+            this.api().columns([0,1,2,4,6]).every( function () {
+                var column = this;
+                var select = $('<select><option value=""></option></select>')
+                    .click( function(e) {
+                        e.stopPropagation();
+                    })
+                    .appendTo( $(column.header()) )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append('<option value="' + d + '">' + d.substr(0,20) + '</option>')
+                } );
+            } );
+        }
+    });
+
+} );
+</script>
+
+{% endblock %}
