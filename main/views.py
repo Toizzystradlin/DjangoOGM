@@ -36,6 +36,9 @@ def new_query(request):
         area1 = list(Equipment.objects.filter(area='Механической обработки'))
         area2 = list(Equipment.objects.filter(area='Слесарный'))
         area3 = list(Equipment.objects.filter(area='Сварки'))
+
+        reasons = Reasons.objects.all()
+
     if request.method == "POST":
         a1 = request.POST.get('area1')
         a2 = request.POST.get('area2')
@@ -106,12 +109,13 @@ def new_query(request):
     else:
         pass
     return render(request, 'main/new_query.html',
-                  {'name': a, 'emps': emps, 'area1': area1, 'area2': area2, 'area3': area3})
+                  {'name': a, 'emps': emps, 'area1': area1, 'area2': area2, 'area3': area3, 'reasons': reasons})
 
 @login_required
 def show_query(request, query_id):
     c = Queries.objects.get(query_id=query_id)
     d = Equipment.objects.get(eq_id=c.eq_id)
+    reasons = Reasons.objects.all()
     now_emp = 0
     try:
         json_now_emps = c.json_emp
@@ -152,7 +156,7 @@ def show_query(request, query_id):
         works = list(works)
 
 
-    return render(request, 'main/query.html', {'query': c, 'equipment': d, 'coms': coms, 'works': works, 'emps': emps, 'now_emp': now_emp, 'final_emps': final_emps})
+    return render(request, 'main/query.html', {'query': c, 'equipment': d, 'coms': coms, 'works': works, 'emps': emps, 'now_emp': now_emp, 'final_emps': final_emps, 'reasons': reasons})
 
 @login_required
 def edit_query(request, query_id):

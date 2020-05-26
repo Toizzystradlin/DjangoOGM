@@ -56,10 +56,9 @@
                 </td></tr>
                 <tr><td>Причина остановки</td><td>
                     <select name="reason_select">
-                        <option value="Механика" >Механика</option>
-                        <option value="Электрика">Электрика</option>
-                        <option value="СОЖ">СОЖ</option>
-                        <option value="Неизвестно">Неизвестно</option>
+                        {%for i in reasons%}
+                            <option value='{{i.reason}}'>{{i.reason}}</option>
+                        {%endfor%}
                     </select>
                 </td></tr>
                 <tr><td>Статус заявки</td><td>

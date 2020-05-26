@@ -34,9 +34,9 @@
                     <td>
                         <select name="query_reason_select">
                             <option value="{{query.reason}}" selected>{{query.reason}}</option>
-                            <option value="Механика">Механика</option>
-                            <option value="Электрика">Электрика</option>
-                            <option value="СОЖ">СОЖ</option>
+                            {%for i in reasons%}
+                                <option value="{{i.reason}}">{{i.reason}}</option>
+                            {%endfor%}
                         </select>
                     </td>
                 </tr>
