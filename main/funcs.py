@@ -3,6 +3,9 @@ from datetime import datetime, timedelta, timezone
 import json
 from django.db import connection
 from . import send_message
+import xlwt
+from django.http import HttpResponse
+
 
 def top10(equipment):
     pairs = []

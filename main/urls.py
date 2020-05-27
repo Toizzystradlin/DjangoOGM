@@ -29,4 +29,5 @@ urlpatterns = [
     path('settings', views.settings, name='settings'),
     path('main/settings/add_reason', views.add_reason, name='add_reason'),
     path('delete_reasons', views.delete_reasons, name='delete_reasons'),
+    path('main/upload_stats', views.export__data, name='export__data'),
 ]

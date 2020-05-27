@@ -10,6 +10,10 @@ from . import send_message, funcs
 from . import qr_code
 from django.contrib.auth.decorators import login_required
 import json
+import openpyxl
+import easygui
+import xlwt
+from django.http import HttpResponse
 
 @login_required
 def main(request):
@@ -421,6 +425,95 @@ def stats(request):
                                                'names_weld': names_weld, 'means_weld': means_weld, 'shifts_weld': shifts_weld,
                                                'names_weld_month': names_weld_month, 'means_weld_month': means_weld_month, 'shifts_weld_month': shifts_weld_month,
                                                'average_time': average_time, 'to_times': to_times, 'to_names': to_names})
+
+def export__data(request):
+    equipment = Equipment.objects.all()  # топ 10 по простою за все время
+    names, means, sh = funcs.top10(equipment)  # возвращает имена, цифры по простою и смены оборудования
+    equipment = Equipment.objects.all()  # топ 10 по простою за все время
+    names_m, means_m, sh_m = funcs.top10_month(equipment)
+
+    equipment = Equipment.objects.filter(area='Механической обработки')
+    names_mech, means_mech, shifts_mech = funcs.top10(equipment)
+    equipment = Equipment.objects.filter(area='Механической обработки')
+    names_mech_month, means_mech_month, shifts_mech_month = funcs.top10_month(equipment)
+
+    equipment = Equipment.objects.filter(area='Слесарный')
+    names_smith, means_smith, shifts_smith = funcs.top10_month(equipment)
+    equipment = Equipment.objects.filter(area='Слесарный')
+    names_smith_month, means_smith_month, shifts_smith_month = funcs.top10_month(equipment)
+
+    equipment = Equipment.objects.filter(area='Сварочный')
+    names_weld, means_weld, shifts_weld = funcs.top10_month(equipment)
+    equipment = Equipment.objects.filter(area='Сварочный')
+    names_weld_month, means_weld_month, shifts_weld_month = funcs.top10_month(equipment)
+
+    to = list(Maintenance.objects.filter(status='Завершено'))
+    to[:20]
+    to_names = []
+    for i in to:
+        item = Equipment.objects.get(eq_id=i.eq_id)
+        x = item.eq_name
+        to_names.append(x)
+    average_time = timedelta()
+    to_times = []
+    for i in to:
+        delta = i.end_time - i.start_time
+        time = delta.total_seconds() / 3600
+        to_times.append(str(time))
+        average_time = average_time + delta
+    average_time = average_time / len(to)
+
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="stats.xls"'
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('stats') # this will make a sheet named Users Data
+
+    # Sheet header, first row
+    row_num = 0
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    def write_data(start_row, start_col, names, means):
+        row = start_row
+        col = start_col
+        for i in names:
+            ws.write(row, col, i, font_style)
+            row = row + 1
+        row = start_row
+        col = start_col + 1
+        for i in means:
+            ws.write(row, col, i, font_style)
+            row = row + 1
+
+    ws.write(0, 0, 'Топ 10 по простою', font_style)
+    ws.write(0, 3, 'Топ 10 по простою мех. обработка', font_style)
+    ws.write(0, 6, 'Топ 10 по простою сварка', font_style)
+    ws.write(0, 9, 'Топ 10 по простою слесарный', font_style)
+    write_data(1, 0, names, means)
+    write_data(1, 3, names_mech, means_mech)
+    write_data(1, 6, names_weld, means_weld)
+    write_data(1, 9, names_smith, means_smith)
+
+    ws.write(15, 0, 'Топ 10 по простою за месяц', font_style)
+    ws.write(15, 3, 'Топ 10 по простою мех. обработка за месяц', font_style)
+    ws.write(15, 6, 'Топ 10 по простою сварка за месяц', font_style)
+    ws.write(15, 9, 'Топ 10 по простою слесарный за месяц', font_style)
+    write_data(16, 0, names_m, means_m)
+    write_data(16, 3, names_mech_month, means_mech_month)
+    write_data(16, 6, names_weld_month, means_weld_month)
+    write_data(16, 9, names_smith_month, means_smith_month)
+
+    ws.write(30, 0, 'Среднее время ТО', font_style)
+    ws.write(31, 0, str(average_time), font_style)
+
+    ws.write(30, 3, 'Среднее время ТО', font_style)
+    write_data(31, 3, to_names, to_times)
+
+
+    wb.save(response)
+    return response
 
 @login_required
 def maintenance(request):
