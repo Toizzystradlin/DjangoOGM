@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>ОГМ</title>
     {% load static %}
+    <link rel="shortcut icon" type="image/png" href="{% static "images/favicon.ico" %}">
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=Kaushan+Script|Montserrat&display=swap&subset=cyrillic"
@@ -40,7 +41,7 @@
 <header class="header">
     <div class="containerX">
         <div class="intro__inner">
-            <h1 class="intro__title">Welcome to OGM</h1>
+            <h1 class="intro__title">Отдел ОГМ</h1>
         </div>
         <div style="float:right"><ul class="sidebar-nav">
                {% if user.is_authenticated %}
