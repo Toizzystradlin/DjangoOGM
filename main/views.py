@@ -366,53 +366,69 @@ def save_emp(request):
 
 @login_required
 def stats(request):
-    go_count = Queries.objects.filter(query_status='В процессе').count()
-    new_count = Queries.objects.filter(query_status='Новая').count()
-    postpone_count = Queries.objects.filter(query_status='отложена').count()
-    got_count = Queries.objects.filter(query_status='Принята').count()
 
-    work_count = Equipment.objects.filter(eq_status='Работает').count()
-    stop_count = Equipment.objects.filter(eq_status='Остановлено').count()
-    to_count = Equipment.objects.filter(eq_status='ТО').count()
+        go_count = Queries.objects.filter(query_status='В процессе').count()
+        new_count = Queries.objects.filter(query_status='Новая').count()
+        postpone_count = Queries.objects.filter(query_status='отложена').count()
+        got_count = Queries.objects.filter(query_status='Принята').count()
+
+        work_count = Equipment.objects.filter(eq_status='Работает').count()
+        stop_count = Equipment.objects.filter(eq_status='Остановлено').count()
+        to_count = Equipment.objects.filter(eq_status='ТО').count()
 
 
-    equipment = Equipment.objects.all()  # топ 10 по простою за все время
-    names, means, sh = funcs.top10(equipment) #возвращает имена, цифры по простою и смены оборудования
-    equipment = Equipment.objects.all()  # топ 10 по простою за все время
-    names_m, means_m, sh_m = funcs.top10_month(equipment)
+        equipment = Equipment.objects.all()  # топ 10 по простою за все время
+        names, means, sh = funcs.top10(equipment) #возвращает имена, цифры по простою и смены оборудования
+        equipment = Equipment.objects.all()  # топ 10 по простою за все время
+        names_m, means_m, sh_m = funcs.top10_month(equipment)
 
-    equipment = Equipment.objects.filter(area='Механической обработки')
-    names_mech, means_mech, shifts_mech = funcs.top10(equipment)
-    equipment = Equipment.objects.filter(area='Механической обработки')
-    names_mech_month, means_mech_month, shifts_mech_month = funcs.top10_month(equipment)
+        equipment = Equipment.objects.filter(area='Механической обработки')
+        names_mech, means_mech, shifts_mech = funcs.top10(equipment)
+        equipment = Equipment.objects.filter(area='Механической обработки')
+        names_mech_month, means_mech_month, shifts_mech_month = funcs.top10_month(equipment)
 
-    equipment = Equipment.objects.filter(area='Слесарный')
-    names_smith, means_smith, shifts_smith = funcs.top10_month(equipment)
-    equipment = Equipment.objects.filter(area='Слесарный')
-    names_smith_month, means_smith_month, shifts_smith_month = funcs.top10_month(equipment)
+        equipment = Equipment.objects.filter(area='Слесарный')
+        names_smith, means_smith, shifts_smith = funcs.top10_month(equipment)
+        equipment = Equipment.objects.filter(area='Слесарный')
+        names_smith_month, means_smith_month, shifts_smith_month = funcs.top10_month(equipment)
 
-    equipment = Equipment.objects.filter(area='Сварочный')
-    names_weld, means_weld, shifts_weld = funcs.top10_month(equipment)
-    equipment = Equipment.objects.filter(area='Сварочный')
-    names_weld_month, means_weld_month, shifts_weld_month = funcs.top10_month(equipment)
+        equipment = Equipment.objects.filter(area='Сварочный')
+        names_weld, means_weld, shifts_weld = funcs.top10_month(equipment)
+        equipment = Equipment.objects.filter(area='Сварочный')
+        names_weld_month, means_weld_month, shifts_weld_month = funcs.top10_month(equipment)
 
-    to = list(Maintenance.objects.filter(status='Завершено'))
-    to[:20]
-    to_names = []
-    for i in to:
-        item = Equipment.objects.get(eq_id=i.eq_id)
-        x = item.eq_name
-        to_names.append(x)
-    average_time = timedelta()
-    to_times = []
-    for i in to:
-        delta = i.end_time - i.start_time
-        time = delta.total_seconds() / 3600
-        to_times.append(time)
-        average_time = average_time + delta
-    average_time = average_time / len(to)
+        try:
+            to = list(Maintenance.objects.filter(status='Завершено'))
+            to[:20]
+            to_names = []
+            for i in to:
+                item = Equipment.objects.get(eq_id=i.eq_id)
+                x = item.eq_name
+                to_names.append(x)
+            average_time = timedelta()
+            to_times = []
+            for i in to:
+                delta = i.end_time - i.start_time
+                time = delta.total_seconds() / 3600
+                to_times.append(time)
+                average_time = average_time + delta
+            average_time = average_time / len(to)
+        except: return render(request, 'main/stats.html', {'go_count': go_count, 'new_count': new_count,
+                                               'postpone_count': postpone_count,
+                                               'got_count': got_count, 'work_count': work_count,
+                                               'stop_count': stop_count,
+                                               'to_count': to_count, 'names': names, 'means': means, 'shifts': sh,
+                                               'names_m': names_m, 'means_m': means_m, 'shifts_m': sh_m, 'names_mech': names_mech,
+                                               'means_mech': means_mech, 'shifts_mech': shifts_mech, 'names_mech_month': names_mech_month,
+                                               'means_mech_month': means_mech_month, 'shifts_mech_month': shifts_mech_month,
+                                               'names_smith': names_smith, 'means_smith': means_smith, 'shifts_smith': shifts_smith,
+                                               'names_smith_month': names_smith_month, 'means_smith_month': means_smith_month, 'shifts_smith_month': shifts_smith_month,
+                                               'names_weld': names_weld, 'means_weld': means_weld, 'shifts_weld': shifts_weld,
+                                               'names_weld_month': names_weld_month, 'means_weld_month': means_weld_month, 'shifts_weld_month': shifts_weld_month
+                                               })
 
-    return render(request, 'main/stats.html', {'go_count': go_count, 'new_count': new_count,
+
+        return render(request, 'main/stats.html', {'go_count': go_count, 'new_count': new_count,
                                                'postpone_count': postpone_count,
                                                'got_count': got_count, 'work_count': work_count,
                                                'stop_count': stop_count,
@@ -424,8 +440,8 @@ def stats(request):
                                                'names_smith_month': names_smith_month, 'means_smith_month': means_smith_month, 'shifts_smith_month': shifts_smith_month,
                                                'names_weld': names_weld, 'means_weld': means_weld, 'shifts_weld': shifts_weld,
                                                'names_weld_month': names_weld_month, 'means_weld_month': means_weld_month, 'shifts_weld_month': shifts_weld_month,
-                                               'average_time': average_time, 'to_times': to_times, 'to_names': to_names})
-
+                                                   'average_time': average_time, 'to_times': to_times, 'to_names': to_names})
+@login_required
 def export__data(request):
     equipment = Equipment.objects.all()  # топ 10 по простою за все время
     names, means, sh = funcs.top10(equipment)  # возвращает имена, цифры по простою и смены оборудования
@@ -628,7 +644,7 @@ def maintenance_edit(request, to_id):
 
     return redirect('/main/maintenance')
 
-
+@login_required
 def pc_query(request):
     with connection.cursor() as cursor:
         cursor.execute("SELECT eq_name FROM equipment")
@@ -701,6 +717,7 @@ def pc_query(request):
         pass
     return render(request, 'pc_query/pc_query.html', {'name': a, 'area1': area1, 'area2': area2, 'area3': area3})
 
+@login_required
 def pc_history(request):
     with connection.cursor() as cursor:
         cursor.execute("SELECT queries.query_id, queries.post_time, equipment.eq_name, queries.reason, queries.msg, "
@@ -711,22 +728,26 @@ def pc_history(request):
         a.reverse()
         return render(request, 'pc_query/pc_history.html', {'dict': a})
 
+@login_required
 def delete_query(request, query_id):
     x = Queries.objects.get(query_id=query_id)
     x.delete()
     return redirect('/main')
 
+@login_required
 def settings(request):
     reasons = Reasons.objects.all()
 
     return render(request, 'main/settings.html', {'reasons': reasons})
 
+@login_required
 def add_reason(request):
     reason = request.POST.get('new_reason')
     if reason != '':
         Reasons.objects.create(reason=reason)
     return redirect('/main/settings')
 
+@login_required
 def delete_reasons(request):
     reasons = request.POST.getlist('delete_list')
     for i in reasons:

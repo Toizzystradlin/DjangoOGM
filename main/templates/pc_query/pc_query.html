@@ -19,9 +19,16 @@
 <header class="header">
     <div class="containerX">
         <div class="intro__inner">
-            <h1 class="intro__title">Welcome to OGM</h1>
+            <h1 class="intro__title">ОТДЕЛ ОГМ</h1>
         </div>
-
+    <div style="float:right"><ul class="sidebar-nav">
+               {% if user.is_authenticated %}
+                    <li>{{ user.get_username }}</li>
+                    <li><a href="{% url 'logout'%}?next={{request.path}}">Logout</a></li>
+               {% else %}
+                    <li><a href="{% url 'login'%}?next={{request.path}}">Login</a></li>
+               {% endif %}
+                    </ul></div>
     <div class="container">
 
         <div class="header__inner">
@@ -104,7 +111,8 @@
 
                 <tr>
                     <td>Сообщение: </td>
-                    <td><textarea name="query_message" rows="5" cols="70"></textarea></td>
+                    <td><textarea name="query_message" rows="5" cols="70"></textarea> <p>Если вашего оборудования нет в списке, выберите пункт "Другое" и уточните в сообщении</p></td>
+
                 </tr>
             </table>
             <input type="submit" class="btn btn-success btn-info" value="Отправить заявку">

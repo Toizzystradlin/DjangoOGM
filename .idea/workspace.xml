@@ -2,11 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="56de9908-72e5-4632-b812-e4a4cf45ac64" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/funcs.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/funcs.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/templates/main/stats.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/stats.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/templates/pc_query/pc_history.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/pc_query/pc_history.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/templates/pc_query/pc_query.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/pc_query/pc_query.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -35,7 +33,7 @@
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$USER_HOME$/PycharmProjects/OGMBOT2" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="run.code.analysis.last.selected.profile" value="aDefault" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
@@ -191,10 +189,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="614" y="114" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1590588948874" />
-    <state x="888" y="352" key="FileChooserDialogImpl" timestamp="1589982498996">
+    <state x="888" y="352" key="FileChooserDialogImpl" timestamp="1591188011717">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="888" y="352" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1589982498996" />
+    <state x="888" y="352" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1591188011717" />
     <state width="1727" height="116" key="GridCell.Tab.0.bottom" timestamp="1588110295872">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -215,10 +213,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="388" y="191" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1588523053796" />
-    <state x="599" y="463" width="607" height="351" key="com.intellij.ide.util.TipDialog" timestamp="1590588344657">
+    <state x="599" y="463" width="607" height="351" key="com.intellij.ide.util.TipDialog" timestamp="1591187991722">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="599" y="463" width="607" height="351" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1590588344657" />
+    <state x="599" y="463" width="607" height="351" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1591187991722" />
     <state x="857" y="125" width="1079" height="519" key="dock-window-1" timestamp="1585563328291">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
