@@ -28,6 +28,8 @@ urlpatterns = [
     path('<int:query_id>/delete_query', views.delete_query, name='delete_query'),
     path('settings', views.settings, name='settings'),
     path('main/settings/add_reason', views.add_reason, name='add_reason'),
+    path('main/settings/add_type', views.add_type, name='add_type'),
     path('delete_reasons', views.delete_reasons, name='delete_reasons'),
+    path('delete_types', views.delete_types, name='delete_types'),
     path('main/upload_stats', views.export__data, name='export__data'),
 ]

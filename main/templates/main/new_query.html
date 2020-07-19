@@ -2,7 +2,7 @@
 
 
 {% block content %}
-
+<br>
 <div class="form-group">
     <div class="container">
         <form action="new_query" method="post">
@@ -10,7 +10,7 @@
             <table class="table2">
                 <tr><td>Выбор участка: </td>
                 <td>
-                    <select name="area_select" id="area_select">
+                    <select name="area_select" id="area_select" class="selectpicker" data-width="300px" data-style="btn btn-outline-dark">
                             <option value="Механической обработки">Механической обработки</option>
                             <option value="Слесарный">Слесарный</option>
                             <option value="Сварочный">Сварочный</option>
@@ -19,7 +19,7 @@
                 </tr>
                 <tr><td>Выбор оборудования</td><td>
                     <div id="div1">
-                        <select class="selectpicker" data-live-search="true" data-style="btn-warning" name="area1" id="area1" >
+                        <select class="selectpicker" data-live-search="true" data-style="btn-warning" name="area1" id="area1" data-size="10" data-width="300px">
                             <option selected></option>
                         {% for i in area1 %}
                         <option value="{{i.eq_id}}">{{i.eq_name}} - {{i.invnum}}</option>
@@ -28,7 +28,7 @@
                     </div>
 
                     <div style="display: none" id="div2">
-                        <select class="selectpicker" data-live-search="true" data-style="btn-warning" name="area2" id="area2">
+                        <select class="selectpicker" data-live-search="true" data-style="btn-warning" name="area2" id="area2" data-size="10" data-width="300px">
                             <option selected></option>
                         {% for i in area2 %}
                         <option value="{{i.eq_id}}">{{i.eq_name}} - {{i.invnum}}</option>
@@ -36,7 +36,7 @@
                         </select>
                     </div>
                     <div style="display: none" id="div3">
-                        <select class="selectpicker" data-live-search="true" data-style="btn-warning" name="area3" id="area3">
+                        <select class="selectpicker" data-live-search="true" data-style="btn-warning" name="area3" id="area3" data-size="10" data-width="300px">
                             <option selected></option>
                         {% for i in area3 %}
                         <option value="{{i.eq_id}}">{{i.eq_name}} - {{i.invnum}}</option>
@@ -47,22 +47,21 @@
                 </td></tr>
 
 
-
                 <tr><td>Оборудование остановлено?</td><td>
-                    <select name="eq_status_select">
+                    <select name="eq_status_select" class="selectpicker" data-style="btn btn-outline-dark" data-width="300px">
                         <option value="Работает" selected>Работает</option>
                         <option value="Остановлено">Остановлено</option>
                     </select>
                 </td></tr>
                 <tr><td>Причина остановки</td><td>
-                    <select name="reason_select">
+                    <select name="reason_select" class="selectpicker" data-style="btn btn-outline-dark" data-width="300px">
                         {%for i in reasons%}
                             <option value='{{i.reason}}'>{{i.reason}}</option>
                         {%endfor%}
                     </select>
                 </td></tr>
                 <tr><td>Статус заявки</td><td>
-                    <select name="query_status_select">
+                    <select name="query_status_select" class="selectpicker" data-style="btn btn-outline-dark" data-width="300px">
                         <option value="Новая" selected>Новая</option>
                         <option value="Принята">Принята</option>
                         <option value="В процессе">В процессе</option>
@@ -72,7 +71,7 @@
                     </select>
                 </td></tr>
                 <tr><td>Назначить на заявку: </td><td>
-                    <select name="employee_select" multiple>
+                    <select name="employee_select" multiple class="selectpicker" data-style="btn btn-outline-dark" data-width="300px" data-size="6" >
                         {% for j in emps %}
                         <option value={{j.0}}>{{j.1}}</option>
                         {%endfor%}
@@ -80,7 +79,7 @@
                 </td></tr>
                 <tr>
                     <td>Сообщение: </td>
-                    <td><textarea name="query_message" rows="10" cols="70"></textarea></td>
+                    <td><textarea name="query_message" rows="5" cols="70" class="form-control"></textarea></td>
                 </tr>
             </table>
             <input type="submit" class="btn btn-success btn-info" value="Отправить заявку">

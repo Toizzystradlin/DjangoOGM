@@ -46,7 +46,7 @@
     $('#myTable2').DataTable({
     "order": [[0, "desc"]],
     initComplete: function () {
-            this.api().columns([0,1,2,4,6]).every( function () {
+            this.api().columns([0,1,2,3,4,6]).every( function () {
                 var column = this;
                 var select = $('<select><option value=""></option></select>')
                     .click( function(e) {

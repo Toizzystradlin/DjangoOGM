@@ -121,6 +121,7 @@ class Eq_stoptime(models.Model):
     month_start = models.DateTimeField(blank=True, null=True)
     shift_start = models.DateTimeField(blank=True, null=True)
     shift_end = models.DateTimeField(blank=True, null=True)
+    now = models.DateTimeField(blank=True, null=True)
     class Meta:
         managed = True
         db_table = 'eq_stoptime'

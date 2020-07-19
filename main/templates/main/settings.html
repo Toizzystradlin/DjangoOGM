@@ -17,18 +17,42 @@
                     </td>
                     <td><div>
                         <!-- Button trigger modal -->
-                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#exampleModal">
-                          Добавить причину
+                        <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#exampleModal">
+                          Добавить тип
                         </button>
                         <br>
                         <br>
                         <!-- Button trigger modal -->
                         <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModal2">
-                          Удалить причину
+                          Удалить тип
                         </button>
                         </div>
                     </td>
                 </tr>
+                <tr>
+                    <td>Типы оборудования:</td>
+                    <td>
+                        <ul>
+                            {%for i in types%}
+                                <li>{{i.type}}</li>
+                            {%endfor%}
+                        </ul>
+                    </td>
+                    <td><div>
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#exampleModal3">
+                          Добавить тип
+                        </button>
+                        <br>
+                        <br>
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModal4">
+                          Удалить тип
+                        </button>
+                        </div>
+                    </td>
+                </tr>
+
 
             </table>
             <!-- Modal -->
@@ -80,6 +104,56 @@
     </div>
   </div>
 </div>
+
+        <!-- Modal -->
+<div class="modal fade" id="exampleModal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <form action="/main/settings/add_type" method="post">
+            {% csrf_token %}
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel3">Напишите название типа</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <input type="text" name="new_type">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </div>
+        </form>
+    </div>
+  </div>
+</div>
+                                <!-- Modal -->
+<div class="modal fade" id="exampleModal4" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <form action="delete_types" method="post">
+            {% csrf_token %}
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel4">Выберите типы для удаления</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          {%for i in types%}
+                <input type="checkbox" value="{{i.id}}" name="delete_type"> {{i.type}}<br>
+          {%endfor%}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+        <button type="submit" class="btn btn-danger">Удалить тип</button>
+      </div>
+        </form>
+    </div>
+  </div>
+</div>
+
 
 
 

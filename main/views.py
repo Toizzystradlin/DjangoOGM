@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Queries, Equipment, Employees, Comment, Maintenance, Worktime, Eq_stoptime, Reasons
+from .models import Queries, Equipment, Employees, Comment, Maintenance, Worktime, Eq_stoptime, Reasons, Type
 from django.http import Http404, HttpResponse
 from django.views.generic import ListView, DetailView
 from django.db import connection
@@ -15,6 +15,7 @@ import easygui
 import xlwt
 from django.http import HttpResponse
 
+
 @login_required
 def main(request):
     with connection.cursor() as cursor:
@@ -26,6 +27,7 @@ def main(request):
         a.reverse()
         return render(request, 'main/main.html', {'dict': a})
 
+
 @login_required
 def new_query(request):
     with connection.cursor() as cursor:
@@ -33,7 +35,7 @@ def new_query(request):
         a = cursor.fetchall()
         a = list(a)
 
-        cursor.execute("SELECT employee_id, fio FROM employees WHERE (master = 'False')")
+        cursor.execute("SELECT employee_id, fio FROM employees")
         emps = cursor.fetchall()
         emps = list(emps)
 
@@ -103,9 +105,9 @@ def new_query(request):
             funcs.appoint_doers(doers, query.query_id)
             funcs.multiple_doers(doers, query.query_id)
 
-            for i in doers:
-                emp = Employees.objects.get(employee_id=int(i))
-                send_message.send_message_4(emp.tg_id, query.query_id)
+            # for i in doers:
+            # emp = Employees.objects.get(employee_id=int(i))
+            # send_message.send_message_4(emp.tg_id, query.query_id)
             return redirect('main')
         except Exception as ex:
             return HttpResponse(ex)
@@ -114,6 +116,7 @@ def new_query(request):
         pass
     return render(request, 'main/new_query.html',
                   {'name': a, 'emps': emps, 'area1': area1, 'area2': area2, 'area3': area3, 'reasons': reasons})
+
 
 @login_required
 def show_query(request, query_id):
@@ -126,25 +129,23 @@ def show_query(request, query_id):
         now_emps_dict = json.loads(json_now_emps)
         now_emps_list = now_emps_dict['doers']
         final_emps = []
-        result_now_emps = [int(item) for item in now_emps_list] #Преобразование "1" в 1
+        result_now_emps = [int(item) for item in now_emps_list]  # Преобразование "1" в 1
         now_emps = []
         for i in result_now_emps:
-            e = Employees.objects.get(employee_id = i)
+            e = Employees.objects.get(employee_id=i)
             now_emps.append(e)
     except:
         result_now_emps = []
         final_emps = []
 
-
-    emps = Employees.objects.filter(master='False')
-    for i in emps:                              # цикл подготовки массива исполнителей для корректного вывода в селект мултипл
+    emps = Employees.objects.all()
+    for i in emps:  # цикл подготовки массива исполнителей для корректного вывода в селект мултипл
         m = [i.employee_id, i.fio, False]
         final_emps.append(m)
         if len(result_now_emps) > 0:
             for j in result_now_emps:
                 if i.employee_id == j:
                     final_emps[-1][2] = True
-
 
     with connection.cursor() as cursor:
         cursor.execute("SELECT comments.query, comments.author, comments.text, comments.created_date, "
@@ -159,8 +160,10 @@ def show_query(request, query_id):
         works = cursor.fetchall()
         works = list(works)
 
+    return render(request, 'main/query.html',
+                  {'query': c, 'equipment': d, 'coms': coms, 'works': works, 'emps': emps, 'now_emp': now_emp,
+                   'final_emps': final_emps, 'reasons': reasons})
 
-    return render(request, 'main/query.html', {'query': c, 'equipment': d, 'coms': coms, 'works': works, 'emps': emps, 'now_emp': now_emp, 'final_emps': final_emps, 'reasons': reasons})
 
 @login_required
 def edit_query(request, query_id):
@@ -179,7 +182,7 @@ def edit_query(request, query_id):
         q.comment = q_comment
         q.reason = q_reason
         q.save()
-        funcs.appoint_doers_2(doers, query_id) # занести json файл
+        funcs.appoint_doers_2(doers, query_id)  # занести json файл
         funcs.multiple_doers(doers, query_id)
         e.eq_status = eq_status
         e.save()
@@ -210,6 +213,7 @@ def edit_query(request, query_id):
                     pass
     return redirect('main')
 
+
 @login_required
 def show_equipment(request):
     with connection.cursor() as cursor:
@@ -218,6 +222,7 @@ def show_equipment(request):
         eqs = list(eqs)
 
     return render(request, 'main/equipment.html', {'eqs': eqs})
+
 
 @login_required
 def show_eq(request, eq_id):
@@ -229,11 +234,20 @@ def show_eq(request, eq_id):
         qs = list(qs)
         qs.reverse()
 
-    equipment = Equipment.objects.filter(eq_id=eq_id)
-    name, mean, shifts = funcs.top10(equipment)
-    name_m, mean_m, shifts_m = funcs.top10_month(equipment)
+        cursor.execute("SELECT id, start_time, comment, status FROM maintenance WHERE (eq_id = %s)", [eq_id])
+        tos = list(cursor.fetchall())
 
-    return render(request, 'main/eq_one.html', {'eqs': eqs, 'queries': qs, 'name': name, 'mean': mean, 'mean_m': mean_m})
+    equipment = Equipment.objects.filter(eq_id=eq_id)
+    name, mean, shifts, invs = funcs.top10(equipment)
+    name_m, mean_m, shifts_m, invs_m = funcs.top10_month(equipment)
+
+    last_week_name, last_week_mean, sh, invnums = funcs.top10_last_week(equipment)
+
+    return render(request, 'main/eq_one.html',
+                  {'eqs': eqs, 'queries': qs, 'name': name, 'mean': str(mean[0])[:5], 'mean_m': str(mean_m[0])[:5],
+                   'tos': tos, 'last_week_name': last_week_name, 'last_week_mean': str(last_week_mean[0])[:5],
+                   'invnums': invnums})
+
 
 @login_required
 def edit_eq(request, eq_id):
@@ -242,6 +256,8 @@ def edit_eq(request, eq_id):
         eq_status = request.POST.get('eq_status_select')
         eqs.eq_status = eq_status
         eqs.shift = request.POST.get('shift_select')
+        eqs.save()
+        eqs.eq_comment = request.POST.get('eq_comment')
         eqs.save()
 
         if eq_status == 'Остановлено':  # Блок занесения простоев в таблицу простоев
@@ -271,6 +287,7 @@ def edit_eq(request, eq_id):
 
     return redirect('/main/equipment')
 
+
 @login_required
 def new_eq(request):
     with connection.cursor() as cursor:
@@ -293,6 +310,7 @@ def new_eq(request):
         return redirect('/main/equipment')
     return render(request, 'main/new_eq.html', {'types': tps})
 
+
 @login_required
 def show_employees(request):
     with connection.cursor() as cursor:
@@ -302,15 +320,16 @@ def show_employees(request):
 
     return render(request, 'main/employees.html', {'emps': emps})
 
+
 @login_required
 def show_emp(request, employee_id):
     emp = Employees.objects.get(employee_id=employee_id)
     man_id = emp.employee_id
     with connection.cursor() as cursor:
         cursor.execute("SELECT equipment.eq_name, queries.post_time, " \
-              "queries.msg, queries.query_status, queries.query_id, queries.json_emp FROM " \
-              "queries JOIN equipment ON ((queries.eq_id = equipment.eq_id) AND (" \
-              "queries.query_status != 'Завершена')) ")
+                       "queries.msg, queries.query_status, queries.query_id, queries.json_emp FROM " \
+                       "queries JOIN equipment ON ((queries.eq_id = equipment.eq_id) AND (" \
+                       "queries.query_status != 'Завершена')) ")
         all_queries = cursor.fetchall()
         my_queries = []
         for i in all_queries:  # сортировка по значению json файла
@@ -322,9 +341,9 @@ def show_emp(request, employee_id):
                     my_queries.append(i)
 
         cursor.execute("SELECT equipment.eq_name, queries.post_time, " \
-              "queries.msg, queries.query_status, queries.query_id, queries.json_emp FROM " \
-              "equipment JOIN queries ON ((queries.eq_id = equipment.eq_id) AND (" \
-              "queries.query_status = 'Завершена')) ")
+                       "queries.msg, queries.query_status, queries.query_id, queries.json_emp FROM " \
+                       "equipment JOIN queries ON ((queries.eq_id = equipment.eq_id) AND (" \
+                       "queries.query_status = 'Завершена')) ")
         all_queries = cursor.fetchall()
         my_queries_done = []
         for i in all_queries:  # сортировка по значению json файла
@@ -335,8 +354,9 @@ def show_emp(request, employee_id):
                 if j == man_id:
                     my_queries_done.append(i)
 
-        cursor.execute("SELECT maintenance.start_time, maintenance.employee_id, maintenance.end_time, maintenance.status, " \
-                       "equipment.eq_name, maintenance.id FROM maintenance JOIN equipment ON (maintenance.eq_id = equipment.eq_id)")
+        cursor.execute(
+            "SELECT maintenance.start_time, maintenance.employee_id, maintenance.end_time, maintenance.status, " \
+            "equipment.eq_name, maintenance.id FROM maintenance JOIN equipment ON (maintenance.eq_id = equipment.eq_id)")
         all_tos = cursor.fetchall()
         my_tos = []
         for i in all_tos:
@@ -347,12 +367,14 @@ def show_emp(request, employee_id):
                 if j == man_id:
                     my_tos.append(i)
 
+    return render(request, 'main/edit_emp.html',
+                  {'emp': emp, 'queries': my_queries, 'done_queries': my_queries_done, 'my_tos': my_tos})
 
-    return render(request, 'main/edit_emp.html', {'emp': emp, 'queries': my_queries, 'done_queries': my_queries_done, 'my_tos': my_tos})
 
 @login_required
 def add_new(request):
     return render(request, 'main/add_new.html')
+
 
 @login_required
 def save_emp(request):
@@ -364,83 +386,107 @@ def save_emp(request):
     Employees.objects.create(fio=name, rank=rank, tg_id=tg_id, master=master)
     return redirect('/main/employees')
 
+
 @login_required
 def stats(request):
+    go_count = Queries.objects.filter(query_status='В процессе').count()
+    new_count = Queries.objects.filter(query_status='Новая').count()
+    postpone_count = Queries.objects.filter(query_status='отложена').count()
+    got_count = Queries.objects.filter(query_status='Принята').count()
 
-        go_count = Queries.objects.filter(query_status='В процессе').count()
-        new_count = Queries.objects.filter(query_status='Новая').count()
-        postpone_count = Queries.objects.filter(query_status='отложена').count()
-        got_count = Queries.objects.filter(query_status='Принята').count()
+    work_count = Equipment.objects.filter(eq_status='Работает').count()
+    stop_count = Equipment.objects.filter(eq_status='Остановлено').count()
+    to_count = Equipment.objects.filter(eq_status='ТО').count()
 
-        work_count = Equipment.objects.filter(eq_status='Работает').count()
-        stop_count = Equipment.objects.filter(eq_status='Остановлено').count()
-        to_count = Equipment.objects.filter(eq_status='ТО').count()
+    equipment = Equipment.objects.all()  # топ 10 по простою за все время
+    names, means, sh, invs_all = funcs.top10(equipment)  # возвращает имена, цифры по простою и смены оборудования
+    equipment = Equipment.objects.all()  # топ 10 по простою за month
+    names_m, means_m, sh_m, invs_month = funcs.top10_month(equipment)
+    names_week, means_week, shifts_week, invnums = funcs.top10_last_week(equipment)# топ 10 по простою за week
 
+    equipment = Equipment.objects.filter(area='Механической обработки')
+    names_mech, means_mech, shifts_mech, invs_mech = funcs.top10(equipment)
+    equipment = Equipment.objects.filter(area='Механической обработки')
+    names_mech_month, means_mech_month, shifts_mech_month, invs_mech_month = funcs.top10_month(equipment)
 
-        equipment = Equipment.objects.all()  # топ 10 по простою за все время
-        names, means, sh = funcs.top10(equipment) #возвращает имена, цифры по простою и смены оборудования
-        equipment = Equipment.objects.all()  # топ 10 по простою за все время
-        names_m, means_m, sh_m = funcs.top10_month(equipment)
+    equipment = Equipment.objects.filter(area='Слесарный')
+    names_smith, means_smith, shifts_smith, invs_smith = funcs.top10(equipment)
+    equipment = Equipment.objects.filter(area='Слесарный')
+    names_smith_month, means_smith_month, shifts_smith_month, invs_smith_month = funcs.top10_month(equipment)
 
-        equipment = Equipment.objects.filter(area='Механической обработки')
-        names_mech, means_mech, shifts_mech = funcs.top10(equipment)
-        equipment = Equipment.objects.filter(area='Механической обработки')
-        names_mech_month, means_mech_month, shifts_mech_month = funcs.top10_month(equipment)
+    equipment = Equipment.objects.filter(area='Сварочный')
+    names_weld, means_weld, shifts_weld, invs_weld = funcs.top10(equipment)
+    equipment = Equipment.objects.filter(area='Сварочный')
+    names_weld_month, means_weld_month, shifts_weld_month, invs_weld_month = funcs.top10_month(equipment)
 
-        equipment = Equipment.objects.filter(area='Слесарный')
-        names_smith, means_smith, shifts_smith = funcs.top10_month(equipment)
-        equipment = Equipment.objects.filter(area='Слесарный')
-        names_smith_month, means_smith_month, shifts_smith_month = funcs.top10_month(equipment)
-
-        equipment = Equipment.objects.filter(area='Сварочный')
-        names_weld, means_weld, shifts_weld = funcs.top10_month(equipment)
-        equipment = Equipment.objects.filter(area='Сварочный')
-        names_weld_month, means_weld_month, shifts_weld_month = funcs.top10_month(equipment)
-
-        try:
-            to = list(Maintenance.objects.filter(status='Завершено'))
-            to[:20]
-            to_names = []
-            for i in to:
-                item = Equipment.objects.get(eq_id=i.eq_id)
-                x = item.eq_name
-                to_names.append(x)
-            average_time = timedelta()
-            to_times = []
-            for i in to:
-                delta = i.end_time - i.start_time
-                time = delta.total_seconds() / 3600
-                to_times.append(time)
-                average_time = average_time + delta
-            average_time = average_time / len(to)
-        except: return render(request, 'main/stats.html', {'go_count': go_count, 'new_count': new_count,
-                                               'postpone_count': postpone_count,
-                                               'got_count': got_count, 'work_count': work_count,
-                                               'stop_count': stop_count,
-                                               'to_count': to_count, 'names': names, 'means': means, 'shifts': sh,
-                                               'names_m': names_m, 'means_m': means_m, 'shifts_m': sh_m, 'names_mech': names_mech,
-                                               'means_mech': means_mech, 'shifts_mech': shifts_mech, 'names_mech_month': names_mech_month,
-                                               'means_mech_month': means_mech_month, 'shifts_mech_month': shifts_mech_month,
-                                               'names_smith': names_smith, 'means_smith': means_smith, 'shifts_smith': shifts_smith,
-                                               'names_smith_month': names_smith_month, 'means_smith_month': means_smith_month, 'shifts_smith_month': shifts_smith_month,
-                                               'names_weld': names_weld, 'means_weld': means_weld, 'shifts_weld': shifts_weld,
-                                               'names_weld_month': names_weld_month, 'means_weld_month': means_weld_month, 'shifts_weld_month': shifts_weld_month
-                                               })
-
-
+    try:
+        to = list(Maintenance.objects.filter(status='Завершено'))
+        to[:20]
+        to_names = []
+        for i in to:
+            item = Equipment.objects.get(eq_id=i.eq_id)
+            x = item.eq_name
+            to_names.append(x)
+        average_time = timedelta()
+        to_times = []
+        for i in to:
+            delta = i.end_time - i.start_time
+            time = delta.total_seconds() / 3600
+            to_times.append(time)
+            average_time = average_time + delta
+        average_time = average_time / len(to)
+    except:
         return render(request, 'main/stats.html', {'go_count': go_count, 'new_count': new_count,
-                                               'postpone_count': postpone_count,
-                                               'got_count': got_count, 'work_count': work_count,
-                                               'stop_count': stop_count,
-                                               'to_count': to_count, 'names': names, 'means': means, 'shifts': sh,
-                                               'names_m': names_m, 'means_m': means_m, 'shifts_m': sh_m, 'names_mech': names_mech,
-                                               'means_mech': means_mech, 'shifts_mech': shifts_mech, 'names_mech_month': names_mech_month,
-                                               'means_mech_month': means_mech_month, 'shifts_mech_month': shifts_mech_month,
-                                               'names_smith': names_smith, 'means_smith': means_smith, 'shifts_smith': shifts_smith,
-                                               'names_smith_month': names_smith_month, 'means_smith_month': means_smith_month, 'shifts_smith_month': shifts_smith_month,
-                                               'names_weld': names_weld, 'means_weld': means_weld, 'shifts_weld': shifts_weld,
-                                               'names_weld_month': names_weld_month, 'means_weld_month': means_weld_month, 'shifts_weld_month': shifts_weld_month,
-                                                   'average_time': average_time, 'to_times': to_times, 'to_names': to_names})
+                                                   'postpone_count': postpone_count,
+                                                   'got_count': got_count, 'work_count': work_count,
+                                                   'stop_count': stop_count,
+                                                   'to_count': to_count, 'names': names, 'means': means, 'shifts': sh, 'invs_all': invs_all,
+                                                   'names_week': names_week, 'means_week': means_week,
+                                                   'shifts_week': shifts_week, 'invnums': invnums,
+                                                   'names_m': names_m, 'means_m': means_m, 'shifts_m': sh_m, 'invs_month': invs_month,
+                                                   'names_mech': names_mech,
+                                                   'means_mech': means_mech, 'shifts_mech': shifts_mech, 'invs_mech': invs_mech,
+                                                   'names_mech_month': names_mech_month,
+                                                   'means_mech_month': means_mech_month,
+                                                   'shifts_mech_month': shifts_mech_month, 'invs_mech_month': invs_mech_month,
+                                                   'names_smith': names_smith, 'means_smith': means_smith,
+                                                   'shifts_smith': shifts_smith, 'invs_smith': invs_smith,
+                                                   'names_smith_month': names_smith_month,
+                                                   'means_smith_month': means_smith_month,
+                                                   'shifts_smith_month': shifts_smith_month, 'invs_smith_month': invs_smith_month,
+                                                   'names_weld': names_weld, 'means_weld': means_weld,
+                                                   'shifts_weld': shifts_weld, 'invs_weld': invs_weld,
+                                                   'names_weld_month': names_weld_month,
+                                                   'means_weld_month': means_weld_month,
+                                                   'shifts_weld_month': shifts_weld_month, 'invs_weld_month': invs_weld_month
+                                                   })
+
+    return render(request, 'main/stats.html', {'go_count': go_count, 'new_count': new_count,
+                                                   'postpone_count': postpone_count,
+                                                   'got_count': got_count, 'work_count': work_count,
+                                                   'stop_count': stop_count,
+                                                   'to_count': to_count, 'names': names, 'means': means, 'shifts': sh, 'invs_all': invs_all,
+                                                   'names_week': names_week, 'means_week': means_week,
+                                                   'shifts_week': shifts_week, 'invnums': invnums,
+                                                   'names_m': names_m, 'means_m': means_m, 'shifts_m': sh_m, 'invs_month': invs_month,
+                                                   'names_mech': names_mech,
+                                                   'means_mech': means_mech, 'shifts_mech': shifts_mech, 'invs_mech': invs_mech,
+                                                   'names_mech_month': names_mech_month,
+                                                   'means_mech_month': means_mech_month,
+                                                   'shifts_mech_month': shifts_mech_month, 'invs_mech_month': invs_mech_month,
+                                                   'names_smith': names_smith, 'means_smith': means_smith,
+                                                   'shifts_smith': shifts_smith, 'invs_smith': invs_smith,
+                                                   'names_smith_month': names_smith_month,
+                                                   'means_smith_month': means_smith_month,
+                                                   'shifts_smith_month': shifts_smith_month, 'invs_smith_month': invs_smith_month,
+                                                   'names_weld': names_weld, 'means_weld': means_weld,
+                                                   'shifts_weld': shifts_weld, 'invs_weld': invs_weld,
+                                                   'names_weld_month': names_weld_month,
+                                                   'means_weld_month': means_weld_month,
+                                                   'shifts_weld_month': shifts_weld_month, 'invs_weld_month': invs_weld_month
+                                                   })
+
+
 @login_required
 def export__data(request):
     equipment = Equipment.objects.all()  # топ 10 по простою за все время
@@ -483,7 +529,7 @@ def export__data(request):
     response['Content-Disposition'] = 'attachment; filename="stats.xls"'
 
     wb = xlwt.Workbook(encoding='utf-8')
-    ws = wb.add_sheet('stats') # this will make a sheet named Users Data
+    ws = wb.add_sheet('stats')  # this will make a sheet named Users Data
 
     # Sheet header, first row
     row_num = 0
@@ -527,9 +573,9 @@ def export__data(request):
     ws.write(30, 3, 'Среднее время ТО', font_style)
     write_data(31, 3, to_names, to_times)
 
-
     wb.save(response)
     return response
+
 
 @login_required
 def maintenance(request):
@@ -541,8 +587,7 @@ def maintenance(request):
 
         tos = cursor.fetchall()
         tos = list(tos)
-        tos.reverse()         #список с запланированными ТО
-
+        tos.reverse()  # список с запланированными ТО
 
     with connection.cursor() as cursor:
         cursor.execute("SELECT equipment.eq_name, equipment.invnum, equipment.eq_type, equipment.area, "
@@ -551,30 +596,32 @@ def maintenance(request):
 
         tos2 = cursor.fetchall()
         tos2 = list(tos2)
-        tos2.reverse()        #список с выполнеными ТО
+        tos2.reverse()  # список с выполнеными ТО
 
     return render(request, 'main/maintenance.html', {'tos': tos, 'tos2': tos2})
 
+
 @login_required
 def new_maintenance(request):
-
     with connection.cursor() as cursor:
-        cursor.execute("SELECT employee_id, fio FROM employees WHERE (master = 'False')")
+        cursor.execute("SELECT employee_id, fio FROM employees")
         emps = cursor.fetchall()
         emps = list(emps)
 
         area1 = list(Equipment.objects.filter(area='Механической обработки'))
         area2 = list(Equipment.objects.filter(area='Слесарный'))
-        area3 = list(Equipment.objects.filter(area='Сварки'))
+        area3 = list(Equipment.objects.filter(area='Сварочный'))
+        area4 = list(Equipment.objects.filter(area="Крупноузловой сборки"))
     if request.method == 'POST':
-        #eq_id = request.POST.get('eq_name_select')
+        # eq_id = request.POST.get('eq_name_select')
         new_date = request.POST.get('date')
-        #new_emp = request.POST.get('employee_select')
+        # new_emp = request.POST.get('employee_select')
         comment = request.POST.get('comment')
 
         a1 = request.POST.get('area1')
         a2 = request.POST.get('area2')
         a3 = request.POST.get('area3')
+        a4 = request.POST.get('area4')
         doers = request.POST.getlist('employee_select')
         try:
             eq = Equipment.objects.get(eq_id=a1)
@@ -588,15 +635,21 @@ def new_maintenance(request):
             eq = Equipment.objects.get(eq_id=a3)
         except:
             pass
+        try:
+            eq = Equipment.objects.get(eq_id=a4)
+        except:
+            pass
 
-        Maintenance.objects.create(start_time=new_date, comment=comment, eq_id=eq.eq_id)
+        Maintenance.objects.create(start_time=new_date, comment=comment, eq_id=eq.eq_id, status='Новое')
 
         to = Maintenance.objects.all().order_by("-id")[0]
         funcs.appoint_doers_to(doers, to.id)
 
         return redirect('/main/maintenance')
 
-    return render(request, 'main/new_maintenance.html', {'emps': emps, 'area1': area1, 'area2': area2, 'area3': area3})
+    return render(request, 'main/new_maintenance.html',
+                  {'emps': emps, 'area1': area1, 'area2': area2, 'area3': area3, 'area4': area4})
+
 
 @login_required
 def show_maintenance(request, maintenance_id):
@@ -617,7 +670,7 @@ def show_maintenance(request, maintenance_id):
         result_now_emps = []
         final_emps = []
 
-    emps = Employees.objects.filter(master='False')
+    emps = Employees.objects.all()
     for i in emps:  # цикл подготовки массива исполнителей для корректного вывода в селект мултипл
         m = [i.employee_id, i.fio, False]
         final_emps.append(m)
@@ -626,7 +679,9 @@ def show_maintenance(request, maintenance_id):
                 if i.employee_id == j:
                     final_emps[-1][2] = True
 
-    return render(request, 'main/show_maintenance.html', {'eq': b, 'to': c, 'emps': emps, 'now_emp': now_emp, 'final_emps': final_emps })
+    return render(request, 'main/show_maintenance.html',
+                  {'eq': b, 'to': c, 'emps': emps, 'now_emp': now_emp, 'final_emps': final_emps})
+
 
 @login_required
 def maintenance_edit(request, to_id):
@@ -644,6 +699,7 @@ def maintenance_edit(request, to_id):
 
     return redirect('/main/maintenance')
 
+
 @login_required
 def pc_query(request):
     with connection.cursor() as cursor:
@@ -653,7 +709,8 @@ def pc_query(request):
 
         area1 = list(Equipment.objects.filter(area='Механической обработки'))
         area2 = list(Equipment.objects.filter(area='Слесарный'))
-        area3 = list(Equipment.objects.filter(area='Сварки'))
+        area3 = list(Equipment.objects.filter(area='Сварочный'))
+        reasons = Reasons.objects.all()
     if request.method == "POST":
         area1 = request.POST.get('area1')
         area2 = request.POST.get('area2')
@@ -715,7 +772,9 @@ def pc_query(request):
             return render(request, 'pc_query/fail_send.html')
     else:
         pass
-    return render(request, 'pc_query/pc_query.html', {'name': a, 'area1': area1, 'area2': area2, 'area3': area3})
+    return render(request, 'pc_query/pc_query.html',
+                  {'name': a, 'area1': area1, 'area2': area2, 'area3': area3, 'reasons': reasons})
+
 
 @login_required
 def pc_history(request):
@@ -728,17 +787,21 @@ def pc_history(request):
         a.reverse()
         return render(request, 'pc_query/pc_history.html', {'dict': a})
 
+
 @login_required
 def delete_query(request, query_id):
     x = Queries.objects.get(query_id=query_id)
     x.delete()
     return redirect('/main')
 
+
 @login_required
 def settings(request):
     reasons = Reasons.objects.all()
+    types = Type.objects.all()
 
-    return render(request, 'main/settings.html', {'reasons': reasons})
+    return render(request, 'main/settings.html', {'reasons': reasons, 'types': types})
+
 
 @login_required
 def add_reason(request):
@@ -746,6 +809,7 @@ def add_reason(request):
     if reason != '':
         Reasons.objects.create(reason=reason)
     return redirect('/main/settings')
+
 
 @login_required
 def delete_reasons(request):
@@ -756,5 +820,20 @@ def delete_reasons(request):
     return redirect('/main/settings')
 
 
+@login_required
+def add_type(request):
+    type = request.POST.get('new_type')
+    if type != '':
+        Type.objects.create(type=type)
+    return redirect('/main/settings')
+
+
+@login_required
+def delete_types(request):
+    types = request.POST.getlist('delete_type')
+    for i in types:
+        x = Type.objects.get(id=i)
+        x.delete()
+    return redirect('/main/settings')
 
 # Create your views here.

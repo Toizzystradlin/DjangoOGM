@@ -10,7 +10,7 @@
             <table class="table2">
 
                 <tr><td>Оборудование: </td><td>
-                    {{eq.eq_name}}, {{eq.invnum}}
+                    <a href="/main/equipment/{{eq.eq_id}}">{{eq.eq_name}}</a>, {{eq.invnum}}
                 </td></tr>
 
                 <tr><td>Дата начала: </td>
@@ -26,7 +26,7 @@
 
                 <tr><td>Назначен на заявку: </td>
                     <td>
-                        <select name="emp_select" multiple>
+                        <select name="emp_select" multiple class="selectpicker" data-style="btn btn-outline-dark" data-width="300px" data-size="6">
                             {%for i in final_emps %}
                                         <option value="{{i.0}}"
                                                 {% if i.2 == True %} selected="selected" {%endif%}
@@ -46,5 +46,18 @@
 
     </div>
 </div>
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+  <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+
+<!-- (Optional) Latest compiled and minified JavaScript translation files -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/i18n/defaults-*.min.js"></script>
 
 {% endblock %}

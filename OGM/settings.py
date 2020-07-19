@@ -25,7 +25,7 @@ SECRET_KEY = '(#&s(^8y6nx3s8p9+cfl-sr=i0xsad#lj6d-v-4u6nodo%&4wr'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['ab1fc23e39a6.ngrok.io']
+ALLOWED_HOSTS = ['toizzystradlin.ddns.net', '192.168.0.101', '127.0.0.1']
 
 
 # Application definition
