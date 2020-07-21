@@ -99,6 +99,9 @@ class Maintenance(models.Model):
     employee_id = models.CharField(max_length=50)
     comment = models.TextField()
     status = models.CharField(max_length=50, null=True, blank=True)
+    month_start = models.DateTimeField(blank=True, null=True)
+    shift_start = models.DateTimeField(blank=True, null=True)
+    shift_end = models.DateTimeField(blank=True, null=True)
     class Meta:
         managed = True
         db_table = 'maintenance'
@@ -110,6 +113,7 @@ class Worktime(models.Model):
     start_time = models.DateTimeField(blank=True, null=True)
     stop_time = models.DateTimeField(blank=True, null=True)
     multiple = models.IntegerField(blank=True, null=True)
+
     class Meta:
         managed = True
         db_table = 'worktime'
@@ -131,3 +135,12 @@ class Reasons(models.Model):
     class Meta:
         managed = True
         db_table = 'reasons'
+
+class Supplies(models.Model):
+    query_id = models.IntegerField(blank=True, null=True)
+    eq_id = models.IntegerField(blank=True, null=True)
+    supply = models.TextField(blank=True, null=True)
+    emp_id = models.IntegerField(blank=True, null=True)
+    class Meta:
+        managed = True
+        db_table = 'supplies'

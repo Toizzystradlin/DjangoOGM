@@ -59,6 +59,8 @@
                             <option value="Механической обработки">Механической обработки</option>
                             <option value="Слесарный">Слесарный</option>
                             <option value="Сварочный">Сварочный</option>
+                            <option value="Крупноузловой сборки">Крупноузловой сборки</option>
+                            <option value="Малярный">Малярный</option>
                     </select>
                 </td>
                 </tr>
@@ -84,6 +86,22 @@
                             <select class="selectpicker" data-live-search="true" data-style="btn-warning" name="area3" id="area3" data-size="10" data-width="300px">
                             <option value=""></option>
                             {% for i in area3 %}
+                            <option value="{{i.eq_id}}">{{i.eq_type}} - {{i.eq_name}} - {{i.invnum}}</option>
+                            {% endfor %}
+                    </select>
+                    </div>
+                    <div style="display: none" id="div4">
+                            <select class="selectpicker" data-live-search="true" data-style="btn-warning" name="area4" id="area4" data-size="10" data-width="300px">
+                            <option value=""></option>
+                            {% for i in area4 %}
+                            <option value="{{i.eq_id}}">{{i.eq_type}} - {{i.eq_name}} - {{i.invnum}}</option>
+                            {% endfor %}
+                    </select>
+                    </div>
+                    <div style="display: none" id="div5">
+                            <select class="selectpicker" data-live-search="true" data-style="btn-warning" name="area5" id="area5" data-size="10" data-width="300px">
+                            <option value=""></option>
+                            {% for i in area5 %}
                             <option value="{{i.eq_id}}">{{i.eq_type}} - {{i.eq_name}} - {{i.invnum}}</option>
                             {% endfor %}
                     </select>
@@ -130,34 +148,79 @@
     var area1 = document.getElementById('div1');
     var area2 = document.getElementById('div2');
     var area3 = document.getElementById('div3');
+    var area4 = document.getElementById('div4');
+    var area5 = document.getElementById('div5');
         areas.addEventListener('change', function() {
         if(this.value == 'Механической обработки') {
             area1.style.display = "block";
             area2.style.display = "none";
             area3.style.display = "none";
+            area4.style.display = "none";
+            area5.style.display = "none";
             area1.disabled=false;
             area2.disabled=true;
             area3.disabled=true;
+            area4.disabled=true
+            area5.disabled=true
             document.getElementById("area2").selectedIndex = 0;
             document.getElementById("area3").selectedIndex = 0;
+            document.getElementById("area4").selectedIndex = 0;
+            document.getElementById("area5").selectedIndex = 0;
             }
         if(this.value == 'Слесарный') {
             area1.style.display = 'none';
             area2.style.display = 'block';
             area3.style.display = 'none';
+            area4.style.display = 'none';
+            area5.style.display = "none";
             area1.disabled=true;
             area2.disabled=false;
             area3.disabled=true;
+            area4.disabled=true;
+            area5.disabled=true
             document.getElementById("area3").selectedIndex = 0;
+            document.getElementById("area4").selectedIndex = 0;
+            document.getElementById("area5").selectedIndex = 0;
             }
         if(this.value == 'Сварочный') {
             area1.style.display = 'none';
             area2.style.display = 'none';
             area3.style.display = 'block';
+            area4.style.display = 'none';
+            area5.style.display = "none";
             area1.disabled=true;
             area2.disabled=true;
             area3.disabled=false;
+            area4.disabled=true;
+            area5.disabled=true
+            document.getElementById("area4").selectedIndex = 0;
+            document.getElementById("area5").selectedIndex = 0;
             }
+        if(this.value == 'Крупноузловой сборки') {
+            area1.style.display = 'none';
+            area2.style.display = 'none';
+            area3.style.display = 'none';
+            area4.style.display = 'block';
+            area5.style.display = "none";
+            area1.disabled=true;
+            area2.disabled=true;
+            area3.disabled=true;
+            area4.disabled=false;
+            area5.disabled=true;
+            document.getElementById("area5").selectedIndex = 0;
+            }
+        if(this.value == 'Малярный') {
+            area1.style.display = 'none';
+            area2.style.display = 'none';
+            area3.style.display = 'none';
+            area4.style.display = 'none';
+            area5.style.display = "block";
+            area1.disabled=true;
+            area2.disabled=true;
+            area3.disabled=true;
+            area4.disabled=true;
+            area5.disabled=block;
+        }
 
     });
 </script>

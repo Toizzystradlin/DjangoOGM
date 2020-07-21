@@ -41,7 +41,9 @@ def new_query(request):
 
         area1 = list(Equipment.objects.filter(area='Механической обработки'))
         area2 = list(Equipment.objects.filter(area='Слесарный'))
-        area3 = list(Equipment.objects.filter(area='Сварки'))
+        area3 = list(Equipment.objects.filter(area='Сварочный'))
+        area4 = list(Equipment.objects.filter(area='Крупноузловой сборки'))
+        area5 = list(Equipment.objects.filter(area='Малярный'))
 
         reasons = Reasons.objects.all()
 
@@ -49,6 +51,8 @@ def new_query(request):
         a1 = request.POST.get('area1')
         a2 = request.POST.get('area2')
         a3 = request.POST.get('area3')
+        a4 = request.POST.get('area4')
+        a5 = request.POST.get('area5')
         new_reason = request.POST.get('reason_select')
         new_status = request.POST.get('query_status_select')
         doers = request.POST.getlist('employee_select')
@@ -65,6 +69,14 @@ def new_query(request):
             pass
         try:
             eq = Equipment.objects.get(eq_id=a3)
+        except:
+            pass
+        try:
+            eq = Equipment.objects.get(eq_id=a4)
+        except:
+            pass
+        try:
+            eq = Equipment.objects.get(eq_id=a5)
         except:
             pass
         try:
@@ -115,7 +127,7 @@ def new_query(request):
     else:
         pass
     return render(request, 'main/new_query.html',
-                  {'name': a, 'emps': emps, 'area1': area1, 'area2': area2, 'area3': area3, 'reasons': reasons})
+                  {'name': a, 'emps': emps, 'area1': area1, 'area2': area2, 'area3': area3, 'area4': area4, 'area5': area5, 'reasons': reasons})
 
 
 @login_required
@@ -153,6 +165,13 @@ def show_query(request, query_id):
                        [query_id])
         coms = cursor.fetchall()
         coms = list(coms)
+
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT employees.fio, supplies.supply FROM supplies JOIN employees ON (supplies.emp_id = employees.employee_id) AND (supplies.query_id = %s)",
+                       [query_id])
+        supplies = cursor.fetchall()
+        supplies = list(supplies)
+
     with connection.cursor() as cursor:
         cursor.execute("SELECT worktime.query_id, worktime.start_time, worktime.stop_time, employees.fio FROM "
                        "worktime JOIN employees ON (worktime.employee_id = employees.employee_id) AND (worktime.query_id = %s)",
@@ -161,7 +180,7 @@ def show_query(request, query_id):
         works = list(works)
 
     return render(request, 'main/query.html',
-                  {'query': c, 'equipment': d, 'coms': coms, 'works': works, 'emps': emps, 'now_emp': now_emp,
+                  {'query': c, 'equipment': d, 'coms': coms, 'supplies': supplies, 'works': works, 'emps': emps, 'now_emp': now_emp,
                    'final_emps': final_emps, 'reasons': reasons})
 
 
@@ -237,6 +256,9 @@ def show_eq(request, eq_id):
         cursor.execute("SELECT id, start_time, comment, status FROM maintenance WHERE (eq_id = %s)", [eq_id])
         tos = list(cursor.fetchall())
 
+        cursor.execute("SELECT supply, query_id FROM supplies WHERE (eq_id = %s)", [eq_id])
+        supplies = list(cursor.fetchall())
+
     equipment = Equipment.objects.filter(eq_id=eq_id)
     name, mean, shifts, invs = funcs.top10(equipment)
     name_m, mean_m, shifts_m, invs_m = funcs.top10_month(equipment)
@@ -246,7 +268,7 @@ def show_eq(request, eq_id):
     return render(request, 'main/eq_one.html',
                   {'eqs': eqs, 'queries': qs, 'name': name, 'mean': str(mean[0])[:5], 'mean_m': str(mean_m[0])[:5],
                    'tos': tos, 'last_week_name': last_week_name, 'last_week_mean': str(last_week_mean[0])[:5],
-                   'invnums': invnums})
+                   'invnums': invnums, 'supplies': supplies})
 
 
 @login_required
@@ -486,12 +508,16 @@ def stats(request):
                                                    'shifts_weld_month': shifts_weld_month, 'invs_weld_month': invs_weld_month
                                                    })
 
+def stats2(request):
+    equipment = Equipment.objects.all()  # топ 10 по простою за все время
+    names, means, means_to, sh, invs_all = funcs.top10_all(equipment)  # возвращает имена, цифры по простою и смены оборудования
+    return render(request, 'main/stats2.html', {'names': names, 'means': means, 'means_to': means_to, 'shifts': sh, 'invs_all': invs_all})
 
 @login_required
 def export__data(request):
     equipment = Equipment.objects.all()  # топ 10 по простою за все время
     names, means, sh = funcs.top10(equipment)  # возвращает имена, цифры по простою и смены оборудования
-    equipment = Equipment.objects.all()  # топ 10 по простою за все время
+    equipment = Equipment.objects.all()  # топ 10 по простою за месяц
     names_m, means_m, sh_m = funcs.top10_month(equipment)
 
     equipment = Equipment.objects.filter(area='Механической обработки')
@@ -710,11 +736,15 @@ def pc_query(request):
         area1 = list(Equipment.objects.filter(area='Механической обработки'))
         area2 = list(Equipment.objects.filter(area='Слесарный'))
         area3 = list(Equipment.objects.filter(area='Сварочный'))
+        area4 = list(Equipment.objects.filter(area='Крупноузловой сборки'))
+        area5 = list(Equipment.objects.filter(area='Малярный'))
         reasons = Reasons.objects.all()
     if request.method == "POST":
         area1 = request.POST.get('area1')
         area2 = request.POST.get('area2')
         area3 = request.POST.get('area3')
+        area4 = request.POST.get('area4')
+        area5 = request.POST.get('area5')
         new_reason = request.POST.get('reason_select')
         new_msg = request.POST.get('query_message')
         new_post_time = datetime.now()
@@ -729,6 +759,14 @@ def pc_query(request):
             pass
         try:
             eq = Equipment.objects.get(eq_id=area3)
+        except:
+            pass
+        try:
+            eq = Equipment.objects.get(eq_id=area4)
+        except:
+            pass
+        try:
+            eq = Equipment.objects.get(eq_id=area5)
         except:
             pass
         try:
@@ -766,14 +804,14 @@ def pc_query(request):
                         pass
             query = Queries.objects.all().order_by("-query_id")[0]
             funcs.appoint_doers(doers, query.query_id)
-            send_message.send_message_1(query.query_id, eq.eq_name, eq.invnum, eq.area, query.reason, query.msg)
+            #send_message.send_message_1(query.query_id, eq.eq_name, eq.invnum, eq.area, query.reason, query.msg)
             return render(request, 'pc_query/success_send.html')
         except:
             return render(request, 'pc_query/fail_send.html')
     else:
         pass
     return render(request, 'pc_query/pc_query.html',
-                  {'name': a, 'area1': area1, 'area2': area2, 'area3': area3, 'reasons': reasons})
+                  {'name': a, 'area1': area1, 'area2': area2, 'area3': area3, 'area4': area4, 'area5':area5, 'reasons': reasons})
 
 
 @login_required

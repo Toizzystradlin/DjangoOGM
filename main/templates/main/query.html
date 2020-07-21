@@ -111,6 +111,27 @@
             </table>
             </div>
 
+            <div class="container" align="center">
+            <table class="table3">
+                <thead>
+                <th>
+                    <tr></tr>
+                    <tr class="table_head"><td>Кто</td><td>ТМЦ</td></tr>
+                </th>
+                </thead>
+                <tbody>
+                <br>
+
+                <h1>Потраченные ТМЦ: </h1>
+                {% for i in supplies %}
+                    <tr class="tr">
+                        <td class="td">{{i.0}}</td><td class="td">{{i.1}}</td>
+                    </tr>
+                {%endfor%}
+                </tbody>
+            </table>
+            </div>
+
             <br>
             <br>
             <h1>Работы по заявке велись:</h1>

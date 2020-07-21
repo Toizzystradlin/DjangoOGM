@@ -8,6 +8,162 @@ from . import send_message
 import xlwt
 from django.http import HttpResponse
 
+
+def top10_all(equipment):
+    pairs = []
+    for i1 in equipment:
+        shifts = i1.shift
+        eq_id = i1.eq_id
+        n = Eq_stoptime.objects.filter(eq_id=eq_id)  # блок высчитывает время простоя
+        m = Maintenance.objects.filter(eq_id=eq_id, status='Завершено')
+        duration = timedelta(microseconds=0)  # он добавляет в бд текущее время, а потом удаляет его
+        full_duration = timedelta(microseconds=0)
+        duration_to = timedelta(microseconds=0)
+        full_duration_to = timedelta(microseconds=0)
+        for i in n:
+            i.now = datetime.now()
+            i.save()
+            if i.start_time == None:
+                i.start_time = datetime.now()
+                w = 1
+                i.save()
+
+        n = Eq_stoptime.objects.filter(eq_id=eq_id)  # по новой получаем список, так как он изменился
+        m = Maintenance.objects.filter(eq_id=eq_id, status='Завершено')
+        for i in n:
+            start_year = i.stop_time.year
+            start_month = i.stop_time.month
+            start_day = i.stop_time.day
+            end_year = i.start_time.year
+            end_month = i.start_time.month
+            end_day = i.start_time.day
+            if shifts == 1:
+                i.shift_end = datetime(start_year, start_month, start_day, 15)
+            else:
+                i.shift_end = datetime(start_year, start_month, start_day, 23)
+            i.shift_start = datetime(end_year, end_month, end_day, 7)
+            i.save()
+        for i in m:
+            start_year = i.start_time.year
+            start_month = i.start_time.month
+            start_day = i.start_time.day
+            end_year = i.end_time.year
+            end_month = i.end_time.month
+            end_day = i.end_time.day
+            if shifts == 1:
+                i.shift_end = datetime(start_year, start_month, start_day, 15)
+            else:
+                i.shift_end = datetime(start_year, start_month, start_day, 23)
+            i.shift_start = datetime(end_year, end_month, end_day, 7)
+            i.save()
+
+        n = Eq_stoptime.objects.filter(eq_id=eq_id)  # по новой получаем список, так как он изменился
+        m = Maintenance.objects.filter(eq_id=eq_id, status='Завершено')
+        for i in n:  # главное тело подсчета простоя.
+            if i.stop_time.date() == i.start_time.date():  # если заявка подана и выполнена в 1 день, то сюда
+                duration = i.start_time - i.stop_time
+            else:  # если нет, то сюда
+                duration = i.shift_end - i.stop_time
+                stop = False
+                i_date = i.stop_time + timedelta(hours=24)
+                while stop == False:
+                    if i_date.date() == i.start_time.date():
+                        j = i.start_time - i.shift_start
+                    else:
+                        if datetime.isoweekday(i_date.date()) < 6:
+                            # j = i.shift_end - i.start_time
+                            j = timedelta(hours=8) * shifts
+                        else:
+                            j = timedelta(seconds=0)
+                    duration = duration + j
+                    if i_date.date() == i.start_time.date():
+                        stop = True
+                    i_date = i_date + timedelta(hours=24)
+            full_duration = full_duration + duration
+
+        for i in m:  # главное тело подсчета простоя.
+            if i.start_time.date() == i.end_time.date():  # если ТО выполнена в 1 день, то сюда
+                duration_to = i.end_time - i.start_time
+            else:  # если нет, то сюда
+                duration_to = i.shift_end - i.start_time
+                stop = False
+                i_date = i.start_time + timedelta(hours=24)
+                while stop == False:
+                    if i_date.date() == i.end_time.date():
+                        j = i.end_time - i.shift_start
+                    else:
+                        if datetime.isoweekday(i_date.date()) < 6:
+                            # j = i.shift_end - i.start_time
+                            j = timedelta(hours=8) * shifts
+                        else:
+                            j = timedelta(seconds=0)
+                    duration_to = duration_to + j
+                    if i_date.date() == i.end_time.date():
+                        stop = True
+                    i_date = i_date + timedelta(hours=24)
+            full_duration_to = full_duration_to + duration_to
+
+
+        m = Maintenance.objects.filter(eq_id=eq_id, status='В процессе')
+        for i in m:
+            i.end_time = datetime.now()
+            i.save()
+        m = Maintenance.objects.filter(eq_id=eq_id, status='В процессе')
+        for i in m:
+            for i in m:  # главное тело подсчета простоя.
+                if i.start_time.date() == i.end_time.date():  # если ТО выполнена в 1 день, то сюда
+                    duration_to = i.end_time - i.start_time
+                else:  # если нет, то сюда
+                    duration_to = i.shift_end - i.start_time
+                    stop = False
+                    i_date = i.start_time + timedelta(hours=24)
+                    while stop == False:
+                        if i_date.date() == i.end_time.date():
+                            j = i.end_time - i.shift_start
+                        else:
+                            if datetime.isoweekday(i_date.date()) < 6:
+                                # j = i.shift_end - i.start_time
+                                j = timedelta(hours=8) * shifts
+                            else:
+                                j = timedelta(seconds=0)
+                        duration_to = duration_to + j
+                        if i_date.date() == i.end_time.date():
+                            stop = True
+                        i_date = i_date + timedelta(hours=24)
+                full_duration_to = full_duration_to + duration_to
+            i.end_time = None
+            i.save()
+
+
+
+        n = list(Eq_stoptime.objects.filter(eq_id=eq_id))
+        try:
+            if w == 1:  # стирает добавленное время "Сейчас", чтобы бд была в том же состоянии
+                i = n[-1]
+                i.start_time = None
+                i.save()
+                w = 0
+        except: pass
+
+        sum = full_duration.total_seconds() + full_duration_to.total_seconds()
+        pair = (i1.eq_name, full_duration.total_seconds() / 3600, full_duration_to.total_seconds() / 3600, shifts, i1.invnum, sum)
+        pairs.append(pair)
+    pairs = sorted(pairs, key=lambda x: x[5])  # сортировка по увеличению дней в простое
+    pairs.reverse()
+    pairs = pairs[:10]  # обрезка до 10 штук
+    names = []
+    means = []
+    means_to = []
+    sh = []
+    invnum = []
+    for j in pairs:
+        names.append(j[0])
+        means.append(j[1])
+        means_to.append(j[2])
+        sh.append(j[3])
+        invnum.append(j[4])
+    return names, means, means_to, sh, invnum
+
 def top10_last_week(equipment):
     pairs = []
     today = datetime.today()
@@ -350,79 +506,3 @@ def multiple_doers(doers, query_id):
 
 
 
-
-
-#устаревший
-def ntop10(equipment):
-    pairs = []
-    for i1 in equipment:
-        shifts = i1.shift
-        eq_id = i1.eq_id
-        n = Eq_stoptime.objects.filter(eq_id=eq_id)  # блок высчитывает время простоя
-        duration = timedelta(microseconds=0)  # он добавляет в бд текущее время, а потом удаляет его
-        for i in n:
-            i.now = datetime.now()
-            i.save()
-            if i.start_time == None:
-                i.start_time = datetime.now()
-                w = 1
-                i.save()
-        n = Eq_stoptime.objects.filter(eq_id=eq_id)  # по новой получаем список, так как он изменился
-        for i in n:
-            start_year = i.stop_time.year
-            start_month = i.stop_time.month
-            start_day = i.stop_time.day
-            end_year = i.start_time.year
-            end_month = i.start_time.month
-            end_day = i.start_time.day
-            if shifts == 1:
-                i.shift_end = datetime(start_year, start_month, start_day, 15)
-            else:
-                i.shift_end = datetime(start_year, start_month, start_day, 23)
-            i.shift_start = datetime(end_year, end_month, end_day, 7)
-            i.save()
-
-        n = Eq_stoptime.objects.filter(eq_id=eq_id)  # по новой получаем список, так как он изменился
-        for i in n:
-            i_date = i.stop_time
-            if datetime.isoweekday(i.stop_time) < 6 and i_date.date() != i.start_time.date():
-                j = i.shift_end - i.stop_time
-            elif i_date.date() == i.start_time.date() and datetime.isoweekday(i.stop_time) < 6:
-                j = i.start_time - i.stop_time
-            else:
-                j = timedelta(microseconds=0)
-            duration = duration + j
-            i_date = i_date + timedelta(hours=24)
-            while i_date < i.shift_start:  # Тут мы прибавляем по 8 часов за каждую смену каждого рабочего дня
-                if datetime.isoweekday(i_date) < 6:
-                    duration = duration + timedelta(hours=8) * shifts
-                i_date = i_date + timedelta(hours=24)
-
-            #if datetime.isoweekday(i.start_time) < 6:
-            #    j = i.start_time - i.shift_start
-            #else:
-            #    j = timedelta(microseconds=0)
-            #duration = duration + j
-
-        n = list(Eq_stoptime.objects.filter(eq_id=eq_id))
-        try:
-            if w == 1:
-                i = n[-1]
-                i.start_time = None
-                i.save()
-                w = 0
-        except:
-            pass
-        pair = (i1.eq_name, duration.total_seconds() / 3600, shifts)
-        pairs.append(pair)
-    pairs = sorted(pairs, key=lambda x: x[1])  # сортировка по увеличению дней в простое
-    pairs.reverse()
-    pairs = pairs[:10]  # обрезка до 10 штук
-    names = []
-    means = []
-    sh = []
-    for j in pairs:
-        names.append(j[0])
-        means.append(j[1])
-        sh.append(j[2])
-    return names, means, sh

@@ -1,0 +1,57 @@
+{% extends "main/wrapper.html" %}
+
+{% block content %}
+
+
+<div id="div1">
+    <br>
+    <h1 align="center">Простой оборудования <b>за все время</b> (топ 10)</h1>
+    <canvas id="myChart4" height="400px"></canvas>
+</div>
+<script>
+
+var ctx = document.getElementById("myChart4").getContext('2d');
+var myChart = new Chart(ctx, {
+	type: 'bar',
+	data: {
+		labels: ["{{names.0}}. {{invs_all.0}}","{{names.1}}. {{invs_all.1}}","{{names.2}}. {{invs_all.2}}", "{{names.3}}. {{invs_all.3}}", "{{names.4}}. {{invs_all.4}}", "{{names.5}}. {{invs_all.5}}", "{{names.6}}. {{invs_all.5}}", "{{names.7}}. {{invs_all.7}}", "{{names.8}}. {{invs_all.8}}", "{{names.9}}. {{invs_all.9}}"],
+      datasets: [{
+			label: 'Аварийные заявки',
+			backgroundColor: "#DC143C",
+			data: [{{means.0}}, {{means.1}}, {{means.2}}, {{means.3}}, {{means.4}}, {{means.5}}, {{means.6}}, {{means.7}}, {{means.8}}, {{means.9}}]
+		}, {
+			label: 'Тех. обслуживание',
+			backgroundColor: "#00BFFF",
+			data: [{{means_to.0}}, {{means_to.1}}, {{means_to.2}}, {{means_to.3}}, {{means_to.4}}, {{means_to.5}}, {{means_to.6}}, {{means_to.7}}, {{means_to.8}}, {{means_to.9}}]
+		}],
+	},
+options: {
+    tooltips: {
+      displayColors: true,
+      callbacks:{
+        mode: 'x',
+      },
+    },
+    scales: {
+      xAxes: [{
+        stacked: true,
+        gridLines: {
+          display: false,
+        }
+      }],
+      yAxes: [{
+        stacked: true,
+        ticks: {
+          beginAtZero: true,
+        },
+        type: 'linear',
+      }]
+    },
+		responsive: true,
+		maintainAspectRatio: false,
+		legend: { position: 'right' },
+	}
+});
+
+</script>
+{% endblock %}
