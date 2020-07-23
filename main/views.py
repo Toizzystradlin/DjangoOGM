@@ -511,7 +511,27 @@ def stats(request):
 def stats2(request):
     equipment = Equipment.objects.all()  # топ 10 по простою за все время
     names, means, means_to, sh, invs_all = funcs.top10_all(equipment)  # возвращает имена, цифры по простою и смены оборудования
-    return render(request, 'main/stats2.html', {'names': names, 'means': means, 'means_to': means_to, 'shifts': sh, 'invs_all': invs_all})
+    names_m, means_m, means_m_to, sh_m, invs_month = funcs.top10_all_month(equipment)
+    names_week, means_week, means_to_week, shifts_week, invnums_week = funcs.top10_all_lastweek(equipment)  # топ 10 по простою за week
+    queries_ids, to_ids = funcs.last_week_queries_and_to()
+    queries = []
+    tos = []
+    with connection.cursor() as cursor:
+        for i in queries_ids:
+            cursor.execute("SELECT queries.query_id, queries.post_time, queries.stop_time, equipment.eq_name, equipment.eq_status, "
+                           "queries.msg, queries.query_status FROM queries JOIN equipment ON (queries.eq_id = equipment.eq_id) AND (queries.query_id = %s)", [i])
+            queries.append(cursor.fetchone())
+        for i in to_ids:
+            cursor.execute("SELECT maintenance.id, maintenance.start_time, maintenance.end_time, equipment.eq_name, "
+                           "equipment.eq_status, maintenance.comment, maintenance.status FROM maintenance JOIN "
+                           "equipment ON (maintenance.eq_id = equipment.eq_id) AND (maintenance.id = %s)", [i])
+            tos.append(cursor.fetchone())
+
+    return render(request, 'main/stats2.html', {'names': names, 'means': means, 'means_to': means_to, 'shifts': sh, 'invs_all': invs_all,
+                                                'names_m': names_m, 'means_m': means_m, 'means_m_to': means_m_to, 'shifts_m': sh_m, 'invs_month': invs_month,
+                                                'names_week': names_week, 'means_week': means_week, 'means_to_week': means_to_week, 'shifts_week': shifts_week, 'invnums_week': invnums_week,
+                                                'queries_ids': queries_ids, 'to_ids': to_ids, 'queries': queries, 'tos': tos
+                                                })
 
 @login_required
 def export__data(request):
@@ -804,7 +824,7 @@ def pc_query(request):
                         pass
             query = Queries.objects.all().order_by("-query_id")[0]
             funcs.appoint_doers(doers, query.query_id)
-            #send_message.send_message_1(query.query_id, eq.eq_name, eq.invnum, eq.area, query.reason, query.msg)
+            send_message.send_message_1(query.query_id, eq.eq_name, eq.invnum, eq.area, query.reason, query.msg)
             return render(request, 'pc_query/success_send.html')
         except:
             return render(request, 'pc_query/fail_send.html')

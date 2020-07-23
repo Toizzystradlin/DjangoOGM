@@ -5,24 +5,82 @@
 
 <div id="div1">
     <br>
-    <h1 align="center">Простой оборудования <b>за все время</b> (топ 10)</h1>
-    <canvas id="myChart4" height="400px"></canvas>
+    <h1 align="center">Простой оборудования <b>за все время</b></h1>
+    <canvas id="myChart4" height="500px"></canvas>
 </div>
+
+<div id="div2">
+    <br>
+    <h1 align="center">Простой оборудования <b>за месяц</b></h1>
+    <canvas id="plain_month" height="400px"></canvas>
+</div>
+
+<div id="div3">
+    <br>
+    <h1 align="center">Простой оборудования <b>за прошлую неделю</b></h1>
+    <canvas id="plain_last_week" height="400px"></canvas>
+</div>
+
+{%for i in queries_ids%}
+    {{i}}
+{%endfor%}
+<p>
+    {%for i in to_ids%}
+    {{i}}
+{%endfor%}
+</p>
+
+<h3 align="center">История заявок прошлой недели </h3>
+        <table class="table3">
+            <thead>
+                <th>
+                    <tr></tr>
+                    <tr class="table_head"><td width="200vw">Время подачи</td><td width="200vw">Время завершения</td><td width="200vw">Оборудование</td><td width="200vw">Сообщение</td><td width="200vw">Статус заявки</td><td></td></tr>
+                </th>
+            </thead>
+            <tbody>
+                {% for i in queries %}
+                    <tr class="tr"><td>{{i.1|date:"d-m-Y в H:i"}}</td><td>{{i.2|date:"d-m-Y в H:i"}}</td><td>{{i.3}}</td><td>{{i.5}}</td><td>{{i.6}}</td>
+                        <td><p></p><a class="btn btn-success btn-info" href="/main/{{i.0}}">Подробнее</a><p></p></td>
+                    </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+<h3 align="center">История ТО прошлой недели </h3>
+        <table class="table3">
+            <thead>
+                <th>
+                    <tr></tr>
+                    <tr class="table_head"><td width="200vw">Время начала</td><td width="200vw">Время завершения</td><td width="200vw">Оборудование</td><td width="200vw">Комментарий</td><td width="200vw">Статус ТО</td><td></td></tr>
+                </th>
+            </thead>
+            <tbody>
+                {% for i in tos %}
+                    <tr class="tr"><td>{{i.1|date:"d-m-Y в H:i"}}</td><td>{{i.2|date:"d-m-Y в H:i"}}</td><td>{{i.3}}</td><td>{{i.5}}</td><td>{{i.6}}</td>
+                        <td><p></p><a class="btn btn-success btn-info" href="/main/maintenance/{{i.0}}">Подробнее</a><p></p></td>
+                    </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+
+
+
+
 <script>
 
 var ctx = document.getElementById("myChart4").getContext('2d');
 var myChart = new Chart(ctx, {
 	type: 'bar',
 	data: {
-		labels: ["{{names.0}}. {{invs_all.0}}","{{names.1}}. {{invs_all.1}}","{{names.2}}. {{invs_all.2}}", "{{names.3}}. {{invs_all.3}}", "{{names.4}}. {{invs_all.4}}", "{{names.5}}. {{invs_all.5}}", "{{names.6}}. {{invs_all.5}}", "{{names.7}}. {{invs_all.7}}", "{{names.8}}. {{invs_all.8}}", "{{names.9}}. {{invs_all.9}}"],
+		labels: ["{{names.0}}. {{invs_all.0}}","{{names.1}}. {{invs_all.1}}","{{names.2}}. {{invs_all.2}}", "{{names.3}}. {{invs_all.3}}", "{{names.4}}. {{invs_all.4}}", "{{names.5}}. {{invs_all.5}}", "{{names.6}}. {{invs_all.5}}", "{{names.7}}. {{invs_all.7}}", "{{names.8}}. {{invs_all.8}}", "{{names.9}}. {{invs_all.9}}", "{{names.10}}. {{invs_all.10}}", "{{names.11}}. {{invs_all.11}}", "{{names.12}}. {{invs_all.12}}", "{{names.13}}. {{invs_all.13}}", "{{names.14}}. {{invs_all.14}}"],
       datasets: [{
 			label: 'Аварийные заявки',
 			backgroundColor: "#DC143C",
-			data: [{{means.0}}, {{means.1}}, {{means.2}}, {{means.3}}, {{means.4}}, {{means.5}}, {{means.6}}, {{means.7}}, {{means.8}}, {{means.9}}]
+			data: [{{means.0}}, {{means.1}}, {{means.2}}, {{means.3}}, {{means.4}}, {{means.5}}, {{means.6}}, {{means.7}}, {{means.8}}, {{means.9}}, {{means.10}}, {{means.11}}, {{means.12}}, {{means.13}}, {{means.14}}]
 		}, {
 			label: 'Тех. обслуживание',
 			backgroundColor: "#00BFFF",
-			data: [{{means_to.0}}, {{means_to.1}}, {{means_to.2}}, {{means_to.3}}, {{means_to.4}}, {{means_to.5}}, {{means_to.6}}, {{means_to.7}}, {{means_to.8}}, {{means_to.9}}]
+			data: [{{means_to.0}}, {{means_to.1}}, {{means_to.2}}, {{means_to.3}}, {{means_to.4}}, {{means_to.5}}, {{means_to.6}}, {{means_to.7}}, {{means_to.8}}, {{means_to.9}}, {{means_to.10}}, {{means_to.11}}, {{means_to.12}}, {{means_to.13}}, {{means_to.14}}]
 		}],
 	},
 options: {
@@ -54,4 +112,98 @@ options: {
 });
 
 </script>
+
+<script>
+
+var ctx = document.getElementById("plain_month").getContext('2d');
+var myChart = new Chart(ctx, {
+	type: 'bar',
+	data: {
+		labels: ["{{names_m.0}}. {{invs_month.0}}","{{names_m.1}}. {{invs_month.1}}","{{names_m.2}}. {{invs_month.2}}", "{{names_m.3}}. {{invs_month.3}}", "{{names_m.4}}. {{invs_month.4}}", "{{names_m.5}}. {{invs_month.5}}", "{{names_m.6}}. {{invs_month.6}}", "{{names_m.7}}. {{invs_month.7}}", "{{names_m.8}}. {{invs_month.8}}", "{{names_m.9}}. {{invs_month.9}}", "{{names_m.10}}. {{invs_month.10}}", "{{names_m.11}}. {{invs_month.11}}", "{{names_m.12}}. {{invs_month.12}}", "{{names_m.13}}. {{invs_month.13}}", "{{names_m.14}}. {{invs_month.14}}"],
+      datasets: [{
+			label: 'Аварийные заявки',
+			backgroundColor: "#DC143C",
+			data: [{{means_m.0}}, {{means_m.1}}, {{means_m.2}}, {{means_m.3}}, {{means_m.4}}, {{means_m.5}}, {{means_m.6}}, {{means_m.7}}, {{means_m.8}}, {{means_m.9}}, {{means_m.10}}, {{means_m.11}}, {{means_m.12}}, {{means_m.13}}, {{means_m.14}}]
+        }, {
+			label: 'Тех. обслуживание',
+			backgroundColor: "#00BFFF",
+			data: [{{means_m_to.0}}, {{means_m_to.1}}, {{means_m_to.2}}, {{means_m_to.3}}, {{means_m_to.4}}, {{means_m_to.5}}, {{means_m_to.6}}, {{means_m_to.7}}, {{means_m_to.8}}, {{means_m_to.9}}, {{means_m_to.10}}, {{means_m_to.11}}, {{means_m_to.12}}, {{means_m_to.13}}, {{means_m_to.14}}]
+		}],
+	},
+options: {
+    tooltips: {
+      displayColors: true,
+      callbacks:{
+        mode: 'x',
+      },
+    },
+    scales: {
+      xAxes: [{
+        stacked: true,
+        gridLines: {
+          display: false,
+        }
+      }],
+      yAxes: [{
+        stacked: true,
+        ticks: {
+          beginAtZero: true,
+        },
+        type: 'linear',
+      }]
+    },
+		responsive: true,
+		maintainAspectRatio: false,
+		legend: { position: 'right' },
+	}
+});
+
+</script>
+
+<script>
+
+var ctx = document.getElementById("plain_last_week").getContext('2d');
+var myChart = new Chart(ctx, {
+	type: 'bar',
+	data: {
+		labels: ["{{names_week.0}}. {{invnums.0}}","{{names_week.1}}. {{invnums.1}}","{{names_week.2}}. {{invnums.2}}", "{{names_week.3}}. {{invnums.3}}", "{{names_week.4}}. {{invnums.4}}", "{{names_week.5}}. {{invnums.5}}", "{{names_week.6}}. {{invnums.6}}", "{{names_week.7}}. {{invnums.7}}", "{{names_week.8}}. {{invnums.8}}", "{{names_week.9}}. {{invnums.9}}"],
+      datasets: [{
+			label: 'Аварийные заявки',
+			backgroundColor: "#DC143C",
+			data: [{{means_week.0}}, {{means_week.1}}, {{means_week.2}}, {{means_week.3}}, {{means_week.4}}, {{means_week.5}}, {{means_week.6}}, {{means_week.7}}, {{means_week.8}}, {{means_week.9}}]
+        }, {
+			label: 'Тех. обслуживание',
+			backgroundColor: "#00BFFF",
+			data: [{{means_to_week.0}}, {{means_to_week.1}}, {{means_to_week.2}}, {{means_to_week.3}}, {{means_to_week.4}}, {{means_to_week.5}}, {{means_to_week.6}}, {{means_to_week.7}}, {{means_to_week.8}}, {{means_to_week.9}}, {{means_to_week.10}}, {{means_to_week.11}}, {{means_to_week.12}}, {{means_to_week.13}}, {{means_to_week.14}}]
+		}],
+	},
+options: {
+    tooltips: {
+      displayColors: true,
+      callbacks:{
+        mode: 'x',
+      },
+    },
+    scales: {
+      xAxes: [{
+        stacked: true,
+        gridLines: {
+          display: false,
+        }
+      }],
+      yAxes: [{
+        stacked: true,
+        ticks: {
+          beginAtZero: true,
+        },
+        type: 'linear',
+      }]
+    },
+		responsive: true,
+		maintainAspectRatio: false,
+		legend: { position: 'right' },
+	}
+});
+</script>
+
 {% endblock %}
