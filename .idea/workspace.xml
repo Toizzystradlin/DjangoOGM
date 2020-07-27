@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="56de9908-72e5-4632-b812-e4a4cf45ac64" name="Default Changelist" comment="">
+    <list default="true" id="56de9908-72e5-4632-b812-e4a4cf45ac64" name="Default Changelist" comment="увеличил статистику 2">
+      <change afterPath="$PROJECT_DIR$/main/templates/main/wrapper2.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/funcs.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/funcs.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/static/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/main/static/style.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/templates/main/stats2.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/stats2.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/views.py" afterDir="false" />
     </list>
@@ -185,23 +185,31 @@
       <option name="project" value="LOCAL" />
       <updated>1595363975557</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="увеличил статистику 2">
+      <created>1595533639357</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1595533639357</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="добавил недельные графики" />
     <MESSAGE value="добавил статистику 2" />
-    <option name="LAST_COMMIT_MESSAGE" value="добавил статистику 2" />
+    <MESSAGE value="увеличил статистику 2" />
+    <option name="LAST_COMMIT_MESSAGE" value="увеличил статистику 2" />
   </component>
   <component name="WindowStateProjectService">
     <state x="494" y="298" key="#Inspections" timestamp="1587724999832">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="494" y="298" key="#Inspections/0.0.1920.1040@0.0.1920.1040" timestamp="1587724999832" />
-    <state x="614" y="114" key="CommitChangelistDialog2" timestamp="1595363974872">
+    <state x="614" y="114" key="CommitChangelistDialog2" timestamp="1595864627524">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="614" y="114" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1595363974872" />
+    <state x="614" y="114" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1595864627524" />
     <state x="888" y="352" key="FileChooserDialogImpl" timestamp="1591848022004">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -226,10 +234,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="388" y="191" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1595353799374" />
-    <state x="599" y="463" width="607" height="351" key="com.intellij.ide.util.TipDialog" timestamp="1595390719828">
+    <state x="599" y="463" width="607" height="351" key="com.intellij.ide.util.TipDialog" timestamp="1595562034542">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="599" y="463" width="607" height="351" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1595390719828" />
+    <state x="599" y="463" width="607" height="351" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1595562034542" />
     <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1588105775378">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

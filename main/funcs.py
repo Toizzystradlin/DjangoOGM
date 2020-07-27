@@ -179,6 +179,8 @@ def top10_all_month(equipment):
         q2.month_start = datetime(this_year, this_month, 1, 7)
         q2.save()
     pairs_m = []
+    full_full_duration = timedelta(microseconds=0)
+    full_full_duration_to = timedelta(microseconds=0)
     for j1 in equipment:
         shifts = j1.shift
         eq_id = j1.eq_id
@@ -329,9 +331,11 @@ def top10_all_month(equipment):
                         i_date = i_date + timedelta(hours=24)
                 duration_to = duration_to + j
             full_duration_to = full_duration_to + duration_to
+
             i.end_time = None
             i.save()
-
+        full_full_duration = full_full_duration + full_duration
+        full_full_duration_to = full_full_duration_to + full_duration_to
 
         n = list(Eq_stoptime.objects.filter(eq_id=eq_id))
         try:
@@ -359,7 +363,27 @@ def top10_all_month(equipment):
         means_m_to.append(j[2])
         sh_m.append(j[3])
         invnum.append(j[4])
-    return names_m, means_m, means_m_to, sh_m, invnum
+    return names_m, means_m, means_m_to, sh_m, invnum, full_full_duration.total_seconds() / 3600, full_full_duration_to.total_seconds() / 3600
+
+
+def queries_and_to():
+    today = datetime.today()
+    day = today.day
+    delta = timedelta(days=day)
+    month_start = today - delta
+    utc = pytz.UTC
+    month_start = utc.localize(month_start)
+    queries = Queries.objects.all()
+    tos = Maintenance.objects.all()
+    queries_count = 0
+    tos_count = 0
+    for i in queries:
+        if i.post_time > month_start:
+            queries_count = queries_count + 1
+    for i in tos:
+        if i.start_time > month_start:
+            tos_count += 1
+    return queries_count, tos_count
 
 def top10_all_lastweek(equipment):
     pairs = []

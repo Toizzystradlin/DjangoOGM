@@ -511,7 +511,7 @@ def stats(request):
 def stats2(request):
     equipment = Equipment.objects.all()  # топ 10 по простою за все время
     names, means, means_to, sh, invs_all = funcs.top10_all(equipment)  # возвращает имена, цифры по простою и смены оборудования
-    names_m, means_m, means_m_to, sh_m, invs_month = funcs.top10_all_month(equipment)
+    names_m, means_m, means_m_to, sh_m, invs_month, full_plain, full_plain_to = funcs.top10_all_month(equipment)
     names_week, means_week, means_to_week, shifts_week, invnums_week = funcs.top10_all_lastweek(equipment)  # топ 10 по простою за week
     queries_ids, to_ids = funcs.last_week_queries_and_to()
     queries = []
@@ -527,10 +527,12 @@ def stats2(request):
                            "equipment ON (maintenance.eq_id = equipment.eq_id) AND (maintenance.id = %s)", [i])
             tos.append(cursor.fetchone())
 
+    queries_count, tos_count = funcs.queries_and_to()
     return render(request, 'main/stats2.html', {'names': names, 'means': means, 'means_to': means_to, 'shifts': sh, 'invs_all': invs_all,
                                                 'names_m': names_m, 'means_m': means_m, 'means_m_to': means_m_to, 'shifts_m': sh_m, 'invs_month': invs_month,
                                                 'names_week': names_week, 'means_week': means_week, 'means_to_week': means_to_week, 'shifts_week': shifts_week, 'invnums_week': invnums_week,
-                                                'queries_ids': queries_ids, 'to_ids': to_ids, 'queries': queries, 'tos': tos
+                                                'queries_ids': queries_ids, 'to_ids': to_ids, 'queries': queries, 'tos': tos,
+                                                'queries_count': queries_count, 'tos_count': tos_count, 'full_plain': full_plain, 'full_plain_to': full_plain_to
                                                 })
 
 @login_required

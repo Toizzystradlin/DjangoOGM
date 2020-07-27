@@ -63,8 +63,18 @@
             </tbody>
         </table>
 
+<div>
+    <br>
+    <h1 align="center">Аварийные поломки/ТО, количество. Этот месяц</h1>
+    <canvas id="PieChart1"></canvas>
+</div>
 
 
+<div>
+    <br>
+    <h1 align="center">Аварийные поломки/ТО, часы простоя. Этот месяц</h1>
+    <canvas id="PieChart2"></canvas>
+</div>
 
 <script>
 
@@ -205,5 +215,70 @@ options: {
 	}
 });
 </script>
+
+<script>
+var ctx = document.getElementById('PieChart1').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: ['Аварийные поломки', 'ТО'],
+        datasets: [{
+            label: 'Статус оборудования',
+            data: [{{queries_count}}, {{tos_count}}],
+            backgroundColor: [
+            '#DC143C',
+            '#00BFFF'
+            ],
+            borderColor: [
+            '#DC143C',
+            '#00BFFF'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+</script>       # скрипт пайчарта 1
+
+<script>
+var ctx = document.getElementById('PieChart2').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: ['Аварийные поломки, часы', 'ТО, часы'],
+        datasets: [{
+            label: 'Статус оборудования',
+            data: [{{full_plain}}, {{full_plain_to}}],
+            backgroundColor: [
+            '#DC143C',
+            '#00BFFF'
+            ],
+            borderColor: [
+            '#DC143C',
+            '#00BFFF'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+</script>       # скрипт пайчарта 2
+
 
 {% endblock %}
