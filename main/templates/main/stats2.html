@@ -76,6 +76,16 @@
     <canvas id="PieChart2"></canvas>
 </div>
 
+<div id="div_tos">
+    <br>
+    <h1 align="center">ТО <b>за месяц</b></h1>
+    <canvas id="tos" height="500px"></canvas>
+</div>
+
+{%for i in plain_list%}
+    {{i}}
+{%endfor%}
+
 <script>
 
 var ctx = document.getElementById("myChart4").getContext('2d');
@@ -280,5 +290,62 @@ var myChart = new Chart(ctx, {
 });
 </script>       # скрипт пайчарта 2
 
+<script>
+var ctx = document.getElementById("tos").getContext('2d');
+var myChart = new Chart(ctx, {
+	type: 'bar',
+	data: {
+		labels: [
+		{%for i in to_times%}
+		    "{{i.0}}",
+		{%endfor%}
+		],
+      datasets: [{
+			label: 'Запланированное время',
+			backgroundColor: "#00BFFF",
+			data: [
+			{%for i in to_times%}
+			    {{i.2}},
+			{%endfor%}
+			]
+		}, {
+			label: 'Реальное время',
+			backgroundColor: "#DC143C",
+			data: [
+			{%for i in to_times%}
+			    {{i.1}},
+			{%endfor%}
+			]
+		}],
+	},
+options: {
+    tooltips: {
+      displayColors: true,
+      callbacks:{
+        mode: 'x',
+      },
+    },
+    scales: {
+      xAxes: [{
+
+        gridLines: {
+          display: false,
+        }
+      }],
+      yAxes: [{
+
+        ticks: {
+          beginAtZero: true,
+        },
+        type: 'linear',
+      }]
+    },
+		responsive: true,
+		maintainAspectRatio: false,
+		legend: { position: 'right' },
+	}
+});
+
+</script>
 
 {% endblock %}

@@ -40,6 +40,7 @@ class Equipment(models.Model):
     eq_name = models.CharField(max_length=255, blank=True, null=True)
     eq_type = models.CharField(max_length=255, blank=True, null=True)
     eq_comment = models.CharField(max_length=3000, blank=True, null=True)
+    category = models.CharField(max_length=255, blank=True, null=True)
     area_choices = [
         ('Механической обработки', 'Механической обработки'),
         ('Слесарный', 'Слесарный'),
@@ -102,6 +103,7 @@ class Maintenance(models.Model):
     month_start = models.DateTimeField(blank=True, null=True)
     shift_start = models.DateTimeField(blank=True, null=True)
     shift_end = models.DateTimeField(blank=True, null=True)
+    expected_time = models.IntegerField(blank=True, null=True)
     class Meta:
         managed = True
         db_table = 'maintenance'

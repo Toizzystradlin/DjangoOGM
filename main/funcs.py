@@ -189,6 +189,7 @@ def top10_all_month(equipment):
         full_duration = timedelta(microseconds=0)
         duration_to = timedelta(microseconds=0)
         full_duration_to = timedelta(microseconds=0)
+        expected_time = 0
         for i in n:
             if i.start_time == None:
                 i.start_time = datetime.now()
@@ -282,6 +283,7 @@ def top10_all_month(equipment):
                         i_date = i_date + timedelta(hours=24)
                 duration_to = duration_to + j
             full_duration_to = full_duration_to + duration_to
+            expected_time = expected_time + i.expected_time
 
         m = Maintenance.objects.filter(eq_id=eq_id, status='В процессе')
         for i in m:
@@ -331,9 +333,9 @@ def top10_all_month(equipment):
                         i_date = i_date + timedelta(hours=24)
                 duration_to = duration_to + j
             full_duration_to = full_duration_to + duration_to
-
             i.end_time = None
             i.save()
+            expected_time = expected_time + i.expected_time
         full_full_duration = full_full_duration + full_duration
         full_full_duration_to = full_full_duration_to + full_duration_to
 
@@ -347,7 +349,8 @@ def top10_all_month(equipment):
         except:
             pass
         sum = full_duration.total_seconds() + full_duration_to.total_seconds()
-        pair2 = (j1.eq_name, full_duration.total_seconds() / 3600, full_duration_to.total_seconds() / 3600, shifts, j1.invnum, sum)
+
+        pair2 = (j1.eq_name, full_duration.total_seconds() / 3600, full_duration_to.total_seconds() / 3600, shifts, j1.invnum, sum, expected_time)
         pairs_m.append(pair2)
     pairs_m = sorted(pairs_m, key=lambda x: x[5])  # сортировка по увеличению дней в простое
     pairs_m.reverse()
@@ -357,33 +360,61 @@ def top10_all_month(equipment):
     means_m_to = []
     sh_m = []
     invnum = []
+    expected_times = []
     for j in pairs_m:
         names_m.append(j[0])
         means_m.append(j[1])
         means_m_to.append(j[2])
         sh_m.append(j[3])
         invnum.append(j[4])
-    return names_m, means_m, means_m_to, sh_m, invnum, full_full_duration.total_seconds() / 3600, full_full_duration_to.total_seconds() / 3600
-
+        expected_times.append(j[6])
+    return names_m, means_m, means_m_to, sh_m, invnum, full_full_duration.total_seconds() / 3600, full_full_duration_to.total_seconds() / 3600, expected_times
 
 def queries_and_to():
     today = datetime.today()
     day = today.day
     delta = timedelta(days=day)
     month_start = today - delta
+    this_month = today.month
     utc = pytz.UTC
     month_start = utc.localize(month_start)
     queries = Queries.objects.all()
-    tos = Maintenance.objects.all()
+    m = Maintenance.objects.filter(status='Завершено')
     queries_count = 0
     tos_count = 0
+    duration_to = timedelta(microseconds=0)
+    pairs = []
     for i in queries:
         if i.post_time > month_start:
             queries_count = queries_count + 1
-    for i in tos:
-        if i.start_time > month_start:
-            tos_count += 1
-    return queries_count, tos_count
+    for i in m:
+        eq = Equipment.objects.get(eq_id=i.eq_id)
+        eq_name = eq.eq_name
+        if i.start_time.month == this_month:
+            if i.start_time > month_start:
+                tos_count += 1
+                if i.start_time.date() == i.end_time.date():
+                    duration_to = i.end_time - i.start_time
+                else:
+                    duration_to = i.shift_end - i.start_time
+                    stop = False
+                    i_date = i.start_time + timedelta(hours=24)
+                    while stop == False:
+                        if i_date.date() == i.end_time.date():
+                            j = i.end_time - i.shift_start
+                        else:
+                            if datetime.isoweekday(i_date.date()) < 6:
+                                j = timedelta(hours=8)
+                            else:
+                                j = timedelta(seconds=0)
+                        duration_to = duration_to + j
+                        if i_date.date() == i.end_time.date():
+                            stop = True
+                        i_date = i_date + timedelta(hours=24)
+            pair = (eq_name, duration_to.total_seconds() / 3600, i.expected_time)
+            pairs.append(pair)
+
+    return queries_count, tos_count, pairs
 
 def top10_all_lastweek(equipment):
     pairs = []
@@ -692,8 +723,6 @@ def top10_last_week(equipment):
         invnum.append(j[3])
     return names, means, sh, invnum
 
-
-
 def top10(equipment):
     pairs = []
     for i1 in equipment:
@@ -771,10 +800,6 @@ def top10(equipment):
         sh.append(j[2])
         invnum.append(j[3])
     return names, means, sh, invnum
-
-
-
-
 
 def top10_month(equipment):
     today = datetime.now()  # топ 10 по простою за месяц
@@ -866,6 +891,48 @@ def top10_month(equipment):
         sh_m.append(j[2])
         invnum.append(j[3])
     return names_m, means_m, sh_m, invnum
+
+def time_kpi_a():
+    n = Equipment.objects.filter(category='A')
+    start = datetime(year=2020, month=6, day=8)
+    step = timedelta(weeks=1)
+    date = start
+    today = datetime.now()
+    utc = pytz.UTC
+    #last_week_start = utc.localize(last_week_start)
+    #last_week_end = utc.localize(last_week_end)
+    date = utc.localize(date)
+
+    plain_list = []
+    while date.date() < today.date():
+        full_duration = timedelta(microseconds=0)
+        for i1 in n:
+            duration = timedelta(microseconds=0)
+            stops = Eq_stoptime.objects.filter(eq_id=i1.eq_id)
+            for stop in stops:
+                if (stop.stop_time >= date) and (stop.stop_time <= date + step):
+                    if (stop.start_time != None) and (stop.stop_time.date() == stop.start_time.date()):
+                        duration = stop.start_time - stop.stop_time
+                    else:
+                        duration = stop.shift_end - stop.stop_time
+                        cancel = False
+                        i_date = stop.stop_time + timedelta(hours=24)
+                        while cancel == False:
+                            if i_date.date() == stop.start_time.date():
+                                j = stop.start_time - stop.shift_start
+                            else:
+                                if datetime.isoweekday(i_date.date()) < 6:
+                                    j = timedelta(hours=8)
+                                else:
+                                    j = timedelta(seconds=0)
+                            duration = duration + j
+                            if (i_date.date() == stop.start_time.date()) or (i_date.date() >= date.date() + step):
+                                cancel = True
+                            i_date = i_date + timedelta(hours=24)
+                full_duration = full_duration + duration
+        plain_list.append(full_duration.total_seconds() / 3600)
+        date = date + step
+    return plain_list
 
 
 def appoint_doers(doers, query_id):
