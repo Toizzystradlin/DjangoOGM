@@ -18,6 +18,7 @@ urlpatterns = [
     path('employees/add_new/save_emp', views.save_emp, name='save_emp'),
     path('stats', views.stats, name='stats'),
     path('stats2', views.stats2, name='stats2'),
+    path('stats2/refreshed', views.stats2, name='stats2'),
     path('maintenance', views.maintenance, name='maintenance'),
     path('maintenance/new_maintenance', views.new_maintenance, name='new_maintenance'),
     path('main/maintenance/new_maintenance/new_maintenance_save', views.new_maintenance, name='new_maintenance_save'),

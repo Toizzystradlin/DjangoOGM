@@ -146,3 +146,11 @@ class Supplies(models.Model):
     class Meta:
         managed = True
         db_table = 'supplies'
+
+class Dates(models.Model):
+    kpi_a_start = models.DateTimeField(blank=True, null=True)
+    kpi_a_end = models.DateTimeField(blank=True, null=True)
+    chart = models.CharField(max_length=50, null=True, blank=True)
+    class Meta:
+        managed = True
+        db_table = 'dates'

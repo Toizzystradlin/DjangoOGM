@@ -892,19 +892,24 @@ def top10_month(equipment):
         invnum.append(j[3])
     return names_m, means_m, sh_m, invnum
 
-def time_kpi_a():
-    n = Equipment.objects.filter(category='A')
-    start = datetime(year=2020, month=6, day=8)
+def time_kpi(n, s1='asd', s2='asd'):
+    start = datetime(year=2020, month=6, day=9)
+    end = datetime.now().date()
+    try:
+        start = datetime(year=s1[0], month=s1[1], day=s1[2])
+        end = datetime(year=s2[0], month=s2[1], day=s2[2]).date()
+    except: pass
+    #start = datetime(year=2020, month=6, day=8)
     step = timedelta(weeks=1)
     date = start
     today = datetime.now()
     utc = pytz.UTC
-    #last_week_start = utc.localize(last_week_start)
-    #last_week_end = utc.localize(last_week_end)
-    date = utc.localize(date)
 
+    date = utc.localize(date)
+    n_count = len(n)
     plain_list = []
-    while date.date() < today.date():
+    #while date.date() < today.date():
+    while date.date() < end:
         full_duration = timedelta(microseconds=0)
         for i1 in n:
             duration = timedelta(microseconds=0)
@@ -932,7 +937,55 @@ def time_kpi_a():
                 full_duration = full_duration + duration
         plain_list.append(full_duration.total_seconds() / 3600)
         date = date + step
-    return plain_list
+
+    date = start
+    today = datetime.now()
+    utc = pytz.UTC
+    date = utc.localize(date)
+    maintenance_list = []
+    expected_time_list = []
+    dates = []
+    while date.date() < end:
+        full_duration_to = timedelta(microseconds=0)
+        for j1 in n:
+            duration_to = timedelta(microseconds=0)
+            maints = Maintenance.objects.filter(eq_id=j1.eq_id)
+            expected_time = 0
+            for maint in maints:
+                if (maint.start_time >= date) and (maint.start_time <= date + step):
+                    if (maint.end_time != None) and (maint.start_time.date() == maint.end_time.date()):
+                        duration_to = maint.end_time - maint.start_time
+                    elif maint.end_time != None:
+                        duration_to = maint.shift_end - maint.start_time
+                        cancel = False
+                        i_date = maint.start_time + timedelta(hours=24)
+                        while cancel == False:
+                            if i_date.date() == maint.end_time.date():
+                                j = maint.end_time - maint.shift_start
+                            else:
+                                if datetime.isoweekday(i_date.date()) < 6:
+                                    j = timedelta(hours=8)
+                                else:
+                                    j = timedelta(seconds=0)
+                            duration_to = duration_to + j
+                            if (i_date.date() == maint.end_time.date()) or (i_date.date() >= date.date() + step):
+                                cancel = True
+                            i_date = i_date + timedelta(hours=24)
+                full_duration_to = full_duration_to + duration_to
+                expected_time = expected_time + maint.expected_time
+        maintenance_list.append(full_duration_to.total_seconds() / 3600)
+        expected_time_list.append(expected_time)
+        dates.append(date)
+        date = date + step
+
+    kpi_list = []
+    for i in range(len(plain_list)):
+
+        mean = ((n_count * 40 - expected_time_list[i]) - plain_list[i] - (maintenance_list[i] - expected_time_list[i])) / (n_count * 40 - expected_time_list[i])
+
+        kpi_list.append(round(mean, 4))
+
+    return plain_list, maintenance_list, expected_time_list, n_count * 40, kpi_list, dates
 
 
 def appoint_doers(doers, query_id):

@@ -3,11 +3,12 @@
   <component name="ChangeListManager">
     <list default="true" id="56de9908-72e5-4632-b812-e4a4cf45ac64" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/forms.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/funcs.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/funcs.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/templates/main/new_eq.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/new_eq.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/templates/main/new_maintenance.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/new_maintenance.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/templates/main/stats2.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/stats2.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/templates/main/wrapper.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/wrapper.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -201,24 +202,32 @@
       <option name="project" value="LOCAL" />
       <updated>1595870895535</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="работаю над кпи графиком">
+      <created>1595969999642</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1595969999642</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="добавил недельные графики" />
     <MESSAGE value="добавил статистику 2" />
     <MESSAGE value="увеличил статистику 2" />
-    <option name="LAST_COMMIT_MESSAGE" value="увеличил статистику 2" />
+    <MESSAGE value="работаю над кпи графиком" />
+    <option name="LAST_COMMIT_MESSAGE" value="работаю над кпи графиком" />
   </component>
   <component name="WindowStateProjectService">
     <state x="494" y="298" key="#Inspections" timestamp="1587724999832">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="494" y="298" key="#Inspections/0.0.1920.1040@0.0.1920.1040" timestamp="1587724999832" />
-    <state x="614" y="114" key="CommitChangelistDialog2" timestamp="1595870894890">
+    <state x="614" y="114" key="CommitChangelistDialog2" timestamp="1595969998996">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="614" y="114" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1595870894890" />
+    <state x="614" y="114" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1595969998996" />
     <state x="888" y="352" key="FileChooserDialogImpl" timestamp="1591848022004">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -243,10 +252,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="388" y="191" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1595353799374" />
-    <state x="599" y="463" width="607" height="351" key="com.intellij.ide.util.TipDialog" timestamp="1595562034542">
+    <state x="599" y="463" width="607" height="351" key="com.intellij.ide.util.TipDialog" timestamp="1595993834584">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="599" y="463" width="607" height="351" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1595562034542" />
+    <state x="599" y="463" width="607" height="351" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1595993834584" />
     <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1588105775378">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
