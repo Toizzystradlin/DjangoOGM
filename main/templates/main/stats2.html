@@ -67,29 +67,40 @@
     <canvas id="PieChart2"></canvas>
 </div>
 
+
+
 <div id="div_tos">
     <br>
     <h1 align="center">ТО <b>за месяц</b></h1>
     <canvas id="tos" height="500px"></canvas>
 </div>
-
-<div id="kpi">
-    <br>
-    <h1 align="center">Коэффицент готовности оборудования <b>категории А</b></h1>
-    <br>
-    <form action="/stats2" method="post">
+<br>
+<br>
+<br>
+<br>
+<form action="/stats2" method="post">
         {% csrf_token %}
         Начало:
     <input type="date" id="kpi_a_start" name="kpi_a_start">
         Конец:
         <input type="date" id="kpi_a_end" name="kpi_a_end">
+        Шаг:
+        <select name="step">
+            <option value="day">День</option>
+            <option value="week" selected>Неделя</option>
+            <option value="month">месяц</option>
+        </select>
         <input type="submit" class="btn btn-success btn-info" value="Обновить">
     </form>
+
+<div id="kpi">
+    <br>
+    <h1 align="center">Коэффицент готовности оборудования <b>категории А</b></h1>
+
     <canvas id="kpi_chart"></canvas>
     <p>K = Время полезной работы / (Время полезной работы + Время вынужденного простоя)</p>
 
-</div>
-{{year_start}}
+</div><br>
 
 
 
@@ -97,15 +108,8 @@
 
 
 
-{{usefull_hours}}
-<br>
-{%for i in expected_time_list%}
-    {{i}}
-{%endfor%}
-<br>
-{%for i in plain_list%}
-    {{i}}
-{%endfor%}
+
+
 
 <div id="kpi_b">
     <br>

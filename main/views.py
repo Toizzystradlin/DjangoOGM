@@ -116,10 +116,6 @@ def new_query(request):
             query = Queries.objects.all().order_by("-query_id")[0]
             funcs.appoint_doers(doers, query.query_id)
             funcs.multiple_doers(doers, query.query_id)
-
-            # for i in doers:
-            # emp = Employees.objects.get(employee_id=int(i))
-            # send_message.send_message_4(emp.tg_id, query.query_id)
             return redirect('main')
         except Exception as ex:
             return HttpResponse(ex)
@@ -530,25 +526,32 @@ def stats2(request):
     queries_count, tos_count, to_times = funcs.queries_and_to()
     equipment = Equipment.objects.filter(category='A')
     plain_list, maintenance_list, expected_time_list, usefull_hours, kpi_list, dates = funcs.time_kpi(equipment)
-    if request.method == 'POST':
-        a = Dates.objects.get(chart='kpi_a')
-        a.kpi_a_start = request.POST.get('kpi_a_start')
-        a.kpi_a_end = request.POST.get('kpi_a_end')
-        a.save()
-        a = Dates.objects.get(chart='kpi_a')
-        year_start = int(str(a.kpi_a_start.year))
-        month_start = int(str(a.kpi_a_start.month))
-        day_start = int(str(a.kpi_a_start.day))
-        s1 = [year_start, month_start, day_start]
-        year_end = int(str(a.kpi_a_end.year))
-        month_end = int(str(a.kpi_a_end.month))
-        day_end = int(str(a.kpi_a_end.day))
-        s2 = [year_end, month_end, day_end]
-        #return render(request, 'main/stats2.html', {'year_start': year_start})
-        plain_list, maintenance_list, expected_time_list, usefull_hours, kpi_list, dates = funcs.time_kpi(equipment, s1, s2)
-
     equipment = Equipment.objects.filter(category='B')
     plain_list_b, maintenance_list_b, expected_time_list_b, usefull_hours_b, kpi_list_b, dates_b = funcs.time_kpi(equipment)
+    if request.method == 'POST':
+        try:
+            a = Dates.objects.get(chart='kpi_a')
+            a.kpi_a_start = request.POST.get('kpi_a_start')
+            a.kpi_a_end = request.POST.get('kpi_a_end')
+            a.save()
+            a = Dates.objects.get(chart='kpi_a')
+            year_start = int(str(a.kpi_a_start.year))
+            month_start = int(str(a.kpi_a_start.month))
+            day_start = int(str(a.kpi_a_start.day))
+            s1 = [year_start, month_start, day_start]
+            year_end = int(str(a.kpi_a_end.year))
+            month_end = int(str(a.kpi_a_end.month))
+            day_end = int(str(a.kpi_a_end.day))
+            s2 = [year_end, month_end, day_end]
+            s3 = request.POST.get('step')
+            #return render(request, 'main/stats2.html', {'year_start': year_start})
+            equipment = Equipment.objects.filter(category='A')
+            plain_list, maintenance_list, expected_time_list, usefull_hours, kpi_list, dates = funcs.time_kpi(
+                equipment, s1, s2, s3)
+            equipment = Equipment.objects.filter(category='B')
+            plain_list_b, maintenance_list_b, expected_time_list_b, usefull_hours_b, kpi_list_b, dates_b = funcs.time_kpi(
+                equipment, s1, s2, s3)
+        except: pass
 
     return render(request, 'main/stats2.html', {'names': names, 'means': means, 'means_to': means_to, 'shifts': sh, 'invs_all': invs_all,
                                                 'names_m': names_m, 'means_m': means_m, 'means_m_to': means_m_to, 'shifts_m': sh_m, 'invs_month': invs_month,

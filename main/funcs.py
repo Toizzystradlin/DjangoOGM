@@ -217,19 +217,19 @@ def top10_all_month(equipment):
                         if i_date.date() == i.start_time.date():
                             stop = True
                         i_date = i_date + timedelta(hours=24)
-            elif i.start_time.month == this_month:
+            elif i.start_time.month == this_month and i.stop_time.month != this_month:
                 if i.start_time.day == datetime(this_year, this_month, 1).day:
                     j = i.start_time - i.shift_start
                 else:
-                    duration = i.shift_end - i.stop_time
+                    #duration = i.shift_end - i.stop_time
                     stop = False
-                    i_date = datetime(this_year, this_month, 2)
+                    i_date = i.stop_time + timedelta(hours=24)
                     while stop == False:
-                        if i_date.date() == i.start_time.date():
+                        if (i_date.date() == i.start_time.date()) and (datetime.isoweekday(i_date.date()) < 6):
                             j = i.start_time - i.shift_start
-                            stop = True
                         else:
-                            if datetime.isoweekday(i_date) < 6:
+                            if datetime.isoweekday(i_date.date()) < 6:
+                                # j = i.shift_end - i.start_time
                                 j = timedelta(hours=8) * shifts
                             else:
                                 j = timedelta(seconds=0)
@@ -237,7 +237,7 @@ def top10_all_month(equipment):
                         if i_date.date() == i.start_time.date():
                             stop = True
                         i_date = i_date + timedelta(hours=24)
-                duration = duration + j
+                #duration = duration + j
             full_duration = full_duration + duration
         m = Maintenance.objects.filter(eq_id=eq_id, status='Завершено')
         for i in m:
@@ -271,7 +271,7 @@ def top10_all_month(equipment):
                     while stop == False:
                         if i_date.date() == i.end_time.date():
                             j = i.end_time - i.shift_start
-                            stop = True
+
                         else:
                             if datetime.isoweekday(i_date) < 6:
                                 j = timedelta(hours=8) * shifts
@@ -892,20 +892,24 @@ def top10_month(equipment):
         invnum.append(j[3])
     return names_m, means_m, sh_m, invnum
 
-def time_kpi(n, s1='asd', s2='asd'):
-    start = datetime(year=2020, month=6, day=9)
+def time_kpi(n, s1='asd', s2='asd', s3='week'):
+    start = datetime(year=2020, month=6, day=8)
     end = datetime.now().date()
+    step = timedelta(weeks=1)
     try:
         start = datetime(year=s1[0], month=s1[1], day=s1[2])
         end = datetime(year=s2[0], month=s2[1], day=s2[2]).date()
+        if s3 == 'day': step = timedelta(days=1)
+        if s3 == 'week': step = timedelta(weeks=1)
+        if s3 == 'month': step = timedelta(weeks=4)
     except: pass
     #start = datetime(year=2020, month=6, day=8)
-    step = timedelta(weeks=1)
+
     date = start
     today = datetime.now()
     utc = pytz.UTC
-
     date = utc.localize(date)
+    x = utc.localize(datetime.now())
     n_count = len(n)
     plain_list = []
     #while date.date() < today.date():
@@ -915,15 +919,15 @@ def time_kpi(n, s1='asd', s2='asd'):
             duration = timedelta(microseconds=0)
             stops = Eq_stoptime.objects.filter(eq_id=i1.eq_id)
             for stop in stops:
-                if (stop.stop_time >= date) and (stop.stop_time <= date + step):
-                    if (stop.start_time != None) and (stop.stop_time.date() == stop.start_time.date()):
+                if (stop.start_time != None) and (stop.stop_time >= date) and (stop.stop_time <= date + step):
+                    if stop.stop_time.date() == stop.start_time.date():
                         duration = stop.start_time - stop.stop_time
                     else:
                         duration = stop.shift_end - stop.stop_time
                         cancel = False
                         i_date = stop.stop_time + timedelta(hours=24)
                         while cancel == False:
-                            if i_date.date() == stop.start_time.date():
+                            if (i_date.date() == stop.start_time.date()):
                                 j = stop.start_time - stop.shift_start
                             else:
                                 if datetime.isoweekday(i_date.date()) < 6:
@@ -934,6 +938,47 @@ def time_kpi(n, s1='asd', s2='asd'):
                             if (i_date.date() == stop.start_time.date()) or (i_date.date() >= date.date() + step):
                                 cancel = True
                             i_date = i_date + timedelta(hours=24)
+                elif (stop.start_time != None) and (stop.stop_time <= date) and (stop.start_time >= date + step):
+                    duration = timedelta(hours=40)
+                elif (stop.start_time != None) and (stop.stop_time < date) and (stop.start_time >= date) and (stop.start_time <= date + step):
+                    cancel = False
+                    i_date = date
+                    while cancel == False:
+                        if (i_date.date() == stop.start_time.date()):
+                            j = stop.start_time - stop.shift_start
+                        else:
+                            if datetime.isoweekday(i_date.date()) < 6:
+                                j = timedelta(hours=8)
+                            else:
+                                j = timedelta(seconds=0)
+                        duration = duration + j
+                        if (i_date.date() == stop.start_time.date()) or (i_date.date() >= date.date() + step):
+                            cancel = True
+                        i_date = i_date + timedelta(hours=24)
+                elif (stop.start_time == None):
+                    if (stop.stop_time >= date) and (stop.stop_time <= date + step):
+                        if stop.stop_time.date() == datetime.now().date():
+
+                            duration = x - stop.stop_time
+                        else:
+                            duration = stop.shift_end - stop.stop_time
+                            cancel = False
+                            i_date = stop.stop_time + timedelta(hours=24)
+                            while cancel == False:
+                                if (i_date.date() == datetime.now().date()):
+
+                                    j = x - stop.shift_start
+                                else:
+                                    if datetime.isoweekday(i_date.date()) < 6:
+                                        j = timedelta(hours=8)
+                                    else:
+                                        j = timedelta(seconds=0)
+                                duration = duration + j
+                                if (i_date.date() == datetime.now().date()) or (i_date.date() >= date.date() + step):
+                                    cancel = True
+                                i_date = i_date + timedelta(hours=24)
+
+
                 full_duration = full_duration + duration
         plain_list.append(full_duration.total_seconds() / 3600)
         date = date + step
@@ -960,7 +1005,7 @@ def time_kpi(n, s1='asd', s2='asd'):
                         cancel = False
                         i_date = maint.start_time + timedelta(hours=24)
                         while cancel == False:
-                            if i_date.date() == maint.end_time.date():
+                            if (i_date.date() == maint.end_time.date()):
                                 j = maint.end_time - maint.shift_start
                             else:
                                 if datetime.isoweekday(i_date.date()) < 6:
