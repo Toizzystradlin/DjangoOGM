@@ -14,6 +14,7 @@ import openpyxl
 import easygui
 import xlwt
 from django.http import HttpResponse
+import pytz
 
 
 @login_required
@@ -505,29 +506,31 @@ def stats(request):
                                                    })
 
 def stats2(request):
-    equipment = Equipment.objects.all()  # топ 10 по простою за все время
-    names, means, means_to, sh, invs_all = funcs.top10_all(equipment)  # возвращает имена, цифры по простою и смены оборудования
-    names_m, means_m, means_m_to, sh_m, invs_month, full_plain, full_plain_to, expected_times = funcs.top10_all_month(equipment)
-    names_week, means_week, means_to_week, shifts_week, invnums_week = funcs.top10_all_lastweek(equipment)  # топ 10 по простою за week
-    queries_ids, to_ids = funcs.last_week_queries_and_to()
-    queries = []
-    tos = []
-    with connection.cursor() as cursor:
-        for i in queries_ids:
-            cursor.execute("SELECT queries.query_id, queries.post_time, queries.stop_time, equipment.eq_name, equipment.eq_status, "
-                           "queries.msg, queries.query_status FROM queries JOIN equipment ON (queries.eq_id = equipment.eq_id) AND (queries.query_id = %s)", [i])
-            queries.append(cursor.fetchone())
-        for i in to_ids:
-            cursor.execute("SELECT maintenance.id, maintenance.start_time, maintenance.end_time, equipment.eq_name, "
-                           "equipment.eq_status, maintenance.comment, maintenance.status FROM maintenance JOIN "
-                           "equipment ON (maintenance.eq_id = equipment.eq_id) AND (maintenance.id = %s)", [i])
-            tos.append(cursor.fetchone())
-
+    utc = pytz.UTC
+    today = datetime.today()
+    weekday = today.weekday()
+    start_delta = timedelta(days=weekday, weeks=1)
+    last_week_start = today - start_delta
+    last_week_end = last_week_start + timedelta(days=6)
+    #last_week_start = utc.localize(last_week_start)
+    #last_week_end = utc.localize(last_week_end)
+    s1 = [int(last_week_start.year), int(last_week_start.month), int(last_week_start.day)]
+    s2 = [int(last_week_end.year), int(last_week_end.month), int(last_week_end.day)]
     queries_count, tos_count, to_times = funcs.queries_and_to()
+    queries_ids, to_ids = funcs.period_queries_and_to(s1, s2)
+    equipment = Equipment.objects.all()
+    names_period, means_period, means_to_period, invs_period = funcs.plain_period(equipment, s1, s2)
+
+    equipment = Equipment.objects.all()  # топ 10 по простою за все время
+    #names, means, means_to, sh, invs_all = funcs.top10_all(equipment)  # возвращает имена, цифры по простою и смены оборудования
+    names_m, means_m, means_m_to, sh_m, invs_month, full_plain, full_plain_to, expected_times = funcs.top10_all_month(equipment)
+    #names_week, means_week, means_to_week, shifts_week, invnums_week = funcs.top10_all_lastweek(equipment)  # топ 10 по простою за week
+
     equipment = Equipment.objects.filter(category='A')
     plain_list, maintenance_list, expected_time_list, usefull_hours, kpi_list, dates = funcs.time_kpi(equipment)
     equipment = Equipment.objects.filter(category='B')
     plain_list_b, maintenance_list_b, expected_time_list_b, usefull_hours_b, kpi_list_b, dates_b = funcs.time_kpi(equipment)
+
     if request.method == 'POST':
         try:
             a = Dates.objects.get(chart='kpi_a')
@@ -551,16 +554,35 @@ def stats2(request):
             equipment = Equipment.objects.filter(category='B')
             plain_list_b, maintenance_list_b, expected_time_list_b, usefull_hours_b, kpi_list_b, dates_b = funcs.time_kpi(
                 equipment, s1, s2, s3)
+            equipment = Equipment.objects.all()
+            names_period, means_period, means_to_period, invs_period = funcs.plain_period(equipment, s1, s2)
+            queries_ids, to_ids = funcs.period_queries_and_to(s1, s2)
         except: pass
+    queries = []
+    tos = []
+    with connection.cursor() as cursor:
+        for i in queries_ids:
+            cursor.execute(
+                "SELECT queries.query_id, queries.post_time, queries.stop_time, equipment.eq_name, equipment.eq_status, "
+                "queries.msg, queries.query_status FROM queries JOIN equipment ON (queries.eq_id = equipment.eq_id) AND (queries.query_id = %s)",
+                [i])
+            queries.append(cursor.fetchone())
+        for i in to_ids:
+            cursor.execute("SELECT maintenance.id, maintenance.start_time, maintenance.end_time, equipment.eq_name, "
+                           "equipment.eq_status, maintenance.comment, maintenance.status FROM maintenance JOIN "
+                           "equipment ON (maintenance.eq_id = equipment.eq_id) AND (maintenance.id = %s)", [i])
+            tos.append(cursor.fetchone())
 
-    return render(request, 'main/stats2.html', {'names': names, 'means': means, 'means_to': means_to, 'shifts': sh, 'invs_all': invs_all,
-                                                'names_m': names_m, 'means_m': means_m, 'means_m_to': means_m_to, 'shifts_m': sh_m, 'invs_month': invs_month,
-                                                'names_week': names_week, 'means_week': means_week, 'means_to_week': means_to_week, 'shifts_week': shifts_week, 'invnums_week': invnums_week,
+    return render(request, 'main/stats2.html', {#'names': names, 'means': means, 'means_to': means_to, 'shifts': sh, 'invs_all': invs_all,
+                                                #'names_m': names_m, 'means_m': means_m, 'means_m_to': means_m_to, 'shifts_m': sh_m, 'invs_month': invs_month,
+                                                #'names_week': names_week, 'means_week': means_week, 'means_to_week': means_to_week, 'shifts_week': shifts_week, 'invnums_week': invnums_week,
                                                 'queries_ids': queries_ids, 'to_ids': to_ids, 'queries': queries, 'tos': tos,
                                                 'queries_count': queries_count, 'tos_count': tos_count, 'full_plain': full_plain, 'full_plain_to': full_plain_to, 'expected_times': expected_times,
                                                 'to_times': to_times,
                                                 'plain_list': plain_list, 'maintenance_list': maintenance_list, 'expected_time_list': expected_time_list, 'usefull_hours': usefull_hours, 'kpi_list': kpi_list, 'dates': dates,
-                                                'kpi_list_b': kpi_list_b, 'dates_b': dates_b
+                                                'kpi_list_b': kpi_list_b, 'dates_b': dates_b,
+                                                'names_period': names_period, 'means_period': means_period, 'means_to_period': means_to_period, 'invs_period': invs_period,
+                                                'start': s1, 'end': s2
                                                 })
 
 @login_required

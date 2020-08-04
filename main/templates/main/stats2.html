@@ -2,7 +2,7 @@
 
 {% block content %}
 
-
+<!--
 <div id="div1">
     <br>
     <h1 align="center">Простой оборудования <b>за все время</b></h1>
@@ -20,14 +20,39 @@
     <h1 align="center">Простой оборудования <b>за прошлую неделю</b></h1>
     <canvas id="plain_last_week" height="400px"></canvas>
 </div>
+-->
+<br>
+<form action="/stats2" method="post">
+        {% csrf_token %}
+        Начало:
+    <input type="date" id="kpi_a_start" name="kpi_a_start">
+        Конец:
+        <input type="date" id="kpi_a_end" name="kpi_a_end">
+        Шаг:
+        <select name="step">
+            <option value="day">День</option>
+            <option value="week" selected>Неделя</option>
+            <option value="month">месяц</option>
+        </select>
+        <input type="submit" class="btn btn-success btn-info" value="Обновить">
+    </form>
+<br>
+<div id="div_period">
+    <br>
+    <h1 align="center">Простой оборудования <b>за выбранный период</b></h1>
+    {%if start%}
+        <h1 align="center">{{start.0}}/{{start.1}}/{{start.2}} - {{end.0}}/{{end.1}}/{{end.2}}</h1>
+    {%endif%}
+    <canvas id="period_chart" height="500px"></canvas>
+</div>
 
-<h3 align="center">История заявок прошлой недели </h3>
-        <table class="table3">
+<h3 align="center">История заявок </h3>
+{%if start%}
+        <h3 align="center">{{start.0}}/{{start.1}}/{{start.2}} - {{end.0}}/{{end.1}}/{{end.2}}</h3>
+    {%endif%}
+        <table class="table" id="myTable1">
             <thead>
-                <th>
-                    <tr></tr>
-                    <tr class="table_head"><td width="200vw">Время подачи</td><td width="200vw">Время завершения</td><td width="200vw">Оборудование</td><td width="200vw">Статус оборудования</td><td width="200vw">Сообщение</td><td width="200vw">Статус заявки</td><td></td></tr>
-                </th>
+                    <tr class="table_head"><th width="200vw">Время подачи</th><th width="200vw">Время завершения</th><th width="200vw">Оборудование</th><th width="200vw">Статус оборудования</th><th width="200vw">Сообщение</th><th width="200vw">Статус заявки</th><th></th></tr>
             </thead>
             <tbody>
                 {% for i in queries %}
@@ -37,13 +62,13 @@
                 {%endfor%}
             </tbody>
         </table>
-<h3 align="center">История ТО прошлой недели </h3>
-        <table class="table3">
+<h3 align="center">История ТО  </h3>
+{%if start%}
+        <h3 align="center">{{start.0}}/{{start.1}}/{{start.2}} - {{end.0}}/{{end.1}}/{{end.2}}</h3>
+    {%endif%}
+        <table class="table" id="myTable2">
             <thead>
-                <th>
-                    <tr></tr>
-                    <tr class="table_head"><td width="200vw">Время начала</td><td width="200vw">Время завершения</td><td width="200vw">Оборудование</td>><td width="200vw">Статус оборудования</td><td width="200vw">Комментарий</td><td width="200vw">Статус ТО</td><td></td></tr>
-                </th>
+                    <tr class="table_head"><th width="200vw">Время начала</th><th width="200vw">Время завершения</th><th width="200vw">Оборудование</th>><th width="200vw">Статус оборудования</th><th width="200vw">Комментарий</th><th width="200vw">Статус ТО</th><th></th></tr>
             </thead>
             <tbody>
                 {% for i in tos %}
@@ -77,21 +102,7 @@
 <br>
 <br>
 <br>
-<br>
-<form action="/stats2" method="post">
-        {% csrf_token %}
-        Начало:
-    <input type="date" id="kpi_a_start" name="kpi_a_start">
-        Конец:
-        <input type="date" id="kpi_a_end" name="kpi_a_end">
-        Шаг:
-        <select name="step">
-            <option value="day">День</option>
-            <option value="week" selected>Неделя</option>
-            <option value="month">месяц</option>
-        </select>
-        <input type="submit" class="btn btn-success btn-info" value="Обновить">
-    </form>
+
 
 <div id="kpi">
     <br>
@@ -104,19 +115,19 @@
 
 
 
-
-
-
-
-
-
-
 <div id="kpi_b">
     <br>
     <h1 align="center">Коэффицент готовности оборудования <b>категории B</b></h1>
     <canvas id="kpi_b_chart"></canvas>
     <p>K = Время полезной работы / (Время полезной работы + Время вынужденного простоя)</p>
 </div>
+
+
+
+
+
+
+
 
 <script>
 
@@ -457,14 +468,123 @@ var myChart = new Chart(ctx, {
 </script>       # скрипт kpi
 
 <script>
-      $(function () {
-        $("#datetimepicker1").datetimepicker();
-      });
-    </script>
 
-<script>
-      $(function () {
-        $("#datetimepicker2").datetimepicker();
-      });
-    </script>
+var ctx = document.getElementById("period_chart").getContext('2d');
+var myChart = new Chart(ctx, {
+	type: 'bar',
+	data: {
+		labels: [
+		{%for i in names_period%}
+		    "{{i}}",
+		{%endfor%}
+		],
+      datasets: [{
+			label: 'Аварийные заявки',
+			backgroundColor: "#DC143C",
+			data: [
+			{%for i in means_period%}
+			    {{i}},
+			{%endfor%}
+			]
+		}, {
+			label: 'Тех. обслуживание',
+			backgroundColor: "#00BFFF",
+			data: [
+			{%for i in means_to_period%}
+			    {{i}},
+			{%endfor%}
+			]
+		}],
+	},
+options: {
+    tooltips: {
+      displayColors: true,
+      callbacks:{
+        mode: 'x',
+      },
+    },
+    scales: {
+      xAxes: [{
+        stacked: true,
+        gridLines: {
+          display: false,
+        }
+      }],
+      yAxes: [{
+        stacked: true,
+        ticks: {
+          beginAtZero: true,
+        },
+        type: 'linear',
+      }]
+    },
+		responsive: true,
+		maintainAspectRatio: false,
+		legend: { position: 'right' },
+	}
+});
+
+</script>
+
+
+<script>$(document).ready( function () {
+    $('#myTable1').DataTable({
+    "order": [[0, "desc"]],
+    initComplete: function () {
+            this.api().columns([2,3,5]).every( function () {
+                var column = this;
+                var select = $('<select><option value=""></option></select>')
+                    .click( function(e) {
+                        e.stopPropagation();
+                    })
+                    .appendTo( $(column.header()) )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append('<option value="' + d + '">' + d.substr(0,20) + '</option>')
+                } );
+            } );
+        }
+    });
+
+} );
+</script>
+<script>$(document).ready( function () {
+    $('#myTable2').DataTable({
+    "order": [[0, "desc"]],
+    initComplete: function () {
+            this.api().columns([3,5]).every( function () {
+                var column = this;
+                var select = $('<select><option value=""></option></select>')
+                    .click( function(e) {
+                        e.stopPropagation();
+                    })
+                    .appendTo( $(column.header()) )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append('<option value="' + d + '">' + d.substr(0,20) + '</option>')
+                } );
+            } );
+        }
+    });
+
+} );
+</script>
 {% endblock %}
