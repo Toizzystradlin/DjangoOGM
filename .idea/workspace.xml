@@ -219,7 +219,14 @@
       <option name="project" value="LOCAL" />
       <updated>1596440872728</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="красивая статистика 2">
+      <created>1596567871206</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1596567871206</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -229,7 +236,8 @@
     <MESSAGE value="работаю над кпи графиком" />
     <MESSAGE value="смог сделать датпикер" />
     <MESSAGE value="поправил баг в статистике 2" />
-    <option name="LAST_COMMIT_MESSAGE" value="поправил баг в статистике 2" />
+    <MESSAGE value="красивая статистика 2" />
+    <option name="LAST_COMMIT_MESSAGE" value="красивая статистика 2" />
   </component>
   <component name="WindowStateProjectService">
     <state x="552" y="178" key="#Inspections" timestamp="1596441550326">
@@ -240,10 +248,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="552" y="178" width="816" height="729" key="#Intentions/0.0.1920.1040@0.0.1920.1040" timestamp="1596397150404" />
-    <state x="614" y="114" key="CommitChangelistDialog2" timestamp="1596440872059">
+    <state x="614" y="114" key="CommitChangelistDialog2" timestamp="1596567870560">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="614" y="114" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1596440872059" />
+    <state x="614" y="114" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1596567870560" />
     <state x="888" y="352" key="FileChooserDialogImpl" timestamp="1591848022004">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

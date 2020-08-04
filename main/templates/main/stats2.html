@@ -81,14 +81,20 @@
 
 <div>
     <br>
-    <h1 align="center">Аварийные поломки/ТО, количество. Этот месяц</h1>
+    <h1 align="center">Аварийные поломки/ТО, количество.</h1>
+    {%if start%}
+        <h1 align="center">{{start.0}}/{{start.1}}/{{start.2}} - {{end.0}}/{{end.1}}/{{end.2}}</h1>
+    {%endif%}
     <canvas id="PieChart1"></canvas>
 </div>
 
 
 <div>
     <br>
-    <h1 align="center">Аварийные поломки/ТО, часы простоя. Этот месяц</h1>
+    <h1 align="center">Аварийные поломки/ТО, часы простоя.</h1>
+    {%if start%}
+        <h1 align="center">{{start.0}}/{{start.1}}/{{start.2}} - {{end.0}}/{{end.1}}/{{end.2}}</h1>
+    {%endif%}
     <canvas id="PieChart2"></canvas>
 </div>
 

@@ -53,13 +53,15 @@ def queries_and_to():
             pair = (eq_name, duration_to.total_seconds() / 3600, i.expected_time)
             pairs.append(pair)
 
-    return queries_count, tos_count, pairs
+    return pairs
 
 def plain_period(equipment, s1, s2):
     utc = pytz.UTC
     period_start = datetime(year=s1[0], month=s1[1], day=s1[2])
     period_end = datetime(year=s2[0], month=s2[1], day=s2[2])
     pairs = []
+    full_full_duration = timedelta(hours=0)
+    full_full_duration_to = timedelta(hours=0)
     for i1 in equipment:
         stops = Eq_stoptime.objects.filter(eq_id = i1.eq_id)
         full_duration = timedelta(microseconds=0)
@@ -105,6 +107,7 @@ def plain_period(equipment, s1, s2):
                         cancel = True
                     i_date = i_date + timedelta(hours=24)
             full_duration = full_duration + duration
+        full_full_duration = full_full_duration + full_duration
         maints = Maintenance.objects.filter(eq_id = i1.eq_id)
         maints = maints.exclude(status='Новое')
         for maint in maints:
@@ -147,6 +150,7 @@ def plain_period(equipment, s1, s2):
                         cancel = True
                     i_date = i_date + timedelta(hours=24)
             full_duration_to = full_duration_to + duration_to
+        full_full_duration_to = full_full_duration_to + full_duration_to
         sum = full_duration.total_seconds() + full_duration_to.total_seconds()
         pair = (i1.eq_name, full_duration.total_seconds() / 3600, full_duration_to.total_seconds() / 3600, i1.invnum, sum)
         pairs.append(pair)
@@ -166,20 +170,17 @@ def plain_period(equipment, s1, s2):
         means_to.append(j[2])
         #sh.append(j[3])
         invnum.append(j[3])
-    return names, means, means_to, invnum
+    return names, means, means_to, invnum, full_full_duration.total_seconds() / 3600, full_full_duration_to.total_seconds() / 3600
 
-def time_kpi(n, s1='asd', s2='asd', s3='week'):
-    start = datetime(year=2020, month=6, day=8)
-    end = datetime.now().date()
-    step = timedelta(weeks=1)
-    try:
-        start = datetime(year=s1[0], month=s1[1], day=s1[2])
-        end = datetime(year=s2[0], month=s2[1], day=s2[2]).date()
-        if s3 == 'day': step = timedelta(days=1)
-        if s3 == 'week': step = timedelta(weeks=1)
-        if s3 == 'month': step = timedelta(weeks=4)
-    except: pass
-    #start = datetime(year=2020, month=6, day=8)
+def time_kpi(n, s1, s2, s3='week'):
+
+
+    start = datetime(year=s1[0], month=s1[1], day=s1[2])
+    end = datetime(year=s2[0], month=s2[1], day=s2[2]).date()
+    if s3 == 'day': step = timedelta(days=1)
+    if s3 == 'week': step = timedelta(weeks=1)
+    if s3 == 'month': step = timedelta(weeks=4)
+
 
     date = start
     today = datetime.now()
@@ -363,25 +364,34 @@ def period_queries_and_to(s1, s2):
     queries_ids = []
     to_ids = []
     n = Queries.objects.all()
+    n_count = 0
     for i in n:
         if (i.stop_time is not None) and period_end.date() >= i.stop_time.date() >= period_start.date():
             queries_ids.append(i.query_id)
+            n_count += 1
         elif i.query_status == 'В процессе' and i.post_time.date() <= period_end.date():
             queries_ids.append(i.query_id)
+            n_count += 1
         elif i.query_status == 'Приостановлена' and i.post_time.date() <= period_end.date():
             queries_ids.append(i.query_id)
+            n_count += 1
         elif (i.stop_time is not None) and i.stop_time.date() >= period_end.date() >= i.post_time.date():
             queries_ids.append(i.query_id)
+            n_count += 1
 
     m = Maintenance.objects.all()
+    m_count = 0
     for i in m:
         if i.end_time is not None and period_end.date() >= i.end_time.date() >= period_start.date():
             to_ids.append(i.id)
+            m_count += 1
         elif i.status == 'В процессе' and i.start_time.date() <= period_end.date():
             to_ids.append(i.id)
+            m_count += 1
         elif i.end_time is not None and i.start_time.date() <= period_end.date() <= i.end_time.date():
             to_ids.append(i.id)
-    return queries_ids, to_ids
+            m_count += 1
+    return queries_ids, to_ids, n_count, m_count
 
 
 
