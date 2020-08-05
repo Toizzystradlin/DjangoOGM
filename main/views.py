@@ -514,7 +514,7 @@ def stats2(request):
     last_week_end = last_week_start + timedelta(days=6)
     s1 = [int(last_week_start.year), int(last_week_start.month), int(last_week_start.day)]
     s2 = [int(last_week_end.year), int(last_week_end.month), int(last_week_end.day)]
-    to_times = funcs.queries_and_to()
+    to_times = funcs.to(s1, s2)
     queries_ids, to_ids, queries_count, tos_count = funcs.period_queries_and_to(s1, s2)
     equipment = Equipment.objects.all()
     names_period, means_period, means_to_period, invs_period, full_plain, full_plain_to = funcs.plain_period(equipment, s1, s2)
@@ -549,6 +549,7 @@ def stats2(request):
             equipment = Equipment.objects.all()
             names_period, means_period, means_to_period, invs_period, full_plain, full_plain_to = funcs.plain_period(equipment, s1, s2)
             queries_ids, to_ids, queries_count, tos_count = funcs.period_queries_and_to(s1, s2)
+            to_times = funcs.to(s1, s2)
         except: pass
     queries = []
     tos = []

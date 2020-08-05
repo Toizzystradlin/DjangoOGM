@@ -9,50 +9,71 @@ import xlwt
 from django.http import HttpResponse
 from django.db.models import Q
 
-def queries_and_to():
-    today = datetime.today()
-    day = today.day
-    delta = timedelta(days=day)
-    month_start = today - delta
-    this_month = today.month
+def to(s1, s2):
     utc = pytz.UTC
-    month_start = utc.localize(month_start)
-    queries = Queries.objects.all()
-    m = Maintenance.objects.filter(status='Завершено')
-    queries_count = 0
-    tos_count = 0
-    duration_to = timedelta(microseconds=0)
+    period_start = datetime(year=s1[0], month=s1[1], day=s1[2])
+    period_end = datetime(year=s2[0], month=s2[1], day=s2[2])
+    period_start = utc.localize(period_start)
+    period_end = utc.localize(period_end)
     pairs = []
-    for i in queries:
-        if i.post_time > month_start:
-            queries_count = queries_count + 1
-    for i in m:
-        eq = Equipment.objects.get(eq_id=i.eq_id)
-        eq_name = eq.eq_name
-        if i.start_time.month == this_month:
-            if i.start_time > month_start:
-                tos_count += 1
-                if i.start_time.date() == i.end_time.date():
-                    duration_to = i.end_time - i.start_time
-                else:
-                    duration_to = i.shift_end - i.start_time
-                    stop = False
-                    i_date = i.start_time + timedelta(hours=24)
-                    while stop == False:
-                        if i_date.date() == i.end_time.date():
-                            j = i.end_time - i.shift_start
-                        else:
-                            if datetime.isoweekday(i_date.date()) < 6:
-                                j = timedelta(hours=8)
-                            else:
-                                j = timedelta(seconds=0)
-                        duration_to = duration_to + j
-                        if i_date.date() == i.end_time.date():
-                            stop = True
-                        i_date = i_date + timedelta(hours=24)
-            pair = (eq_name, duration_to.total_seconds() / 3600, i.expected_time)
-            pairs.append(pair)
 
+    maints = Maintenance.objects.all()
+    maints = maints.exclude(status='Новое')
+    for maint in maints:
+        maint.shift_start = datetime(year=maint.end_time.year, month=maint.end_time.month, day=maint.end_time.day, hour=7)
+        maint.shift_end = datetime(year=maint.start_time.year, month=maint.start_time.month, day=maint.start_time.day, hour=15)
+        maint.save()
+
+    maints = Maintenance.objects.all()
+    maints = maints.exclude(status='Новое')
+    for maint in maints:
+        duration_to = timedelta(microseconds=0)
+        eq = Equipment.objects.get(eq_id=maint.eq_id)
+        eq_name = eq.eq_name
+        if maint.end_time is not None:
+            end_time = maint.end_time
+        else:
+            end_time = utc.localize(datetime.now())
+        if (maint.start_time.date() == end_time.date()) and (
+                period_start.date() <= maint.start_time.date() <= period_end.date()):
+            duration_to = end_time - maint.start_time
+            pair = (eq_name, duration_to.total_seconds() / 3600, maint.expected_time)
+            pairs.append(pair)
+        elif period_start.date() <= maint.start_time.date() <= period_end.date():
+            duration_to = maint.shift_end - maint.start_time
+            cancel = False
+            i_date = maint.start_time + timedelta(hours=24)
+            while cancel == False:
+                if (i_date.date() == end_time.date()):
+                    j = end_time - maint.shift_start
+                else:
+                    if datetime.isoweekday(i_date.date()) < 6:
+                        j = timedelta(hours=8)
+                    else:
+                        j = timedelta(seconds=0)
+                duration_to = duration_to + j
+                if (i_date.date() == end_time.date()) or (i_date.date() >= period_end.date()):
+                    cancel = True
+                i_date = i_date + timedelta(hours=24)
+            pair = (eq_name, duration_to.total_seconds() / 3600, maint.expected_time)
+            pairs.append(pair)
+        elif (maint.start_time.date() < period_start.date()) and (end_time.date() >= period_start.date()):
+            cancel = False
+            i_date = period_start
+            while cancel == False:
+                if (i_date.date() == end_time.date()):
+                    j = end_time - maint.shift_start
+                else:
+                    if datetime.isoweekday(i_date.date()) < 6:
+                        j = timedelta(hours=8)
+                    else:
+                        j = timedelta(seconds=0)
+                duration_to = duration_to + j
+                if (i_date.date() == end_time.date()) or (i_date.date() >= period_end.date()):
+                    cancel = True
+                i_date = i_date + timedelta(hours=24)
+            pair = (eq_name, duration_to.total_seconds() / 3600, maint.expected_time)
+            pairs.append(pair)
     return pairs
 
 def plain_period(equipment, s1, s2):
@@ -356,11 +377,6 @@ def period_queries_and_to(s1, s2):
         pass
     period_start = utc.localize(period_start)
     period_end = utc.localize(period_end)
-    #today = datetime.today()
-    #weekday = today.weekday()
-    #start_delta = timedelta(days=weekday, weeks=1)
-    #last_week_start = today - start_delta - timedelta(days=1)
-    #last_week_end = last_week_start + timedelta(days=4)
     queries_ids = []
     to_ids = []
     n = Queries.objects.all()
