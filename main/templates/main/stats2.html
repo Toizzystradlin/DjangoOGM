@@ -28,11 +28,21 @@
     <input type="date" id="kpi_a_start" name="kpi_a_start">
         Конец:
         <input type="date" id="kpi_a_end" name="kpi_a_end">
-        Шаг:
+        Шаг коэффицента:
         <select name="step">
-            <option value="day">День</option>
-            <option value="week" selected>Неделя</option>
+            <option value="day" selected>День</option>
+            <option value="week">Неделя</option>
             <option value="month">месяц</option>
+        </select>
+        Участок:
+        <select name="area">
+            <option value="Все участки" selected>Все участки</option>
+            <option value="Механической обработки">Механический</option>
+            <option value="Слесарный">Слесарный</option>
+            <option value="Сварочный">Сварочный</option>
+            <option value="Малярный">Малярный</option>
+            <option value="Крупноузловой сборки">Крупноузловой сборки</option>
+            <option value="Инструментальный">Инструментальный</option>
         </select>
         <input type="submit" class="btn btn-success btn-info" value="Обновить">
     </form>
@@ -40,13 +50,16 @@
 <div id="div_period">
     <br>
     <h1 align="center">Простой оборудования <b>за выбранный период</b></h1>
+    <h1 align="center"><b>Участок: {{area_title}}</b></h1>
     {%if start%}
         <h1 align="center">{{start.0}}/{{start.1}}/{{start.2}} - {{end.0}}/{{end.1}}/{{end.2}}</h1>
     {%endif%}
     <canvas id="period_chart" height="500px"></canvas>
 </div>
+<br>
+<br>
+<h1 align="center">История заявок <b>Участок: {{area_title}}</b></h1>
 
-<h3 align="center">История заявок </h3>
 {%if start%}
         <h3 align="center">{{start.0}}/{{start.1}}/{{start.2}} - {{end.0}}/{{end.1}}/{{end.2}}</h3>
     {%endif%}
@@ -62,7 +75,9 @@
                 {%endfor%}
             </tbody>
         </table>
-<h3 align="center">История ТО  </h3>
+<br>
+<br>
+<h1 align="center">История ТО  <b>Участок: {{area_title}}</b></h1>
 {%if start%}
         <h3 align="center">{{start.0}}/{{start.1}}/{{start.2}} - {{end.0}}/{{end.1}}/{{end.2}}</h3>
     {%endif%}
@@ -78,31 +93,37 @@
                 {%endfor%}
             </tbody>
         </table>
-
+<br>
+<br>
 <div>
     <br>
-    <h1 align="center">Аварийные поломки/ТО, количество.</h1>
+    <h1 align="center">Аварийные поломки/ТО, количество. <b>Участок: {{area_title}}</b></h1>
     {%if start%}
         <h1 align="center">{{start.0}}/{{start.1}}/{{start.2}} - {{end.0}}/{{end.1}}/{{end.2}}</h1>
     {%endif%}
     <canvas id="PieChart1"></canvas>
 </div>
-
+<br>
+<br>
 
 <div>
     <br>
-    <h1 align="center">Аварийные поломки/ТО, часы простоя.</h1>
+    <h1 align="center">Аварийные поломки/ТО, часы простоя. <b>Участок: {{area_title}}</b></h1>
     {%if start%}
         <h1 align="center">{{start.0}}/{{start.1}}/{{start.2}} - {{end.0}}/{{end.1}}/{{end.2}}</h1>
     {%endif%}
     <canvas id="PieChart2"></canvas>
 </div>
-
+<br>
+<br>
 
 
 <div id="div_tos">
     <br>
-    <h1 align="center">ТО <b>за месяц</b></h1>
+    <h1 align="center">Сравнение ожидаемого и реального времени ТО. <b>Участок: {{area_title}}</b></h1>
+    {%if start%}
+        <h1 align="center">{{start.0}}/{{start.1}}/{{start.2}} - {{end.0}}/{{end.1}}/{{end.2}}</h1>
+    {%endif%}
     <canvas id="tos" height="500px"></canvas>
 </div>
 <br>

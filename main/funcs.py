@@ -9,19 +9,20 @@ import xlwt
 from django.http import HttpResponse
 from django.db.models import Q
 
-def to(s1, s2):
+def to(area, s1, s2):
     utc = pytz.UTC
     period_start = datetime(year=s1[0], month=s1[1], day=s1[2])
     period_end = datetime(year=s2[0], month=s2[1], day=s2[2])
     period_start = utc.localize(period_start)
     period_end = utc.localize(period_end)
     pairs = []
-
     maints = Maintenance.objects.all()
     maints = maints.exclude(status='Новое')
     for maint in maints:
-        maint.shift_start = datetime(year=maint.end_time.year, month=maint.end_time.month, day=maint.end_time.day, hour=7)
-        maint.shift_end = datetime(year=maint.start_time.year, month=maint.start_time.month, day=maint.start_time.day, hour=15)
+        maint.shift_start = datetime(year=maint.end_time.year, month=maint.end_time.month, day=maint.end_time.day,
+                                     hour=7)
+        maint.shift_end = datetime(year=maint.start_time.year, month=maint.start_time.month, day=maint.start_time.day,
+                                   hour=15)
         maint.save()
 
     maints = Maintenance.objects.all()
@@ -29,51 +30,54 @@ def to(s1, s2):
     for maint in maints:
         duration_to = timedelta(microseconds=0)
         eq = Equipment.objects.get(eq_id=maint.eq_id)
-        eq_name = eq.eq_name
-        if maint.end_time is not None:
-            end_time = maint.end_time
-        else:
-            end_time = utc.localize(datetime.now())
-        if (maint.start_time.date() == end_time.date()) and (
-                period_start.date() <= maint.start_time.date() <= period_end.date()):
-            duration_to = end_time - maint.start_time
-            pair = (eq_name, duration_to.total_seconds() / 3600, maint.expected_time)
-            pairs.append(pair)
-        elif period_start.date() <= maint.start_time.date() <= period_end.date():
-            duration_to = maint.shift_end - maint.start_time
-            cancel = False
-            i_date = maint.start_time + timedelta(hours=24)
-            while cancel == False:
-                if (i_date.date() == end_time.date()):
-                    j = end_time - maint.shift_start
-                else:
-                    if datetime.isoweekday(i_date.date()) < 6:
-                        j = timedelta(hours=8)
+        if eq.area != area and area != 'Все участки':
+            pass
+        elif eq.area == area or area == 'Все участки':
+            eq_name = eq.eq_name
+            if maint.end_time is not None:
+                end_time = maint.end_time
+            else:
+                end_time = utc.localize(datetime.now())
+            if (maint.start_time.date() == end_time.date()) and (
+                    period_start.date() <= maint.start_time.date() <= period_end.date()):
+                duration_to = end_time - maint.start_time
+                pair = (eq_name, duration_to.total_seconds() / 3600, maint.expected_time)
+                pairs.append(pair)
+            elif period_start.date() <= maint.start_time.date() <= period_end.date():
+                duration_to = maint.shift_end - maint.start_time
+                cancel = False
+                i_date = maint.start_time + timedelta(hours=24)
+                while cancel == False:
+                    if (i_date.date() == end_time.date()):
+                        j = end_time - maint.shift_start
                     else:
-                        j = timedelta(seconds=0)
-                duration_to = duration_to + j
-                if (i_date.date() == end_time.date()) or (i_date.date() >= period_end.date()):
-                    cancel = True
-                i_date = i_date + timedelta(hours=24)
-            pair = (eq_name, duration_to.total_seconds() / 3600, maint.expected_time)
-            pairs.append(pair)
-        elif (maint.start_time.date() < period_start.date()) and (end_time.date() >= period_start.date()):
-            cancel = False
-            i_date = period_start
-            while cancel == False:
-                if (i_date.date() == end_time.date()):
-                    j = end_time - maint.shift_start
-                else:
-                    if datetime.isoweekday(i_date.date()) < 6:
-                        j = timedelta(hours=8)
+                        if datetime.isoweekday(i_date.date()) < 6:
+                            j = timedelta(hours=8)
+                        else:
+                            j = timedelta(seconds=0)
+                    duration_to = duration_to + j
+                    if (i_date.date() == end_time.date()) or (i_date.date() >= period_end.date()):
+                        cancel = True
+                    i_date = i_date + timedelta(hours=24)
+                pair = (eq_name, duration_to.total_seconds() / 3600, maint.expected_time)
+                pairs.append(pair)
+            elif (maint.start_time.date() < period_start.date()) and (end_time.date() >= period_start.date()):
+                cancel = False
+                i_date = period_start
+                while cancel == False:
+                    if (i_date.date() == end_time.date()):
+                        j = end_time - maint.shift_start
                     else:
-                        j = timedelta(seconds=0)
-                duration_to = duration_to + j
-                if (i_date.date() == end_time.date()) or (i_date.date() >= period_end.date()):
-                    cancel = True
-                i_date = i_date + timedelta(hours=24)
-            pair = (eq_name, duration_to.total_seconds() / 3600, maint.expected_time)
-            pairs.append(pair)
+                        if datetime.isoweekday(i_date.date()) < 6:
+                            j = timedelta(hours=8)
+                        else:
+                            j = timedelta(seconds=0)
+                    duration_to = duration_to + j
+                    if (i_date.date() == end_time.date()) or (i_date.date() >= period_end.date()):
+                        cancel = True
+                    i_date = i_date + timedelta(hours=24)
+                pair = (eq_name, duration_to.total_seconds() / 3600, maint.expected_time)
+                pairs.append(pair)
     return pairs
 
 def plain_period(equipment, s1, s2):
@@ -193,83 +197,63 @@ def plain_period(equipment, s1, s2):
         invnum.append(j[3])
     return names, means, means_to, invnum, full_full_duration.total_seconds() / 3600, full_full_duration_to.total_seconds() / 3600
 
-def time_kpi(n, s1, s2, s3='week'):
+def time_kpi(n, s1, s2, s3='day'):
     start = datetime(year=s1[0], month=s1[1], day=s1[2])
-    end = datetime(year=s2[0], month=s2[1], day=s2[2]).date()
+    end = datetime(year=s2[0], month=s2[1], day=s2[2])
     if s3 == 'day': step = timedelta(days=1)
     if s3 == 'week': step = timedelta(weeks=1)
     if s3 == 'month': step = timedelta(weeks=4)
     date = start
     utc = pytz.UTC
     date = utc.localize(date)
-    x = utc.localize(datetime.now())
     n_count = len(n)
     plain_list = []
-    while date.date() < end:
+    while date.date() <= end.date():
         full_duration = timedelta(microseconds=0)
         for i1 in n:
             duration = timedelta(microseconds=0)
             stops = Eq_stoptime.objects.filter(eq_id=i1.eq_id)
             for stop in stops:
-                if (stop.start_time != None) and (stop.stop_time >= date) and (stop.stop_time <= date + step):
-                    if stop.stop_time.date() == stop.start_time.date():
-                        duration = stop.start_time - stop.stop_time
+                if stop.start_time is not None:
+                    start_time = stop.start_time
+                else:
+                    start_time = utc.localize(datetime.now())
+                if (stop.stop_time >= date) and (stop.stop_time <= date + step):
+                    if stop.stop_time.date() == start_time.date():
+                        duration = start_time - stop.stop_time
                     else:
                         duration = stop.shift_end - stop.stop_time
                         cancel = False
                         i_date = stop.stop_time + timedelta(hours=24)
                         while cancel == False:
-                            if (i_date.date() == stop.start_time.date()):
-                                j = stop.start_time - stop.shift_start
+                            if (i_date.date() == start_time.date()):
+                                j = start_time - stop.shift_start
                             else:
                                 if datetime.isoweekday(i_date.date()) < 6:
                                     j = timedelta(hours=8)
                                 else:
                                     j = timedelta(seconds=0)
                             duration = duration + j
-                            if (i_date.date() == stop.start_time.date()) or (i_date.date() >= date.date() + step):
+                            if (i_date.date() == start_time.date()) or (i_date.date() > date.date() + step):
                                 cancel = True
                             i_date = i_date + timedelta(hours=24)
-                elif (stop.start_time != None) and (stop.stop_time <= date) and (stop.start_time >= date + step):
+                elif (stop.stop_time < date) and (start_time >= date + step):
                     duration = timedelta(hours=40)
-                elif (stop.start_time != None) and (stop.stop_time < date) and (stop.start_time >= date) and (stop.start_time <= date + step):
+                elif (stop.stop_time < date) and (start_time >= date) and (start_time <= date + step):
                     cancel = False
                     i_date = date
                     while cancel == False:
-                        if (i_date.date() == stop.start_time.date()):
-                            j = stop.start_time - stop.shift_start
+                        if (i_date.date() == start_time.date()):
+                            j = start_time - stop.shift_start
                         else:
                             if datetime.isoweekday(i_date.date()) < 6:
                                 j = timedelta(hours=8)
                             else:
                                 j = timedelta(seconds=0)
                         duration = duration + j
-                        if (i_date.date() == stop.start_time.date()) or (i_date.date() >= date.date() + step):
+                        if (i_date.date() == start_time.date()) or (i_date.date() > date.date() + step):
                             cancel = True
                         i_date = i_date + timedelta(hours=24)
-                elif (stop.start_time == None):
-                    if (stop.stop_time >= date) and (stop.stop_time <= date + step):
-                        if stop.stop_time.date() == datetime.now().date():
-                            duration = x - stop.stop_time
-                        else:
-                            duration = stop.shift_end - stop.stop_time
-                            cancel = False
-                            i_date = stop.stop_time + timedelta(hours=24)
-                            while cancel == False:
-                                if (i_date.date() == datetime.now().date()):
-
-                                    j = x - stop.shift_start
-                                else:
-                                    if datetime.isoweekday(i_date.date()) < 6:
-                                        j = timedelta(hours=8)
-                                    else:
-                                        j = timedelta(seconds=0)
-                                duration = duration + j
-                                if (i_date.date() == datetime.now().date()) or (i_date.date() >= date.date() + step):
-                                    cancel = True
-                                i_date = i_date + timedelta(hours=24)
-
-
                 full_duration = full_duration + duration
         plain_list.append(full_duration.total_seconds() / 3600)
         date = date + step
@@ -280,32 +264,53 @@ def time_kpi(n, s1, s2, s3='week'):
     maintenance_list = []
     expected_time_list = []
     dates = []
-    while date.date() < end:
+    while date.date() <= end.date():
         full_duration_to = timedelta(microseconds=0)
         for j1 in n:
             duration_to = timedelta(microseconds=0)
             maints = Maintenance.objects.filter(eq_id=j1.eq_id)
             expected_time = 0
             for maint in maints:
+                if maint.end_time is not None:
+                    end_time = maint.end_time
+                else:
+                    end_time = utc.localize(datetime.now())
                 if (maint.start_time >= date) and (maint.start_time <= date + step):
-                    if (maint.end_time != None) and (maint.start_time.date() == maint.end_time.date()):
-                        duration_to = maint.end_time - maint.start_time
-                    elif maint.end_time != None:
+                    if (maint.start_time.date() == end_time.date()):
+                        duration_to = end_time - maint.start_time
+                    else:
                         duration_to = maint.shift_end - maint.start_time
                         cancel = False
                         i_date = maint.start_time + timedelta(hours=24)
                         while cancel == False:
-                            if (i_date.date() == maint.end_time.date()):
-                                j = maint.end_time - maint.shift_start
+                            if (i_date.date() == end_time.date()):
+                                j = end_time - maint.shift_start
                             else:
                                 if datetime.isoweekday(i_date.date()) < 6:
                                     j = timedelta(hours=8)
                                 else:
                                     j = timedelta(seconds=0)
                             duration_to = duration_to + j
-                            if (i_date.date() == maint.end_time.date()) or (i_date.date() >= date.date() + step):
+                            if (i_date.date() == end_time.date()) or (i_date.date() > date.date() + step):
                                 cancel = True
                             i_date = i_date + timedelta(hours=24)
+                elif (date > maint.start_time) and (end_time >= date + step):
+                    duration_to = timedelta(hours=40)
+                elif (maint.start_time < date) and (end_time >= date) and (end_time <= date + step):
+                    cancel = False
+                    i_date = date
+                    while cancel == False:
+                        if (i_date.date() == end_time.date()):
+                            j = end_time - maint.shift_start
+                        else:
+                            if datetime.isoweekday(i_date.date()) < 6:
+                                j = timedelta(hours=8)
+                            else:
+                                j = timedelta(seconds=0)
+                        duration_to = duration_to + j
+                        if (i_date.date() == end_time.date()) or (i_date.date() > date.date() + step):
+                            cancel = True
+                        i_date = i_date + timedelta(hours=24)
                 full_duration_to = full_duration_to + duration_to
                 expected_time = expected_time + maint.expected_time
         maintenance_list.append(full_duration_to.total_seconds() / 3600)
@@ -358,7 +363,7 @@ def multiple_doers(doers, query_id):
         q.multiple = 0
         q.save()
 
-def period_queries_and_to(s1, s2):
+def period_queries_and_to(area, s1, s2):
     utc = pytz.UTC
 
     try:
@@ -373,31 +378,39 @@ def period_queries_and_to(s1, s2):
     n = Queries.objects.all()
     n_count = 0
     for i in n:
-        if (i.stop_time is not None) and period_end.date() >= i.stop_time.date() >= period_start.date():
-            queries_ids.append(i.query_id)
-            n_count += 1
-        elif i.query_status == 'В процессе' and i.post_time.date() <= period_end.date():
-            queries_ids.append(i.query_id)
-            n_count += 1
-        elif i.query_status == 'Приостановлена' and i.post_time.date() <= period_end.date():
-            queries_ids.append(i.query_id)
-            n_count += 1
-        elif (i.stop_time is not None) and i.stop_time.date() >= period_end.date() >= i.post_time.date():
-            queries_ids.append(i.query_id)
-            n_count += 1
+        eq = Equipment.objects.get(eq_id=i.eq_id)
+        if eq.area != area and area != 'Все участки':
+            pass
+        elif eq.area == area or area == 'Все участки':
+            if (i.stop_time is not None) and period_end.date() >= i.stop_time.date() >= period_start.date():
+                queries_ids.append(i.query_id)
+                n_count += 1
+            elif i.query_status == 'В процессе' and i.post_time.date() <= period_end.date():
+                queries_ids.append(i.query_id)
+                n_count += 1
+            elif i.query_status == 'Приостановлена' and i.post_time.date() <= period_end.date():
+                queries_ids.append(i.query_id)
+                n_count += 1
+            elif (i.stop_time is not None) and i.stop_time.date() >= period_end.date() >= i.post_time.date():
+                queries_ids.append(i.query_id)
+                n_count += 1
 
     m = Maintenance.objects.all()
     m_count = 0
     for i in m:
-        if i.end_time is not None and period_end.date() >= i.end_time.date() >= period_start.date():
-            to_ids.append(i.id)
-            m_count += 1
-        elif i.status == 'В процессе' and i.start_time.date() <= period_end.date():
-            to_ids.append(i.id)
-            m_count += 1
-        elif i.end_time is not None and i.start_time.date() <= period_end.date() <= i.end_time.date():
-            to_ids.append(i.id)
-            m_count += 1
+        eq = Equipment.objects.get(eq_id=i.eq_id)
+        if eq.area != area and area != 'Все участки':
+            pass
+        elif eq.area == area or area == 'Все участки':
+            if i.end_time is not None and period_end.date() >= i.end_time.date() >= period_start.date():
+                to_ids.append(i.id)
+                m_count += 1
+            elif i.status == 'В процессе' and i.start_time.date() <= period_end.date():
+                to_ids.append(i.id)
+                m_count += 1
+            elif i.end_time is not None and i.start_time.date() <= period_end.date() <= i.end_time.date():
+                to_ids.append(i.id)
+                m_count += 1
     return queries_ids, to_ids, n_count, m_count
 
 

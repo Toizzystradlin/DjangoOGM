@@ -506,6 +506,8 @@ def stats(request):
                                                    })
 
 def stats2(request):
+    equipment = Equipment.objects.all()
+    area_title = 'Все участки'
     utc = pytz.UTC
     today = datetime.today()
     weekday = today.weekday()
@@ -514,9 +516,8 @@ def stats2(request):
     last_week_end = last_week_start + timedelta(days=6)
     s1 = [int(last_week_start.year), int(last_week_start.month), int(last_week_start.day)]
     s2 = [int(last_week_end.year), int(last_week_end.month), int(last_week_end.day)]
-    to_times = funcs.to(s1, s2)
-    queries_ids, to_ids, queries_count, tos_count = funcs.period_queries_and_to(s1, s2)
-    equipment = Equipment.objects.all()
+    to_times = funcs.to('Все участки', s1, s2)
+    queries_ids, to_ids, queries_count, tos_count = funcs.period_queries_and_to('Все участки', s1, s2)
     names_period, means_period, means_to_period, invs_period, full_plain, full_plain_to = funcs.plain_period(equipment, s1, s2)
 
     equipment = Equipment.objects.filter(category='A')
@@ -546,10 +547,14 @@ def stats2(request):
             equipment = Equipment.objects.filter(category='B')
             plain_list_b, maintenance_list_b, expected_time_list_b, usefull_hours_b, kpi_list_b, dates_b = funcs.time_kpi(
                 equipment, s1, s2, s3)
-            equipment = Equipment.objects.all()
+            area = request.POST.get('area')
+            equipment = Equipment.objects.filter(area=area)
+            if area == 'Все участки':
+                equipment = Equipment.objects.all()
+            area_title = area
             names_period, means_period, means_to_period, invs_period, full_plain, full_plain_to = funcs.plain_period(equipment, s1, s2)
-            queries_ids, to_ids, queries_count, tos_count = funcs.period_queries_and_to(s1, s2)
-            to_times = funcs.to(s1, s2)
+            queries_ids, to_ids, queries_count, tos_count = funcs.period_queries_and_to(area, s1, s2)
+            to_times = funcs.to(area, s1, s2)
         except: pass
     queries = []
     tos = []
@@ -573,7 +578,8 @@ def stats2(request):
                                                 'kpi_list_b': kpi_list_b, 'dates_b': dates_b,
                                                 'names_period': names_period, 'means_period': means_period, 'means_to_period': means_to_period, 'invs_period': invs_period,
                                                 'start': s1, 'end': s2,
-                                                'full_plain': full_plain, 'full_plain_to':full_plain_to
+                                                'full_plain': full_plain, 'full_plain_to': full_plain_to,
+                                                'area_title': area_title
                                                 })
 
 @login_required

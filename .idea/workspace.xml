@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="56de9908-72e5-4632-b812-e4a4cf45ac64" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/funcs.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/funcs.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/templates/main/stats2.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/stats2.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -237,7 +240,14 @@
       <option name="project" value="LOCAL" />
       <updated>1596632981408</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="теперь выбор даты распространяется на все графики статистики 2">
+      <created>1596633349354</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1596633349354</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -260,10 +270,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="552" y="178" width="816" height="729" key="#Intentions/0.0.1920.1040@0.0.1920.1040" timestamp="1596397150404" />
-    <state x="614" y="114" key="CommitChangelistDialog2" timestamp="1596632980762">
+    <state x="614" y="114" key="CommitChangelistDialog2" timestamp="1596633348807">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="614" y="114" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1596632980762" />
+    <state x="614" y="114" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1596633348807" />
     <state x="888" y="352" key="FileChooserDialogImpl" timestamp="1591848022004">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
