@@ -194,23 +194,17 @@ def plain_period(equipment, s1, s2):
     return names, means, means_to, invnum, full_full_duration.total_seconds() / 3600, full_full_duration_to.total_seconds() / 3600
 
 def time_kpi(n, s1, s2, s3='week'):
-
-
     start = datetime(year=s1[0], month=s1[1], day=s1[2])
     end = datetime(year=s2[0], month=s2[1], day=s2[2]).date()
     if s3 == 'day': step = timedelta(days=1)
     if s3 == 'week': step = timedelta(weeks=1)
     if s3 == 'month': step = timedelta(weeks=4)
-
-
     date = start
-    today = datetime.now()
     utc = pytz.UTC
     date = utc.localize(date)
     x = utc.localize(datetime.now())
     n_count = len(n)
     plain_list = []
-    #while date.date() < today.date():
     while date.date() < end:
         full_duration = timedelta(microseconds=0)
         for i1 in n:
@@ -281,7 +275,6 @@ def time_kpi(n, s1, s2, s3='week'):
         date = date + step
 
     date = start
-    today = datetime.now()
     utc = pytz.UTC
     date = utc.localize(date)
     maintenance_list = []
@@ -322,9 +315,7 @@ def time_kpi(n, s1, s2, s3='week'):
 
     kpi_list = []
     for i in range(len(plain_list)):
-
         mean = ((n_count * 40 - expected_time_list[i]) - plain_list[i] - (maintenance_list[i] - expected_time_list[i])) / (n_count * 40 - expected_time_list[i])
-
         kpi_list.append(round(mean, 4))
 
     return plain_list, maintenance_list, expected_time_list, n_count * 40, kpi_list, dates
@@ -411,7 +402,7 @@ def period_queries_and_to(s1, s2):
 
 
 
-
+#ниже начинаются старые функции, возможно они еще есть в статистике 1
 
 
 def top10_all_lastweek(equipment):
