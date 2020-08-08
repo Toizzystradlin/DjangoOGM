@@ -521,9 +521,9 @@ def stats2(request):
     names_period, means_period, means_to_period, invs_period, full_plain, full_plain_to = funcs.plain_period(equipment, s1, s2)
 
     equipment = Equipment.objects.filter(category='A')
-    plain_list, maintenance_list, expected_time_list, usefull_hours, kpi_list, dates = funcs.time_kpi(equipment, s1, s2)
+    plain_list, maintenance_list, expected_time_list, usefull_hours, kpi_list, dates, kpi_pairs_a = funcs.time_kpi(equipment, s1, s2)
     equipment = Equipment.objects.filter(category='B')
-    plain_list_b, maintenance_list_b, expected_time_list_b, usefull_hours_b, kpi_list_b, dates_b = funcs.time_kpi(equipment, s1, s2)
+    plain_list_b, maintenance_list_b, expected_time_list_b, usefull_hours_b, kpi_list_b, dates_b, kpi_pairs_b = funcs.time_kpi(equipment, s1, s2)
 
     if request.method == 'POST':
         try:
@@ -542,10 +542,10 @@ def stats2(request):
             s2 = [year_end, month_end, day_end]
             s3 = request.POST.get('step')
             equipment = Equipment.objects.filter(category='A')
-            plain_list, maintenance_list, expected_time_list, usefull_hours, kpi_list, dates = funcs.time_kpi(
+            plain_list, maintenance_list, expected_time_list, usefull_hours, kpi_list, dates, kpi_pairs_a = funcs.time_kpi(
                 equipment, s1, s2, s3)
             equipment = Equipment.objects.filter(category='B')
-            plain_list_b, maintenance_list_b, expected_time_list_b, usefull_hours_b, kpi_list_b, dates_b = funcs.time_kpi(
+            plain_list_b, maintenance_list_b, expected_time_list_b, usefull_hours_b, kpi_list_b, dates_b, kpi_pairs_b = funcs.time_kpi(
                 equipment, s1, s2, s3)
             area = request.POST.get('area')
             equipment = Equipment.objects.filter(area=area)

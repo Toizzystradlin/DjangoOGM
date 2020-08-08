@@ -247,7 +247,14 @@
       <option name="project" value="LOCAL" />
       <updated>1596633349354</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="теперь выбор даты распространяется на все графики статистики 2">
+      <created>1596657482150</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1596657482150</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -270,10 +277,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="552" y="178" width="816" height="729" key="#Intentions/0.0.1920.1040@0.0.1920.1040" timestamp="1596397150404" />
-    <state x="614" y="114" key="CommitChangelistDialog2" timestamp="1596633348807">
+    <state x="614" y="114" key="CommitChangelistDialog2" timestamp="1596657481605">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="614" y="114" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1596633348807" />
+    <state x="614" y="114" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1596657481605" />
     <state x="888" y="352" key="FileChooserDialogImpl" timestamp="1591848022004">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -298,13 +305,9 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="388" y="191" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1595353799374" />
-    <state x="599" y="463" width="607" height="351" key="com.intellij.ide.util.TipDialog" timestamp="1596601354369">
+    <state x="599" y="463" width="607" height="351" key="com.intellij.ide.util.TipDialog" timestamp="1596871856123">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="599" y="463" width="607" height="351" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1596601354369" />
-    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1588105775378">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1588105775378" />
+    <state x="599" y="463" width="607" height="351" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1596871856123" />
   </component>
 </project>

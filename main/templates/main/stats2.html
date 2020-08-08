@@ -52,7 +52,7 @@
     <h1 align="center">Простой оборудования <b>за выбранный период</b></h1>
     <h1 align="center"><b>Участок: {{area_title}}</b></h1>
     {%if start%}
-        <h1 align="center">{{start.0}}/{{start.1}}/{{start.2}} - {{end.0}}/{{end.1}}/{{end.2}}</h1>
+        <h1 align="center">{{start.2}}/{{start.1}}/{{start.0}} - {{end.2}}/{{end.1}}/{{end.0}}</h1>
     {%endif%}
     <canvas id="period_chart" height="500px"></canvas>
 </div>
@@ -61,7 +61,7 @@
 <h1 align="center">История заявок <b>Участок: {{area_title}}</b></h1>
 
 {%if start%}
-        <h3 align="center">{{start.0}}/{{start.1}}/{{start.2}} - {{end.0}}/{{end.1}}/{{end.2}}</h3>
+        <h3 align="center">{{start.2}}/{{start.1}}/{{start.0}} - {{end.2}}/{{end.1}}/{{end.0}}</h3>
     {%endif%}
         <table class="table" id="myTable1">
             <thead>
@@ -79,7 +79,7 @@
 <br>
 <h1 align="center">История ТО  <b>Участок: {{area_title}}</b></h1>
 {%if start%}
-        <h3 align="center">{{start.0}}/{{start.1}}/{{start.2}} - {{end.0}}/{{end.1}}/{{end.2}}</h3>
+        <h3 align="center">{{start.2}}/{{start.1}}/{{start.0}} - {{end.2}}/{{end.1}}/{{end.0}}</h3>
     {%endif%}
         <table class="table" id="myTable2">
             <thead>
@@ -99,7 +99,7 @@
     <br>
     <h1 align="center">Аварийные поломки/ТО, количество. <b>Участок: {{area_title}}</b></h1>
     {%if start%}
-        <h1 align="center">{{start.0}}/{{start.1}}/{{start.2}} - {{end.0}}/{{end.1}}/{{end.2}}</h1>
+        <h1 align="center">{{start.2}}/{{start.1}}/{{start.0}} - {{end.2}}/{{end.1}}/{{end.0}}</h1>
     {%endif%}
     <canvas id="PieChart1"></canvas>
 </div>
@@ -110,7 +110,7 @@
     <br>
     <h1 align="center">Аварийные поломки/ТО, часы простоя. <b>Участок: {{area_title}}</b></h1>
     {%if start%}
-        <h1 align="center">{{start.0}}/{{start.1}}/{{start.2}} - {{end.0}}/{{end.1}}/{{end.2}}</h1>
+        <h1 align="center">{{start.2}}/{{start.1}}/{{start.0}} - {{end.2}}/{{end.1}}/{{end.0}}</h1>
     {%endif%}
     <canvas id="PieChart2"></canvas>
 </div>
@@ -122,7 +122,7 @@
     <br>
     <h1 align="center">Сравнение ожидаемого и реального времени ТО. <b>Участок: {{area_title}}</b></h1>
     {%if start%}
-        <h1 align="center">{{start.0}}/{{start.1}}/{{start.2}} - {{end.0}}/{{end.1}}/{{end.2}}</h1>
+        <h1 align="center">{{start.2}}/{{start.1}}/{{start.0}} - {{end.2}}/{{end.1}}/{{end.0}}</h1>
     {%endif%}
     <canvas id="tos" height="500px"></canvas>
 </div>
@@ -134,9 +134,11 @@
 <div id="kpi">
     <br>
     <h1 align="center">Коэффицент готовности оборудования <b>категории А</b></h1>
-
+    {%if start%}
+        <h1 align="center">{{start.2}}/{{start.1}}/{{start.0}} - {{end.2}}/{{end.1}}/{{end.0}}</h1>
+    {%endif%}
     <canvas id="kpi_chart"></canvas>
-    <p>K = Время полезной работы / (Время полезной работы + Время вынужденного простоя)</p>
+    <p>K = (Время полезной работы - Время вынужденного простоя) / (Время полезной работы)</p>
 
 </div><br>
 
@@ -145,8 +147,11 @@
 <div id="kpi_b">
     <br>
     <h1 align="center">Коэффицент готовности оборудования <b>категории B</b></h1>
+    {%if start%}
+        <h1 align="center">{{start.2}}/{{start.1}}/{{start.0}} - {{end.2}}/{{end.1}}/{{end.0}}</h1>
+    {%endif%}
     <canvas id="kpi_b_chart"></canvas>
-    <p>K = Время полезной работы / (Время полезной работы + Время вынужденного простоя)</p>
+     <p>K = (Время полезной работы - Время вынужденного простоя) / (Время полезной работы)</p>
 </div>
 
 
@@ -453,6 +458,9 @@ var myChart = new Chart(ctx, {
 					mode: 'nearest',
 					intersect: true
 				},}
+
+
+
 });
 </script>       # скрипт kpi
 

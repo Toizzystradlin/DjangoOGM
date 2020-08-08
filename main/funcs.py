@@ -19,6 +19,10 @@ def to(area, s1, s2):
     maints = Maintenance.objects.all()
     maints = maints.exclude(status='Новое')
     for maint in maints:
+        if maint.end_time is not None:
+            maint.end_time = maint.end_time
+        else:
+            maint.end_time = utc.localize(datetime.now())
         maint.shift_start = datetime(year=maint.end_time.year, month=maint.end_time.month, day=maint.end_time.day,
                                      hour=7)
         maint.shift_end = datetime(year=maint.start_time.year, month=maint.start_time.month, day=maint.start_time.day,
@@ -319,11 +323,15 @@ def time_kpi(n, s1, s2, s3='day'):
         date = date + step
 
     kpi_list = []
+    kpi_pairs = []
     for i in range(len(plain_list)):
         mean = ((n_count * 40 - expected_time_list[i]) - plain_list[i] - (maintenance_list[i] - expected_time_list[i])) / (n_count * 40 - expected_time_list[i])
         kpi_list.append(round(mean, 4))
+        kpi_pair = (n_count * 40 - expected_time_list[i], plain_list[i] - (maintenance_list[i] - expected_time_list[i]), n_count * 40 - expected_time_list[i])
+        kpi_pairs.append(kpi_pair)
 
-    return plain_list, maintenance_list, expected_time_list, n_count * 40, kpi_list, dates
+
+    return plain_list, maintenance_list, expected_time_list, n_count * 40, kpi_list, dates, kpi_pairs
 
 def appoint_doers(doers, query_id):
     doers_dict = {'doers': doers}
