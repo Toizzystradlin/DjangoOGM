@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Queries, Equipment, Employees, Comment, Maintenance, Worktime, Eq_stoptime, Reasons, Type, Dates
+from .models import Queries, Equipment, Employees, Comment, Maintenance, Worktime, Eq_stoptime, Reasons, Type, Dates, Supplies, Unstated_works
 from django.http import Http404, HttpResponse
 from django.views.generic import ListView, DetailView
 from django.db import connection
@@ -28,6 +28,17 @@ def main(request):
         a.reverse()
         return render(request, 'main/main.html', {'dict': a})
 
+def tmc(request):
+    #tmc = Supplies.objects.all()
+    with connection.cursor() as cursor:
+        cursor.execute('SELECT supplies.supply, queries.msg, equipment.eq_name, queries.query_id '
+                       'FROM supplies '
+                       'JOIN queries ON (queries.query_id = supplies.query_id)'
+                       'JOIN equipment ON (equipment.eq_id = supplies.eq_id)'
+                       'WHERE LENGTH(supplies.supply) > 2')
+        tmc = cursor.fetchall()
+        tmc = list(tmc)
+    return render(request, 'main/tmc.html', {'tmc': tmc})
 
 @login_required
 def new_query(request):
@@ -164,7 +175,7 @@ def show_query(request, query_id):
         coms = list(coms)
 
     with connection.cursor() as cursor:
-        cursor.execute("SELECT employees.fio, supplies.supply FROM supplies JOIN employees ON (supplies.emp_id = employees.employee_id) AND (supplies.query_id = %s)",
+        cursor.execute("SELECT employees.fio, supplies.supply FROM supplies JOIN employees ON (supplies.emp_id = employees.employee_id) AND (supplies.query_id = %s) WHERE LENGTH(supplies.supply) > 2",
                        [query_id])
         supplies = cursor.fetchall()
         supplies = list(supplies)
@@ -229,6 +240,19 @@ def edit_query(request, query_id):
                     pass
     return redirect('main')
 
+def works(request):
+    works = Unstated_works.objects.all()
+    return render(request, 'main/works.html', {'works': works})
+
+def new_work(request):
+    if request.method == 'POST':
+        text = request.POST.get('work_message')
+        doers = request.POST.getlist('work_employee_select')
+        Unstated_works.objects.create(what=text, post_time= datetime.now(), query_status='Новая')
+        work = Unstated_works.objects.all().order_by("-work_id")[0]
+        funcs.appoint_doers_work(doers, work.work_id)
+
+    return redirect('works')
 
 @login_required
 def show_equipment(request):
@@ -516,6 +540,16 @@ def stats2(request):
     last_week_end = last_week_start + timedelta(days=6)
     s1 = [int(last_week_start.year), int(last_week_start.month), int(last_week_start.day)]
     s2 = [int(last_week_end.year), int(last_week_end.month), int(last_week_end.day)]
+
+    go_count = Queries.objects.filter(query_status='В процессе').count()
+    new_count = Queries.objects.filter(query_status='Новая').count()
+    postpone_count = Queries.objects.filter(query_status='отложена').count()
+    got_count = Queries.objects.filter(query_status='Принята').count()
+
+    work_count = Equipment.objects.filter(eq_status='Работает').count()
+    stop_count = Equipment.objects.filter(eq_status='Остановлено').count()
+    to_count = Equipment.objects.filter(eq_status='ТО').count()
+
     to_times = funcs.to('Все участки', s1, s2)
     queries_ids, to_ids, queries_count, tos_count = funcs.period_queries_and_to('Все участки', s1, s2)
     names_period, means_period, means_to_period, invs_period, full_plain, full_plain_to = funcs.plain_period(equipment, s1, s2)
@@ -579,7 +613,12 @@ def stats2(request):
                                                 'names_period': names_period, 'means_period': means_period, 'means_to_period': means_to_period, 'invs_period': invs_period,
                                                 'start': s1, 'end': s2,
                                                 'full_plain': full_plain, 'full_plain_to': full_plain_to,
-                                                'area_title': area_title
+                                                'area_title': area_title,
+                                                'go_count': go_count, 'new_count': new_count,
+                                                'postpone_count': postpone_count,
+                                                'got_count': got_count, 'work_count': work_count,
+                                                'stop_count': stop_count,
+                                                'to_count': to_count
                                                 })
 
 @login_required

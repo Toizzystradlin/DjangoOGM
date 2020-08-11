@@ -1,4 +1,4 @@
-from .models import Queries, Equipment, Employees, Comment, Maintenance, Worktime, Eq_stoptime
+from .models import Queries, Equipment, Employees, Comment, Maintenance, Worktime, Eq_stoptime, Unstated_works
 from datetime import datetime, timedelta, timezone
 import pytz
 #import datetime
@@ -343,6 +343,17 @@ def appoint_doers(doers, query_id):
         doer_query = Employees.objects.get(employee_id=doer)
         doer_id = doer_query.tg_id
         send_message.send_message_4(doer_id, query_id)
+
+def appoint_doers_work(doers, work_id):
+    doers_dict = {'doers': doers}
+    doers_json = json.dumps(doers_dict)
+    work = Unstated_works.objects.get(work_id=work_id)
+    work.json_emp = doers_json
+    work.save()
+    for doer in doers:
+        doer_work = Employees.objects.get(employee_id=doer)
+        doer_id = doer_work.tg_id
+        send_message.send_message_work(doer_id, work_id)
 
 def appoint_doers_to(doers, to_id):
     doers_dict = {'doers': doers}

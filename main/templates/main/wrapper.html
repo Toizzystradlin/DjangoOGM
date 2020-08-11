@@ -53,11 +53,18 @@
 <body>
 
 <header class="header">
-    <div class="containerX">
-        <div class="intro__inner">
-            <h1 class="intro__title">Отдел ОГМ</h1>
-        </div>
-        <div style="float:right"><ul class="sidebar-nav">
+    <div class="header-center">
+        <nav class="nav">
+                <a class="nav__link" href="/main">Заявки</a>
+                <a class="nav__link" href="/main/maintenance">ТО</a>
+                <a class="nav__link" href="/main/works">Нештат. работы</a>
+                <a class="nav__link" href="/main/tmc">ТМЦ</a>
+                <a class="nav__link" href="/main/equipment">Оборудование</a>
+                <a class="nav__link" href="/main/employees">Сотрудники</a>
+                <a class="nav__link" href="/main/stats2">Статистика</a>
+            </nav>
+    </div>
+    <div style="float:right"><ul class="sidebar-nav">
                {% if user.is_authenticated %}
                     <li>{{ user.get_username }}</li>
                     <li><a href="{% url 'logout'%}?next={{request.path}}">Logout</a></li>
@@ -66,33 +73,9 @@
                {% endif %}
                     <li><a href="/settings">Настройки</a></li>
                     </ul></div>
-        </div>
-    <div class="container">
-
-        <div class="header__inner">
-            <nav class="nav">
-                <a class="nav__link" href="/main">Главная</a>
-                <a class="nav__link" href="/main/equipment">Оборудование</a>
-                <a class="nav__link" href="/main/employees">Сотрудники</a>
-                <a class="nav__link" href="/main/stats">Статистика</a>
-                <a class="nav__link" href="/main/maintenance">ТО</a>
-            </nav>
-        </div>
-        <div class="header__inner">
-            <nav class="nav">
-                <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="nav__link" href="/main/stats2">Статистика 2</a></p>
-
-            </nav>
-        </div>
-    </div>
 </header>
 
-<div class="intro">
 
-</div>
 <div class="container">
     {% block content %}
             {% endblock %}

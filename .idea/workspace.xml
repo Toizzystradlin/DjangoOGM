@@ -2,9 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="56de9908-72e5-4632-b812-e4a4cf45ac64" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/main/templates/main/tmc.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/main/templates/main/works.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/funcs.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/funcs.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/send_message.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/send_message.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/static/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/main/static/style.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/templates/main/new_query.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/new_query.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/templates/main/stats2.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/stats2.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/templates/main/wrapper.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/wrapper.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/templates/pc_query/test.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/pc_query/test.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -254,7 +263,14 @@
       <option name="project" value="LOCAL" />
       <updated>1596657482150</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="формат дат статистики 2">
+      <created>1596875994370</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1596875994370</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -266,7 +282,8 @@
     <MESSAGE value="поправил баг в статистике 2" />
     <MESSAGE value="красивая статистика 2" />
     <MESSAGE value="теперь выбор даты распространяется на все графики статистики 2" />
-    <option name="LAST_COMMIT_MESSAGE" value="теперь выбор даты распространяется на все графики статистики 2" />
+    <MESSAGE value="формат дат статистики 2" />
+    <option name="LAST_COMMIT_MESSAGE" value="формат дат статистики 2" />
   </component>
   <component name="WindowStateProjectService">
     <state x="552" y="178" key="#Inspections" timestamp="1596441550326">
@@ -277,10 +294,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="552" y="178" width="816" height="729" key="#Intentions/0.0.1920.1040@0.0.1920.1040" timestamp="1596397150404" />
-    <state x="614" y="114" key="CommitChangelistDialog2" timestamp="1596657481605">
+    <state x="614" y="114" key="CommitChangelistDialog2" timestamp="1596875993693">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="614" y="114" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1596657481605" />
+    <state x="614" y="114" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1596875993693" />
     <state x="888" y="352" key="FileChooserDialogImpl" timestamp="1591848022004">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -305,9 +322,9 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="388" y="191" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1595353799374" />
-    <state x="599" y="463" width="607" height="351" key="com.intellij.ide.util.TipDialog" timestamp="1596871856123">
+    <state x="599" y="463" width="607" height="351" key="com.intellij.ide.util.TipDialog" timestamp="1596964639147">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="599" y="463" width="607" height="351" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1596871856123" />
+    <state x="599" y="463" width="607" height="351" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1596964639147" />
   </component>
 </project>

@@ -173,3 +173,69 @@
 </div>
 
 </body>
+
+
+
+
+
+
+
+
+
+
+ <div class="containerX">
+        <div class="intro__inner">
+            <h1 class="intro__title">Отдел ОГМ</h1>
+        </div>
+        <div style="float:right"><ul class="sidebar-nav">
+               {% if user.is_authenticated %}
+                    <li>{{ user.get_username }}</li>
+                    <li><a href="{% url 'logout'%}?next={{request.path}}">Logout</a></li>
+               {% else %}
+                    <li><a href="{% url 'login'%}?next={{request.path}}">Login</a></li>
+               {% endif %}
+                    <li><a href="/settings">Настройки</a></li>
+                    </ul></div>
+        </div>
+    <div class="container">
+
+        <div class="header__inner">
+            <nav class="nav">
+                <a class="nav__link" href="/main">Заявки</a>
+                <a class="nav__link" href="/main/maintenance">ТО</a>
+                <a class="nav__link" href="/main/tmc">ТМЦ</a>
+                <a class="nav__link" href="/main/equipment">Оборудование</a>
+                <a class="nav__link" href="/main/employees">Сотрудники</a>
+                <a class="nav__link" href="/main/stats2">Статистика</a>
+            </nav>
+        </div>
+    </div>
+
+<div class="intro">
+
+</div>
+
+
+.header {
+    width: 100% !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000 !important;
+    padding-top: 30px !important;
+}
+
+.header__inner {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    position: relative !important;
+    top: 30px !important;
+}
+
+.header__logo {
+    font-size: 30px !important;
+    font-weight: 700 !important;
+    color: #fff !important;
+}

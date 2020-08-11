@@ -115,6 +115,7 @@ class Worktime(models.Model):
     start_time = models.DateTimeField(blank=True, null=True)
     stop_time = models.DateTimeField(blank=True, null=True)
     multiple = models.IntegerField(blank=True, null=True)
+    work_id = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = True
@@ -154,3 +155,18 @@ class Dates(models.Model):
     class Meta:
         managed = True
         db_table = 'dates'
+
+class Unstated_works(models.Model):
+    work_id = models.AutoField(primary_key=True)
+    what = models.CharField(max_length=400, blank=True, null=True)
+    post_time = models.DateTimeField(blank=True, null=True)
+    query_status = models.CharField(max_length=45, blank=True, null=True)
+    start_time = models.DateTimeField(blank=True, null=True)
+    stop_time = models.DateTimeField(blank=True, null=True)
+    comment = models.CharField(max_length=3000, blank=True, null=True)
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    json_emp = models.CharField(max_length=45, blank=True, null=True)
+    multiple = models.IntegerField(blank=True, null=True)
+    class Meta:
+        managed = True
+        db_table = 'unstated_works'

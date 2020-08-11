@@ -5,7 +5,9 @@
 <br>
 <div class="form-group">
     <div class="container">
-        <form action="new_query" method="post">
+        <button type="button" id="button1" class="btn btn-success btn-danger">Аварийная заявка</button>
+        <button type="button" id="button2" class="btn btn-success btn-warning">Нештатные работы</button>
+        <form action="new_query" method="post" id="query">
             {% csrf_token %}
             <table class="table2">
                 <tr><td>Выбор участка: </td>
@@ -103,6 +105,24 @@
             </table>
             <input type="submit" class="btn btn-success btn-info" value="Отправить заявку">
         </form>
+        <form id="unstated_work" action="new_work" method="post">
+            {% csrf_token %}
+            <table class="table2">
+                <tr>
+                    <td>Сообщение: </td>
+                    <td><textarea name="work_message" rows="5" cols="70" class="form-control"></textarea></td>
+                </tr>
+                <tr><td>Назначить на заявку: </td><td>
+                    <select name="work_employee_select" multiple class="selectpicker" data-style="btn btn-outline-dark" data-width="300px" data-size="6" >
+                        {% for j in emps %}
+                        <option value={{j.0}}>{{j.1}}</option>
+                        {%endfor%}
+                    </select>
+                </td></tr>
+
+            </table>
+            <input type="submit" class="btn btn-success btn-info" value="Создать работу">
+        </form>
 
 
     </div>
@@ -190,6 +210,23 @@
         }
 
     });
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    // hide the forms when page is ready
+    $('#query').hide();
+    $('#unstated_work').hide();
+
+    $('#button1').click(function(){
+        $('#query').show();
+        $('#unstated_work').hide();
+    });
+    $('#button2').click(function(){
+        $('#unstated_work').show();
+        $('#query').hide();
+    });
+});
 </script>
 
     <!-- Optional JavaScript -->

@@ -21,6 +21,36 @@
     <canvas id="plain_last_week" height="400px"></canvas>
 </div>
 -->
+
+<div class="container">
+    <br>
+    <p align="right"><a class="btn btn-success btn-info" href="upload_stats">Выгрузить в Excel</a></p>
+    <br>
+    <h1 align="center">Заявки</h1>
+
+    <canvas id="bar-chart"></canvas>
+</div>
+<br>
+<br>
+<br>
+<hr>
+<br>
+<br>
+<br>
+<br>
+
+
+<div>
+    <br>
+    <h1 align="center">Оборудование</h1>
+    <canvas id="PieChart"></canvas>
+</div>
+
+<br>
+<br>
+<br>
+<br>
+
 <br>
 <form action="/stats2" method="post">
         {% csrf_token %}
@@ -622,4 +652,59 @@ options: {
 
 } );
 </script>
+
+
+<script>
+var ctx = document.getElementById('PieChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: ['Работает', 'Остановлено', 'ТО'],
+        datasets: [{
+            label: 'Статус оборудования',
+            data: [{{work_count}}, {{stop_count}}, {{to_count}}],
+            backgroundColor: [
+            'rgba(19, 235, 148, 1)',
+            'rgba(237, 55, 91, 1)',
+            'rgba(67, 158, 232, 1)'
+            ],
+            borderColor: [
+            'rgba(19, 235, 148, 1)',
+            'rgba(237, 55, 91, 1)',
+            'rgba(67, 158, 232, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+</script>       # скрипт пайчарта
+
+
+
+<script>new Chart(document.getElementById("bar-chart"), {
+    type: 'bar',
+    data: {
+      labels: ["Новые","Принято","Отложена", "В процессе"],
+      datasets: [
+        {
+          label: "Заявок",
+          backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+          data: [{{new_count}}, {{got_count}}, {{postpone_count}}, {{go_count}}, 0]
+        }
+      ]
+    },
+    options: {
+      legend: { display: false },
+
+    }
+});</script>      # скрипт бар чарта заявок
 {% endblock %}
