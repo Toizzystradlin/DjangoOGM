@@ -15,6 +15,7 @@ import easygui
 import xlwt
 from django.http import HttpResponse
 import pytz
+from django.core.files.storage import FileSystemStorage
 
 
 @login_required
@@ -353,6 +354,36 @@ def new_eq(request):
         return redirect('/main/equipment')
     return render(request, 'main/new_eq.html', {'types': tps})
 
+def upload_photo_eq(request, eq_id):
+    if request.method == 'POST' and request.FILES['myfile']:
+        myfile = request.FILES['myfile']
+        fs = FileSystemStorage()
+        filename = fs.save(str(eq_id) + '.jpg', myfile)
+        #uploaded_file_url = fs.url(filename)
+        eqs = Equipment.objects.get(eq_id=eq_id)
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT queries.query_id, queries.post_time, queries.reason, queries.msg, "
+                           "queries.query_status FROM queries WHERE (queries.eq_id = %s)", [eq_id])
+            qs = cursor.fetchall()
+            qs = list(qs)
+            qs.reverse()
+
+            cursor.execute("SELECT id, start_time, comment, status FROM maintenance WHERE (eq_id = %s)", [eq_id])
+            tos = list(cursor.fetchall())
+
+            cursor.execute("SELECT supply, query_id FROM supplies WHERE (eq_id = %s)", [eq_id])
+            supplies = list(cursor.fetchall())
+
+        equipment = Equipment.objects.filter(eq_id=eq_id)
+        name, mean, shifts, invs = funcs.top10(equipment)
+        name_m, mean_m, shifts_m, invs_m = funcs.top10_month(equipment)
+
+        last_week_name, last_week_mean, sh, invnums = funcs.top10_last_week(equipment)
+
+        return render(request, 'main/eq_one.html',
+                      {'eqs': eqs, 'queries': qs, 'name': name, 'mean': str(mean[0])[:5], 'mean_m': str(mean_m[0])[:5],
+                       'tos': tos, 'last_week_name': last_week_name, 'last_week_mean': str(last_week_mean[0])[:5],
+                       'invnums': invnums, 'supplies': supplies})
 
 @login_required
 def show_employees(request):

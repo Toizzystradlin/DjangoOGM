@@ -37,4 +37,5 @@ urlpatterns = [
     path('delete_reasons', views.delete_reasons, name='delete_reasons'),
     path('delete_types', views.delete_types, name='delete_types'),
     path('main/upload_stats', views.export__data, name='export__data'),
+    path('main/equipment/<int:eq_id>/upload_photo_eq', views.upload_photo_eq, name='upload_photo_eq'),
 ]

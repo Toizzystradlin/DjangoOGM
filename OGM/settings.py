@@ -126,8 +126,9 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
-
 ]
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'main/static/images/eq_photos')
 
 LOGIN_REDIRECT_URL = '/'
 
