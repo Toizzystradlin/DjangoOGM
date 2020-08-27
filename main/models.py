@@ -26,6 +26,7 @@ class Queries(models.Model):
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     json_emp = models.CharField(max_length=45, blank=True, null=True)
     multiple = models.IntegerField(blank=True, null=True)
+    photo_name = models.CharField(max_length=100, blank=True, null=True)
 
 
     class Meta:
@@ -81,6 +82,7 @@ class Comment(models.Model):
     text = models.TextField()
     created_date = models.DateTimeField(null=True, blank=True)
     query = models.IntegerField(blank=True, null=True)
+    work = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = True
@@ -100,10 +102,12 @@ class Maintenance(models.Model):
     employee_id = models.CharField(max_length=50)
     comment = models.TextField()
     status = models.CharField(max_length=50, null=True, blank=True)
+    status2 = models.CharField(max_length=50, null=True, blank=True)
     month_start = models.DateTimeField(blank=True, null=True)
     shift_start = models.DateTimeField(blank=True, null=True)
     shift_end = models.DateTimeField(blank=True, null=True)
     expected_time = models.IntegerField(blank=True, null=True)
+    plan_date = models.DateTimeField(blank=True, null=True)
     class Meta:
         managed = True
         db_table = 'maintenance'
@@ -144,6 +148,8 @@ class Supplies(models.Model):
     eq_id = models.IntegerField(blank=True, null=True)
     supply = models.TextField(blank=True, null=True)
     emp_id = models.IntegerField(blank=True, null=True)
+    work_id = models.IntegerField(blank=True, null=True)
+    to_id = models.IntegerField(blank=True, null=True)
     class Meta:
         managed = True
         db_table = 'supplies'
@@ -170,3 +176,12 @@ class Unstated_works(models.Model):
     class Meta:
         managed = True
         db_table = 'unstated_works'
+
+class Daily_tasks(models.Model):
+    task_id = models.AutoField(primary_key=True)
+    date = models.DateTimeField(blank=True, null=True)
+    status = models.CharField(max_length=100, blank=True, null=True)
+    task = models.CharField(max_length=3000, blank=True, null=True)
+    class Meta:
+        managed = True
+        db_table = 'daily_tasks'

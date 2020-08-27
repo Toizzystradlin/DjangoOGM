@@ -2,12 +2,23 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="56de9908-72e5-4632-b812-e4a4cf45ac64" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/main/templates/main/tasks.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/main/templates/main/work.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/OGM/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/OGM/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/eq_photos/189" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/eq_photos/189.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/eq_photos/189_2NuCSqt.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/funcs.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/funcs.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/static/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/main/static/style.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/templates/main/eq_one.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/eq_one.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/templates/pc_query/pc_history.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/pc_query/pc_history.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/templates/pc_query/pc_query.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/pc_query/pc_query.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/templates/main/maintenance.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/maintenance.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/templates/main/query.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/query.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/templates/main/show_maintenance.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/show_maintenance.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/templates/main/tmc.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/tmc.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/templates/main/works.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/works.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/templates/main/wrapper.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/wrapper.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/tests.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/views.py" afterDir="false" />
     </list>
@@ -164,7 +175,7 @@
     </recent_temporary>
   </component>
   <component name="SvnConfiguration">
-    <configuration />
+    <configuration>C:\Users\User\AppData\Roaming\Subversion</configuration>
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -272,7 +283,14 @@
       <option name="project" value="LOCAL" />
       <updated>1597171888035</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="добавил фото в станки">
+      <created>1597229214991</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1597229214991</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -286,7 +304,8 @@
     <MESSAGE value="теперь выбор даты распространяется на все графики статистики 2" />
     <MESSAGE value="формат дат статистики 2" />
     <MESSAGE value="добавил тмц и нештатные работы" />
-    <option name="LAST_COMMIT_MESSAGE" value="добавил тмц и нештатные работы" />
+    <MESSAGE value="добавил фото в станки" />
+    <option name="LAST_COMMIT_MESSAGE" value="добавил фото в станки" />
   </component>
   <component name="WindowStateProjectService">
     <state x="552" y="178" key="#Inspections" timestamp="1596441550326">
@@ -321,10 +340,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1899" height="190" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1591911048534" />
-    <state x="388" y="191" key="SettingsEditor" timestamp="1595353799374">
+    <state x="388" y="191" key="SettingsEditor" timestamp="1598529655382">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="388" y="191" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1595353799374" />
+    <state x="388" y="191" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1598529655382" />
     <state x="599" y="463" width="607" height="351" key="com.intellij.ide.util.TipDialog" timestamp="1596964639147">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

@@ -1,42 +1,52 @@
 {% extends "main/wrapper.html" %}
 
 {% block content %}
+{%for key, value in task.items%}
+{%for i in values%}
+<p>{{i.0}} - {{i.1}} - {{i.2}}
+    {%endfor%}
+{%endfor%}
+
+
+
 <br>
-<p align="right"><a class="btn btn-success btn-info" href="/main/new_query">Новая заявка</a></p>
-<h1 align="center">Нештатные работы</h1>
+
+<h1 align="center">Ежедневные задачи</h1>
+<form action="/main/tasks/save_tasks" method="post">
+    {% csrf_token %}
+    <div align="right"><input type="submit" class="btn btn-success" value="Сохранить"></div>
+    <br>
 <br>
     <table class="table" id="myTable">
         <thead>
         <tr class="table_head">
-            <th class="my_th">№ работы</th>
-            <th class="my_th">Сообщение</th>
             <th class="my_th">Дата</th>
-            <th class="my_th">Cтатус</th>
-            <th class="th"></th>
+            <th class="my_th">Задачи</th>
         </tr>
         </thead>
 <tbody>
-{% for i in xworks %}
+{% for key, value in tasks.items %}
         <tr class="tr">
-            <td class="td">{{i.0}}</td>
-            <td class="td">{{i.1}}</td>
-            <td class="td">{{i.2|date:"d-m-Y в H:i"}}</td>
-            <td class="td">{{i.3}}</td>
-            <td class="td"><a class="btn btn-success btn-info" href="/main/works/{{i.0}}">Подробнее</a></td>
+            <td class="td">{{key}}</td><td> <table>
+                                {%for i in value%}
+                                    <tr {%if i.1 == 'Завершена'%}style="background-color:#00FF00; border-radius:10px"{%endif%}><td style="width:60em">
+                                        <div>{%if i.1 == 'Завершена'%}<del>{{i.0}}</del>{%else%}{{i.0}}{%endif%}</div>
+                                    </td>
+                                        <td><input value="Завершена" name="{{i.2}}" style="width: 40px; height: 40px" type="checkbox" {%if i.1 == 'Завершена'%}checked{%endif%}></td></tr>
+                                {%endfor%}
+                </table></td>
         </tr>
-    {% endfor %}
+{% endfor %}
 </tbody>
         <tfoot class="text-primary">
         <tr>
-            <th></th>
-            <th></th>
-            <th></th>
             <th></th>
             <th></th>
         </tr>
     </tfoot>
     </table>
 
+</form>
 
 <script>$(document).ready( function () {
     $('#myTable').DataTable({
@@ -82,5 +92,3 @@
 
 
 {% endblock %}
-
-

@@ -18,6 +18,17 @@
                 <tbody>
                     <tr><td>Наименование: </td><td>{{eqs.eq_name}}</td></tr>
                     <tr><td>Тип оборудования: </td><td>{{eqs.eq_type}}</td></tr>
+                    <tr><td>Категория: </td>
+                    <td>
+                        <select name="category_select" class="selectpicker" data-width="300px" data-style="btn btn-outline-dark">
+                            <option value="{{eqs.category}}" selected>{{eqs.category}}</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                    </td>
+                    </tr>
                     <tr><td>Инвентарный №: </td><td>{{eqs.invnum}}</td></tr>
                     <tr><td>Участок: </td><td>{{eqs.area}}</td></tr>
                     <tr><td>Статус оборудования: </td>
@@ -49,7 +60,7 @@
             <div style="float: left">
                 <form method="post" enctype="multipart/form-data" action="/main/equipment/{{eqs.eq_id}}/upload_photo_eq">
                     {% csrf_token %}
-                    <img id="eq_photo" src="/static/images/eq_photos/{{eqs.eq_id}}.jpg" onerror="this.src='/static/images/no_image.jpg'" width="300" height="300">
+                    <img style='border:5px solid #FFDAB9' id="eq_photo" src="/static/images/eq_photos/{{eqs.eq_id}}.jpg" onerror="this.src='/static/images/no_image.jpg'" width="400">
                     <div><button type="button" id="change" class="btn btn-success">Изменить фото</button></div>
                     <div id="change_photo"><input type="file" name="myfile" class="btn btn-warning">
                     <input type="submit" value="Загрузить"></div>

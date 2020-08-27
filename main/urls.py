@@ -27,6 +27,10 @@ urlpatterns = [
     path('main/maintenance/new_maintenance/<int:to_id>/maintenance_edit', views.maintenance_edit, name='maintenance_edit'),
     path('tmc', views.tmc, name='tmc'),
     path('works', views.works, name='works'),
+    path('works/<int:work_id>', views.show_work, name='show_work'),
+    path('<int:work_id>/delete_work', views.delete_work, name='delete_work'),
+    path('<int:work_id>/edit_work', views.edit_work, name='edit_work'),
+    path('<int:work_id>/reappoint_work', views.reappoint_work, name='reappoint_work'),
     path('new_work', views.new_work, name='new_work'),
     path('pc_query/pc_query', views.pc_query, name='pc_query'),
     path('pc_query/pc_history', views.pc_history, name='pc_history'),
@@ -38,4 +42,6 @@ urlpatterns = [
     path('delete_types', views.delete_types, name='delete_types'),
     path('main/upload_stats', views.export__data, name='export__data'),
     path('main/equipment/<int:eq_id>/upload_photo_eq', views.upload_photo_eq, name='upload_photo_eq'),
+    path('main/tasks', views.tasks, name='tasks'),
+    path('main/tasks/save_tasks', views.save_tasks, name='save_tasks'),
 ]

@@ -85,6 +85,33 @@ def to(area, s1, s2):
     return pairs
 
 def plain_period(equipment, s1, s2):
+    for i1 in equipment:
+        shifts = i1.shift
+        eq_id = i1.eq_id
+        n = Eq_stoptime.objects.filter(eq_id=eq_id)  # по новой получаем список, так как он изменился
+        for i in n:
+            start_year = i.stop_time.year
+            start_month = i.stop_time.month
+            start_day = i.stop_time.day
+            try:
+                end_year = i.start_time.year
+                end_month = i.start_time.month
+                end_day = i.start_time.day
+            except:
+                end_year = datetime.now().year
+                end_month = datetime.now().month
+                end_day = datetime.now().day
+            if shifts == 1:
+                i.shift_end = datetime(start_year, start_month, start_day, 15)
+            else:
+                i.shift_end = datetime(start_year, start_month, start_day, 23)
+            try:
+                i.shift_start = datetime(end_year, end_month, end_day, 7)
+            except:
+                pass
+            i.save()
+
+
     utc = pytz.UTC
     period_start = datetime(year=s1[0], month=s1[1], day=s1[2])
     period_end = datetime(year=s2[0], month=s2[1], day=s2[2])

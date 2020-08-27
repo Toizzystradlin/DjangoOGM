@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Queries, Equipment, Employees, Comment, Maintenance, Worktime, Eq_stoptime, Reasons, Type, Dates, Supplies, Unstated_works
+from .models import Queries, Equipment, Employees, Comment, Maintenance, Worktime, Eq_stoptime, Reasons, Type, Dates, Supplies, Unstated_works, Daily_tasks
 from django.http import Http404, HttpResponse
 from django.views.generic import ListView, DetailView
 from django.db import connection
@@ -32,14 +32,29 @@ def main(request):
 def tmc(request):
     #tmc = Supplies.objects.all()
     with connection.cursor() as cursor:
-        cursor.execute('SELECT supplies.supply, queries.msg, equipment.eq_name, queries.query_id '
+        cursor.execute('SELECT supplies.supply, queries.msg, equipment.eq_name, queries.query_id, queries.post_time '
                        'FROM supplies '
                        'JOIN queries ON (queries.query_id = supplies.query_id)'
                        'JOIN equipment ON (equipment.eq_id = supplies.eq_id)'
                        'WHERE LENGTH(supplies.supply) > 2')
         tmc = cursor.fetchall()
         tmc = list(tmc)
-    return render(request, 'main/tmc.html', {'tmc': tmc})
+        tmc.reverse()
+        cursor.execute('SELECT supplies.supply, unstated_works.what, unstated_works.work_id, unstated_works.post_time '
+                       'FROM supplies '
+                       'JOIN unstated_works ON (unstated_works.work_id = supplies.work_id)'
+                       'WHERE LENGTH(supplies.supply) > 2')
+        tmc_work = cursor.fetchall()
+        tmc_work = list(tmc_work)
+        tmc_work.reverse()
+        cursor.execute('SELECT supplies.supply, equipment.eq_name, maintenance.comment, maintenance.end_time '
+                       'FROM supplies '
+                       'JOIN maintenance ON (maintenance.id = supplies.to_id)'
+                       'JOIN equipment ON (equipment.eq_id = supplies.eq_id)')
+        tmc_to = cursor.fetchall()
+        tmc_to = list(tmc_to)
+        tmc_to.reverse()
+    return render(request, 'main/tmc.html', {'tmc': tmc, 'tmc_work': tmc_work, 'tmc_to': tmc_to})
 
 @login_required
 def new_query(request):
@@ -239,11 +254,81 @@ def edit_query(request, query_id):
                         a.save()
                 except:
                     pass
+
+        if q_status == 'Завершена':
+            with connection.cursor() as cursor:
+                cursor.execute('UPDATE worktime SET stop_time = %s WHERE query_id = %s', [datetime.now(), query_id])
+                cursor.execute('UPDATE queries SET stop_time = %s WHERE query_id = %s', [datetime.now(), query_id])
+
     return redirect('main')
 
 def works(request):
     works = Unstated_works.objects.all()
-    return render(request, 'main/works.html', {'works': works})
+    with connection.cursor() as cursor:
+        cursor.execute('SELECT unstated_works.work_id, unstated_works.what, unstated_works.post_time, '
+                       'unstated_works.query_status FROM unstated_works')
+        xworks = list(cursor.fetchall())
+    return render(request, 'main/works.html', {'works': works, 'xworks': xworks})
+
+def show_work(request, work_id):
+    c = Unstated_works.objects.get(work_id=work_id)
+    now_emp = 0
+    try:
+        json_now_emps = c.json_emp
+        now_emps_dict = json.loads(json_now_emps)
+        now_emps_list = now_emps_dict['doers']
+        final_emps = []
+        result_now_emps = [int(item) for item in now_emps_list]  # Преобразование "1" в 1
+        now_emps = []
+        for i in result_now_emps:
+            e = Employees.objects.get(employee_id=i)
+            now_emps.append(e)
+    except:
+        result_now_emps = []
+        final_emps = []
+
+    emps = Employees.objects.all()
+    for i in emps:  # цикл подготовки массива исполнителей для корректного вывода в селект мултипл
+        m = [i.employee_id, i.fio, False]
+        final_emps.append(m)
+        if len(result_now_emps) > 0:
+            for j in result_now_emps:
+                if i.employee_id == j:
+                    final_emps[-1][2] = True
+
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT comments.query, comments.author, comments.text, comments.created_date, "
+                       "employees.fio FROM comments JOIN employees ON (comments.work = %s) AND (comments.author = employees.employee_id)",
+                       [work_id])
+        coms = cursor.fetchall()
+        coms = list(coms)
+
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "SELECT employees.fio, supplies.supply FROM supplies JOIN employees ON (supplies.emp_id = employees.employee_id) AND (supplies.work_id = %s) WHERE LENGTH(supplies.supply) > 2",
+            [work_id])
+        supplies = cursor.fetchall()
+        supplies = list(supplies)
+
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT worktime.work_id, worktime.start_time, worktime.stop_time, employees.fio FROM "
+                       "worktime JOIN employees ON (worktime.employee_id = employees.employee_id) AND (worktime.work_id = %s)",
+                       [work_id])
+        works = cursor.fetchall()
+        works = list(works)
+
+    return render(request, 'main/work.html',
+                  {'work': c, 'coms': coms, 'supplies': supplies, 'works': works, 'emps': emps,
+                   'now_emp': now_emp,
+                   'final_emps': final_emps})
+
+def edit_work(request, work_id):
+    if request.method == 'POST':
+        work_status = request.POST.get('work_status_select')
+        x = Unstated_works.objects.get(work_id=work_id)
+        x.query_status = work_status
+        x.save()
+        return redirect('works')
 
 def new_work(request):
     if request.method == 'POST':
@@ -254,6 +339,18 @@ def new_work(request):
         funcs.appoint_doers_work(doers, work.work_id)
 
     return redirect('works')
+
+def reappoint_work(request, work_id):
+    doers = request.POST.getlist('emp_select')
+    work = Unstated_works.objects.get(work_id=work_id)
+    funcs.appoint_doers_work(doers, work.work_id)
+    return redirect('works')
+
+
+def delete_work(request, work_id):
+    x = Unstated_works.objects.get(work_id=work_id)
+    x.delete()
+    return redirect('/main/works')
 
 @login_required
 def show_equipment(request):
@@ -298,11 +395,14 @@ def edit_eq(request, eq_id):
     if request.method == 'POST':
         eqs = Equipment.objects.get(eq_id=eq_id)
         eq_status = request.POST.get('eq_status_select')
+        eq_category = request.POST.get('category_select')
+        eqs.category = eq_category
         eqs.eq_status = eq_status
         eqs.shift = request.POST.get('shift_select')
         eqs.save()
         eqs.eq_comment = request.POST.get('eq_comment')
         eqs.save()
+
 
         if eq_status == 'Остановлено':  # Блок занесения простоев в таблицу простоев
             with connection.cursor() as cursor:
@@ -358,6 +458,7 @@ def upload_photo_eq(request, eq_id):
     if request.method == 'POST' and request.FILES['myfile']:
         myfile = request.FILES['myfile']
         fs = FileSystemStorage()
+        fs.delete(str(eq_id) + '.jpg')
         filename = fs.save(str(eq_id) + '.jpg', myfile)
         #uploaded_file_url = fs.url(filename)
         eqs = Equipment.objects.get(eq_id=eq_id)
@@ -745,25 +846,52 @@ def export__data(request):
 @login_required
 def maintenance(request):
     a = list(Maintenance.objects.all())
+    for i in a:
+        if (i.start_time.month > i.plan_date.month) and i.end_time:
+            delta = i.start_time - i.plan_date
+            i.status2 = 'Выполнено с опозданием ' + str(delta.days) + ' дней'
+            i.save()
+        elif i.status == 'Новое':
+            if i.plan_date.month < datetime.now().month:
+                delta = datetime.now().date() - i.plan_date.date()
+                i.status2 = 'Просрочено на ' + str(delta.days) + ' дней'
+                i.save()
+            else:
+                i.status2 = 'Новое'
+                i.save()
+        elif (i.start_time.month < i.plan_date.month) and i.end_time:
+            delta = i.start_time - i.plan_date
+            i.status2 = 'Выполнено раньше на ' + str(abs(delta.days)) + ' дней'
+            i.save()
+        elif (i.start_time.month == i.plan_date.month) and i.end_time:
+            i.status2 = 'Выполнено в срок '
+            i.save()
+
     with connection.cursor() as cursor:
         cursor.execute("SELECT equipment.eq_name, equipment.invnum, equipment.eq_type, equipment.area, "
-                       "maintenance.start_time, maintenance.employee_id, maintenance.comment, maintenance.id FROM equipment JOIN "
-                       "maintenance ON (equipment.eq_id = maintenance.eq_id) and (end_time IS NULL)")
-
+                       "maintenance.start_time, maintenance.employee_id, maintenance.comment, maintenance.id, maintenance.status2 FROM equipment JOIN "
+                       "maintenance ON (equipment.eq_id = maintenance.eq_id) and (end_time IS NULL) and (status = 'Новое')")
         tos = cursor.fetchall()
         tos = list(tos)
         tos.reverse()  # список с запланированными ТО
 
-    with connection.cursor() as cursor:
         cursor.execute("SELECT equipment.eq_name, equipment.invnum, equipment.eq_type, equipment.area, "
-                       "maintenance.start_time, maintenance.end_time, maintenance.employee_id, maintenance.comment, maintenance.id FROM equipment JOIN "
-                       "maintenance ON (equipment.eq_id = maintenance.eq_id) and (end_time IS NOT NULL)")
+                       "maintenance.start_time, maintenance.end_time, maintenance.employee_id, maintenance.comment, maintenance.id, maintenance.status2 FROM equipment JOIN "
+                       "maintenance ON (equipment.eq_id = maintenance.eq_id) and (end_time IS NOT NULL) and (status = 'Завершено')")
 
         tos2 = cursor.fetchall()
         tos2 = list(tos2)
         tos2.reverse()  # список с выполнеными ТО
 
-    return render(request, 'main/maintenance.html', {'tos': tos, 'tos2': tos2})
+        cursor.execute("SELECT equipment.eq_name, equipment.invnum, equipment.eq_type, equipment.area, "
+                       "maintenance.start_time, maintenance.end_time, maintenance.employee_id, maintenance.comment, maintenance.id FROM equipment JOIN "
+                       "maintenance ON (equipment.eq_id = maintenance.eq_id) and (maintenance.status = 'В процессе')")
+
+        tos3 = cursor.fetchall()
+        tos3 = list(tos3)
+        tos3.reverse()  # список с в процеесе ТО
+
+    return render(request, 'main/maintenance.html', {'tos': tos, 'tos2': tos2, 'tos3': tos3})
 
 
 @login_required
@@ -806,7 +934,7 @@ def new_maintenance(request):
         except:
             pass
 
-        Maintenance.objects.create(start_time=new_date, comment=comment, eq_id=eq.eq_id, status='Новое', expected_time=expected_time)
+        Maintenance.objects.create(comment=comment, eq_id=eq.eq_id, status='Новое', expected_time=expected_time, plan_date=new_date)
 
         to = Maintenance.objects.all().order_by("-id")[0]
         funcs.appoint_doers_to(doers, to.id)
@@ -1013,5 +1141,32 @@ def delete_types(request):
         x = Type.objects.get(id=i)
         x.delete()
     return redirect('/main/settings')
+
+def tasks(request):
+    all_tasks = Daily_tasks.objects.all()
+    dates = []
+    for task in all_tasks:
+        if task.date.date() not in dates:
+            dates.append(task.date.date())
+    tasks = {}
+    for date in dates:
+        daily_tasks = []
+        for task in all_tasks:
+            if task.date.date() == date:
+                x = [task.task, task.status, task.task_id]
+                daily_tasks.append(x)
+        #tasks.append(daily_tasks)
+        tasks[date] = daily_tasks
+    return render(request, 'main/tasks.html', {'dates': dates, 'tasks': tasks})
+
+def save_tasks(request):
+    tasks = Daily_tasks.objects.all()
+    for task in tasks:
+        completed = request.POST.get(str(task.task_id))
+        if completed == 'Завершена':
+            a = Daily_tasks.objects.get(task_id=task.task_id)
+            a.status = 'Завершена'
+            a.save()
+    return redirect('/main/tasks')
 
 # Create your views here.

@@ -1,10 +1,11 @@
 {% extends "main/wrapper.html" %}
 
 {% block content %}
-
+<h1 align="center">ТМЦ на заявки</h1>
     <table class="table" id="myTable">
         <thead>
         <tr class="table_head">
+            <th class="th">Дата</th>
             <th class="my_th">Заявка</th>
             <th class="th">Оборудование</th>
             <th class="th">ТМЦ</th>
@@ -14,6 +15,7 @@
 <tbody>
 {% for i in tmc %}
         <tr class="tr">
+            <td class="td">{{i.4|date:"d-m-Y в H:i"}}</td>
             <td class="td">{{i.1}}</td>
             <td class="td">{{i.2}}</td>
             <td class="td">{{i.0}}</td>
@@ -30,5 +32,164 @@
         </tr>
     </tfoot>
     </table>
+
+
+<br>
+<br>
+<br>
+<h1 align="center">ТМЦ на нештатные работы</h1>
+    <table class="table" id="myTable2">
+        <thead>
+        <tr class="table_head">
+            <th class="th">Дата</th>
+            <th class="my_th">Работа</th>
+            <th class="th">ТМЦ</th>
+            <th class="th"></th>
+        </tr>
+        </thead>
+<tbody>
+{% for i in tmc_work %}
+        <tr class="tr">
+            <td class="td">{{i.3|date:"d-m-Y в H:i"}}</td>
+            <td class="td">{{i.1}}</td>
+            <td class="td">{{i.0}}</td>
+            <td class="td"><a class="btn btn-success btn-info" href="#">Подробнее</a> </td>
+        </tr>
+    {% endfor %}
+</tbody>
+        <tfoot class="text-primary">
+        <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+    </tfoot>
+    </table>
+
+<br>
+<br>
+<h1 align="center">ТМЦ на TO</h1>
+    <table class="table" id="myTable3">
+        <thead>
+        <tr class="table_head">
+            <th class="th">Дата</th>
+            <th class="my_th">Оборудование</th>
+            <th class="th">ТМЦ</th>
+            <th class="th"></th>
+        </tr>
+        </thead>
+<tbody>
+{% for i in tmc_to %}
+        <tr class="tr">
+            <td class="td">{{i.3|date:"d-m-Y в H:i"}}</td>
+            <td class="td">{{i.1}}</td>
+            <td class="td">{{i.0}}</td>
+            <td class="td"><a class="btn btn-success btn-info" href="#">Подробнее</a> </td>
+        </tr>
+    {% endfor %}
+</tbody>
+        <tfoot class="text-primary">
+        <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+    </tfoot>
+    </table>
+
+
+<script>$(document).ready( function () {
+    $('#myTable').DataTable({
+    initComplete: function () {
+            this.api().columns([]).every( function () {
+                var column = this;
+                var select = $('<select><option value=""></option></select>')
+                    .click( function(e) {
+                        e.stopPropagation();
+                    })
+                    .appendTo( $(column.header()) )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append('<option value="' + d + '">' + d.substr(0,20) + '</option>')
+                } );
+            } );
+        }
+    });
+
+} );
+</script>
+
+<script>$(document).ready( function () {
+    $('#myTable2').DataTable({
+    "order": [[0, "desc"]],
+    initComplete: function () {
+            this.api().columns([]).every( function () {
+                var column = this;
+                var select = $('<select><option value=""></option></select>')
+                    .click( function(e) {
+                        e.stopPropagation();
+                    })
+                    .appendTo( $(column.header()) )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append('<option value="' + d + '">' + d.substr(0,20) + '</option>')
+                } );
+            } );
+        }
+    });
+
+} );
+</script>
+
+<script>$(document).ready( function () {
+    $('#myTable3').DataTable({
+    "order": [[0, "desc"]],
+    initComplete: function () {
+            this.api().columns([]).every( function () {
+                var column = this;
+                var select = $('<select><option value=""></option></select>')
+                    .click( function(e) {
+                        e.stopPropagation();
+                    })
+                    .appendTo( $(column.header()) )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append('<option value="' + d + '">' + d.substr(0,20) + '</option>')
+                } );
+            } );
+        }
+    });
+
+} );
+</script>
 
 {% endblock %}

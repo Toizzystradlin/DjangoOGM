@@ -12,18 +12,20 @@
                 <tr><td>Оборудование: </td><td>
                     <a href="/main/equipment/{{eq.eq_id}}">{{eq.eq_name}}</a>, {{eq.invnum}}
                 </td></tr>
-
+                <tr><td>Запланированная дата:</td><td>{{to.plan_date|date:"d-m-Y"}}</td></tr>
                 <tr><td>Дата начала: </td>
-                    <td>
-                        <input type="date" id="date" name="date" value="{{to.start_time|date:"Y-m-d"}}">
+                    <td>{%if to.status != 'Новое'%}
+                            {{to.start_time|date:"d-m-Y в H:i"}}
+
+                        {%endif%}
                     </td>
                 </tr>
 
                 <tr>
                     <td>Дата завершения: </td>
-                    <td><input type="date" id="date2" name="date2" value="{{to.end_time|date:"Y-m-d"}}"></td>
+                    <td>{{to.end_time|date:"d-m-Y в H:i"}}</td>
                 </tr>
-
+                <tr><td>Статус</td><td>{{to.status2}}</td></tr>
                 <tr><td>Назначен на заявку: </td>
                     <td>
                         <select name="emp_select" multiple class="selectpicker" data-style="btn btn-outline-dark" data-width="300px" data-size="6">
