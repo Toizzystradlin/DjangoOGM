@@ -1,27 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="56de9908-72e5-4632-b812-e4a4cf45ac64" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/main/templates/main/tasks.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main/templates/main/work.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/eq_photos/189" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/eq_photos/189.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/eq_photos/189_2NuCSqt.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/funcs.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/funcs.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/static/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/main/static/style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/templates/main/eq_one.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/eq_one.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/templates/main/maintenance.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/maintenance.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/templates/main/query.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/query.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/templates/main/show_maintenance.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/show_maintenance.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/templates/main/tmc.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/tmc.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/templates/main/works.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/works.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/templates/main/wrapper.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/wrapper.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/tests.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/views.py" afterDir="false" />
-    </list>
+    <list default="true" id="56de9908-72e5-4632-b812-e4a4cf45ac64" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -290,7 +270,14 @@
       <option name="project" value="LOCAL" />
       <updated>1597229214991</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="готовим к релизу">
+      <created>1598544901240</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1598544901240</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -305,7 +292,8 @@
     <MESSAGE value="формат дат статистики 2" />
     <MESSAGE value="добавил тмц и нештатные работы" />
     <MESSAGE value="добавил фото в станки" />
-    <option name="LAST_COMMIT_MESSAGE" value="добавил фото в станки" />
+    <MESSAGE value="готовим к релизу" />
+    <option name="LAST_COMMIT_MESSAGE" value="готовим к релизу" />
   </component>
   <component name="WindowStateProjectService">
     <state x="552" y="178" key="#Inspections" timestamp="1596441550326">
@@ -316,10 +304,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="552" y="178" width="816" height="729" key="#Intentions/0.0.1920.1040@0.0.1920.1040" timestamp="1596397150404" />
-    <state x="614" y="114" key="CommitChangelistDialog2" timestamp="1597229214429">
+    <state x="614" y="114" key="CommitChangelistDialog2" timestamp="1598544900356">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="614" y="114" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1597229214429" />
+    <state x="614" y="114" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1598544900356" />
     <state x="888" y="352" key="FileChooserDialogImpl" timestamp="1597224257552">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
