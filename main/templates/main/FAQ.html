@@ -1,0 +1,10 @@
+{% extends "main/wrapper.html" %}
+
+{% block content %}
+<p>
+{%for i in text%}
+    {{i}}<br>
+{%endfor%}
+</p>
+<p><a class="btn btn-success btn-info" href="main/FAQ/edit_text">Редактировать FAQ</a></p>
+{% endblock %}

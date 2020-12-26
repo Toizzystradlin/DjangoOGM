@@ -8,6 +8,7 @@ from . import send_message
 import xlwt
 from django.http import HttpResponse
 from django.db.models import Q
+import time
 
 def to(area, s1, s2):
     utc = pytz.UTC
@@ -20,12 +21,12 @@ def to(area, s1, s2):
     maints = maints.exclude(status='Новое')
     for maint in maints:
         if maint.end_time is not None:
-            maint.end_time = maint.end_time
+            end_of_maint = maint.end_time
         else:
-            maint.end_time = utc.localize(datetime.now())
-        maint.shift_start = datetime(year=maint.end_time.year, month=maint.end_time.month, day=maint.end_time.day,
+            end_of_maint = utc.localize(datetime.now())
+        maint.shift_start = datetime(year=end_of_maint.year, month=end_of_maint.month, day=end_of_maint.day,
                                      hour=7)
-        maint.shift_end = datetime(year=maint.start_time.year, month=maint.start_time.month, day=maint.start_time.day,
+        maint.shift_end = datetime(year=end_of_maint.year, month=end_of_maint.month, day=end_of_maint.day,
                                    hour=15)
         maint.save()
 
@@ -370,6 +371,7 @@ def appoint_doers(doers, query_id):
         doer_query = Employees.objects.get(employee_id=doer)
         doer_id = doer_query.tg_id
         send_message.send_message_4(doer_id, query_id)
+        time.sleep(0.5)
 
 def appoint_doers_work(doers, work_id):
     doers_dict = {'doers': doers}
@@ -421,6 +423,7 @@ def period_queries_and_to(area, s1, s2):
     period_end = utc.localize(period_end)
     queries_ids = []
     to_ids = []
+    u_ids = []
     n = Queries.objects.all()
     n_count = 0
     for i in n:
@@ -443,6 +446,8 @@ def period_queries_and_to(area, s1, s2):
 
     m = Maintenance.objects.all()
     m_count = 0
+    m_process_count = 0
+    to_done_count = 0
     for i in m:
         eq = Equipment.objects.get(eq_id=i.eq_id)
         if eq.area != area and area != 'Все участки':
@@ -451,884 +456,172 @@ def period_queries_and_to(area, s1, s2):
             if i.end_time is not None and period_end.date() >= i.end_time.date() >= period_start.date():
                 to_ids.append(i.id)
                 m_count += 1
+                to_done_count += 1
             elif i.status == 'В процессе' and i.start_time.date() <= period_end.date():
                 to_ids.append(i.id)
                 m_count += 1
+                m_process_count += 1
             elif i.end_time is not None and i.start_time.date() <= period_end.date() <= i.end_time.date():
                 to_ids.append(i.id)
                 m_count += 1
-    return queries_ids, to_ids, n_count, m_count
+            elif i.end_time is None and period_start.date() <= i.start_time.date() <= period_end.date():
+                to_ids.append(i.id)
+                m_count += 1
 
+    u = Unstated_works.objects.all()
+    u_count = 0
+    try:
+        for i in u:
+            if i.stop_time is not None and period_end.date() >= i.stop_time.date() >= period_start.date():
+                u_ids.append(i.work_id)
+                u_count += 1
+            elif i.query_status == 'В процессе' and i.start_time.date() <= period_end.date():
+                u_ids.append(i.work_id)
+                u_count += 1
+            elif i.stop_time is not None and i.start_time.date() <= period_end.date() <= i.stop_time.date():
+                u_ids.append(i.work_id)
+                u_count += 1
+    except: pass
+    return queries_ids, to_ids, u_ids, n_count, m_count, u_count, to_done_count,  m_process_count
 
-
-#ниже начинаются старые функции, возможно они еще есть в статистике 1
-
-
-def top10_all_lastweek(equipment):
-    pairs = []
-    today = datetime.today()
-    weekday = today.weekday()
-    start_delta = timedelta(days=weekday, weeks=1)
-    last_week_start = today - start_delta
-    last_week_end = last_week_start + timedelta(days=4)
-    utc = pytz.UTC
-    last_week_start = utc.localize(last_week_start)
-    last_week_end = utc.localize(last_week_end)
-
-    for i1 in equipment:
-        n = Eq_stoptime.objects.filter(eq_id=i1.eq_id)
-        duration = timedelta(microseconds=0)
-        full_duration = timedelta(microseconds=0)
-        duration_to = timedelta(microseconds=0)
-        full_duration_to = timedelta(microseconds=0)
-        shifts = i1.shift
-        for i in n:
-            i.now = datetime.now()
-            i.save()
-            if i.start_time == None:
-                i.start_time = datetime.now()
-                w = 1
-                i.save()
-        n = Eq_stoptime.objects.filter(eq_id=i1.eq_id)  # по новой получаем список, так как он изменился
-        for i in n:
-            start_year = i.stop_time.year
-            start_month = i.stop_time.month
-            start_day = i.stop_time.day
-            end_year = i.start_time.year
-            end_month = i.start_time.month
-            end_day = i.start_time.day
-            if shifts == 1:
-                i.shift_end = datetime(start_year, start_month, start_day, 15)
-            else:
-                i.shift_end = datetime(start_year, start_month, start_day, 23)
-            i.shift_start = datetime(end_year, end_month, end_day, 7)
-            i.save()
-        n = Eq_stoptime.objects.filter(eq_id=i1.eq_id)  # по новой получаем список, так как он изменился
-        for i in n:
-            if i.stop_time >= last_week_start and i.start_time <= last_week_end:
-                if i.stop_time.date() == i.start_time.date():  # если заявка начата и выполнена в 1 день
-                    duration = i.start_time - i.stop_time
-                else:  # если нет, то сюда
-                    duration = i.shift_end - i.stop_time
-                    stop = False
-                    i_date = i.stop_time + timedelta(hours=24)
-                    while stop == False:
-                        if i_date.date() == i.start_time.date():
-                            j = i.start_time - i.shift_start
-                        else:
-                            if datetime.isoweekday(i_date.date()) < 6:
-                                # j = i.shift_end - i.start_time
-                                j = timedelta(hours=8) * shifts
-                            else:
-                                j = timedelta(seconds=0)
-                        duration = duration + j
-                        if i_date.date() == i.start_time.date():
-                            stop = True
-                        i_date = i_date + timedelta(hours=24)
-            elif (i.stop_time >= last_week_start and i.stop_time <= last_week_end) and i.start_time > last_week_end:
-                duration = i.shift_end - i.stop_time
-                stop = False
-                i_date = i.stop_time + timedelta(hours=24)
-                while stop == False:
-                    if datetime.isoweekday(i_date.date()) < 6:
-                        j = timedelta(hours=8) * shifts
-                        duration = duration + j
-                    else:
-                        stop = True
-                    i_date = i_date + timedelta(hours=24)
-            elif (i.start_time >= last_week_start and i.start_time <= last_week_end) and i.stop_time < last_week_start:
-                if i.start_time.date() == last_week_start.date():
-                    duration = i.start_time - i.shift_start
-                else:
-                    stop = False
-                    i_date = last_week_start
-                    while stop == False:
-                        if i_date.date() == i.start_time.date():
-                            j = i.start_time - i.shift_start
-                        else:
-                            if datetime.isoweekday(i_date.date()) < 6:
-                                j = timedelta(hours=8) * shifts
-                            else:
-                                j = timedelta(seconds=0)
-                        duration = duration + j
-                        if i_date.date() == i.start_time.date():
-                            stop = True
-                        i_date = i_date + timedelta(hours=24)
-            elif (i.stop_time < last_week_start and i.start_time > last_week_end):
-                duration = timedelta(hours=40)
-            full_duration = full_duration + duration
-
-        m = Maintenance.objects.filter(eq_id=i1.eq_id, status='В процессе')
-        for i in m:
-            i.end_time = datetime.now()
-            i.save()
-
-        #Item.objects.filter(Q(creator=owner) | Q(moderated=False))
-        m = Maintenance.objects.filter(Q(eq_id=i1.eq_id, status='Завершено') | Q(eq_id=i1.eq_id, status='В процессе'))
-        for i in m:
-            if i.start_time >= last_week_start and i.end_time <= last_week_end:
-                if i.start_time.date() == i.end_time.date():  # если заявка начата и выполнена в 1 день
-                    duration_to = i.end_time - i.start_time
-                else:  # если нет, то сюда
-                    duration_to = i.shift_end - i.start_time
-                    stop = False
-                    i_date = i.start_time + timedelta(hours=24)
-                    while stop == False:
-                        if i_date.date() == i.end_time.date():
-                            j = i.end_time - i.shift_start
-                        else:
-                            if datetime.isoweekday(i_date.date()) < 6:
-                                # j = i.shift_end - i.start_time
-                                j = timedelta(hours=8) * shifts
-                            else:
-                                j = timedelta(seconds=0)
-                        duration_to = duration_to + j
-                        if i_date.date() == i.end_time.date():
-                            stop = True
-                        i_date = i_date + timedelta(hours=24)
-            elif (i.start_time >= last_week_start and i.start_time <= last_week_end) and i.end_time > last_week_end:
-                duration_to = i.shift_end - i.start_time
-                stop = False
-                i_date = i.end_time + timedelta(hours=24)
-                while stop == False:
-                    if datetime.isoweekday(i_date.date()) < 6:
-                        j = timedelta(hours=8) * shifts
-                        duration_to = duration_to + j
-                    else:
-                        stop = True
-                    i_date = i_date + timedelta(hours=24)
-            elif (i.end_time >= last_week_start and i.end_time <= last_week_end) and i.start_time < last_week_start:
-                if i.end_time.date() == last_week_start.date():
-                    duration_to = i.end_time - i.shift_start
-                else:
-                    stop = False
-                    i_date = last_week_start
-                    while stop == False:
-                        if i_date.date() == i.end_time.date():
-                            j = i.end_time - i.shift_start
-                        else:
-                            if datetime.isoweekday(i_date.date()) < 6:
-                                j = timedelta(hours=8) * shifts
-                            else:
-                                j = timedelta(seconds=0)
-                        duration_to = duration_to + j
-                        if i_date.date() == i.end_time.date():
-                            stop = True
-                        i_date = i_date + timedelta(hours=24)
-            elif (i.start_time < last_week_start and i.end_time > last_week_end):
-                duration_to = timedelta(hours=40)
-            full_duration_to = full_duration_to + duration_to
-
-        m = Maintenance.objects.filter(eq_id=i1.eq_id, status='В процессе')
-        for i in m:
-            i.end_time = None
-            i.save()
-
-
-
-        n = list(Eq_stoptime.objects.filter(eq_id=i1.eq_id))
+def employees_queries_and_works(employee_id, date1, date2):
+    query_ids = []
+    queries = Queries.objects.all()
+    for query in queries:
         try:
-            if w == 1:  # стирает добавленное время "Сейчас", чтобы бд была в том же состоянии
-                i = n[-1]
-                i.start_time = None
-                i.save()
-                w = 0
-        except:
-            pass
-        sum = full_duration.total_seconds() + full_duration_to.total_seconds()
-        pair = (i1.eq_name, full_duration.total_seconds() / 3600, full_duration_to.total_seconds() / 3600, shifts, i1.invnum, sum)
-        pairs.append(pair)
-    pairs = sorted(pairs, key=lambda x: x[5])  # сортировка по увеличению дней в простое
-    pairs.reverse()
-    pairs = pairs[:10]  # обрезка до 10 штук
-    names = []
-    means = []
-    means_to = []
-    sh = []
-    invnum = []
-    for j in pairs:
-        names.append(j[0])
-        means.append(j[1])
-        means_to.append(j[2])
-        sh.append(j[3])
-        invnum.append(j[4])
-    return names, means, means_to, sh, invnum
-
-def top10_last_week(equipment):
-    pairs = []
-    today = datetime.today()
-    weekday = today.weekday()
-    start_delta = timedelta(days=weekday, weeks=1)
-    last_week_start = today - start_delta
-    last_week_end = last_week_start + timedelta(days=4)
-    utc=pytz.UTC
-    last_week_start = utc.localize(last_week_start)
-    last_week_end = utc.localize(last_week_end)
-
-    for i1 in equipment:
-        n = Eq_stoptime.objects.filter(eq_id=i1.eq_id)
-        duration = timedelta(microseconds=0)
-        full_duration = timedelta(microseconds=0)
-        shifts = i1.shift
-        for i in n:
-            i.now = datetime.now()
-            i.save()
-            if i.start_time == None:
-                i.start_time = datetime.now()
-                w = 1
-                i.save()
-        n = Eq_stoptime.objects.filter(eq_id=i1.eq_id)  # по новой получаем список, так как он изменился
-        for i in n:
-            start_year = i.stop_time.year
-            start_month = i.stop_time.month
-            start_day = i.stop_time.day
-            end_year = i.start_time.year
-            end_month = i.start_time.month
-            end_day = i.start_time.day
-            if shifts == 1:
-                i.shift_end = datetime(start_year, start_month, start_day, 15)
-            else:
-                i.shift_end = datetime(start_year, start_month, start_day, 23)
-            i.shift_start = datetime(end_year, end_month, end_day, 7)
-            i.save()
-        n = Eq_stoptime.objects.filter(eq_id=i1.eq_id)  # по новой получаем список, так как он изменился
-        for i in n:
-            if i.stop_time >= last_week_start and i.start_time <= last_week_end:
-                if i.stop_time.date() == i.start_time.date(): # если заявка начата и выполнена в 1 день
-                    duration = i.start_time - i.stop_time
-                else:  # если нет, то сюда
-                    duration = i.shift_end - i.stop_time
-                    stop = False
-                    i_date = i.stop_time + timedelta(hours=24)
-                    while stop == False:
-                        if i_date.date() == i.start_time.date():
-                            j = i.start_time - i.shift_start
-                        else:
-                            if datetime.isoweekday(i_date.date()) < 6:
-                                # j = i.shift_end - i.start_time
-                                j = timedelta(hours=8) * shifts
-                            else:
-                                j = timedelta(seconds=0)
-                        duration = duration + j
-                        if i_date.date() == i.start_time.date():
-                            stop = True
-                        i_date = i_date + timedelta(hours=24)
-            elif (i.stop_time >= last_week_start and i.stop_time <= last_week_end) and i.start_time > last_week_end:
-                duration = i.shift_end - i.stop_time
-                stop = False
-                i_date = i.stop_time + timedelta(hours=24)
-                while stop == False:
-                    if datetime.isoweekday(i_date.date()) < 6:
-                        j = timedelta(hours=8) * shifts
-                        duration = duration + j
-                    else:
-                        stop = True
-                    i_date = i_date + timedelta(hours=24)
-            elif (i.start_time >= last_week_start and i.start_time <= last_week_end) and i.stop_time < last_week_start:
-                if i.start_time.date() == last_week_start.date():
-                    duration = i.start_time - i.shift_start
-                else:
-                    stop = False
-                    i_date = last_week_start
-                    while stop == False:
-                        if i_date.date() == i.start_time.date():
-                            j = i.start_time - i.shift_start
-                        else:
-                            if datetime.isoweekday(i_date.date()) < 6:
-                                j = timedelta(hours=8) * shifts
-                            else:
-                                j = timedelta(seconds=0)
-                        duration = duration + j
-                        if i_date.date() == i.start_time.date():
-                            stop = True
-                        i_date = i_date + timedelta(hours=24)
-            elif (i.stop_time < last_week_start and i.start_time > last_week_end):
-                duration = timedelta(hours=40)
-
-            full_duration = full_duration + duration
-        n = list(Eq_stoptime.objects.filter(eq_id=i1.eq_id))
-        try:
-            if w == 1:  # стирает добавленное время "Сейчас", чтобы бд была в том же состоянии
-                i = n[-1]
-                i.start_time = None
-                i.save()
-                w = 0
-        except:
-            pass
-        pair = (i1.eq_name, full_duration.total_seconds() / 3600, shifts, i1.invnum)
-        pairs.append(pair)
-    pairs = sorted(pairs, key=lambda x: x[1])  # сортировка по увеличению дней в простое
-    pairs.reverse()
-    pairs = pairs[:10]  # обрезка до 10 штук
-    names = []
-    means = []
-    sh = []
-    invnum = []
-    for j in pairs:
-        names.append(j[0])
-        means.append(j[1])
-        sh.append(j[2])
-        invnum.append(j[3])
-    return names, means, sh, invnum
-
-def top10(equipment):
-    pairs = []
-    for i1 in equipment:
-        shifts = i1.shift
-        eq_id = i1.eq_id
-        n = Eq_stoptime.objects.filter(eq_id=eq_id)  # блок высчитывает время простоя
-        duration = timedelta(microseconds=0)  # он добавляет в бд текущее время, а потом удаляет его
-        full_duration = timedelta(microseconds=0)
-        for i in n:
-            i.now = datetime.now()
-            i.save()
-            if i.start_time == None:
-                i.start_time = datetime.now()
-                w = 1
-                i.save()
-        n = Eq_stoptime.objects.filter(eq_id=eq_id)  # по новой получаем список, так как он изменился
-        for i in n:
-            start_year = i.stop_time.year
-            start_month = i.stop_time.month
-            start_day = i.stop_time.day
-            end_year = i.start_time.year
-            end_month = i.start_time.month
-            end_day = i.start_time.day
-            if shifts == 1:
-                i.shift_end = datetime(start_year, start_month, start_day, 15)
-            else:
-                i.shift_end = datetime(start_year, start_month, start_day, 23)
-            i.shift_start = datetime(end_year, end_month, end_day, 7)
-            i.save()
-
-        n = Eq_stoptime.objects.filter(eq_id=eq_id)  # по новой получаем список, так как он изменился
-        for i in n:                                      # главное тело подсчета простоя.
-            if i.stop_time.date() == i.start_time.date():   #если заявка подана и выполнена в 1 день, то сюда
-                duration = i.start_time - i.stop_time
-            else:                                           #если нет, то сюда
-                duration = i.shift_end - i.stop_time
-                stop = False
-                i_date = i.stop_time + timedelta(hours=24)
-                while stop == False:
-                    if i_date.date() == i.start_time.date():
-                        j = i.start_time - i.shift_start
-                    else:
-                        if datetime.isoweekday(i_date.date()) < 6:
-                            #j = i.shift_end - i.start_time
-                            j = timedelta(hours=8) * shifts
-                        else:
-                            j = timedelta(seconds=0)
-                    duration = duration + j
-                    if i_date.date() == i.start_time.date():
-                        stop = True
-                    i_date = i_date + timedelta(hours=24)
-            full_duration = full_duration + duration
-
-        n = list(Eq_stoptime.objects.filter(eq_id=eq_id))
-        try:
-            if w == 1:                                  #стирает добавленное время "Сейчас", чтобы бд была в том же состоянии
-                i = n[-1]
-                i.start_time = None
-                i.save()
-                w = 0
-        except:
-            pass
-        pair = (i1.eq_name, full_duration.total_seconds() / 3600, shifts, i1.invnum)
-        pairs.append(pair)
-    pairs = sorted(pairs, key=lambda x: x[1])  # сортировка по увеличению дней в простое
-    pairs.reverse()
-    pairs = pairs[:10]  # обрезка до 10 штук
-    names = []
-    means = []
-    sh = []
-    invnum = []
-    for j in pairs:
-        names.append(j[0])
-        means.append(j[1])
-        sh.append(j[2])
-        invnum.append(j[3])
-    return names, means, sh, invnum
-
-def top10_month(equipment):
-    today = datetime.now()  # топ 10 по простою за месяц
-    this_month = today.month
-    this_year = today.year
-    stops = Eq_stoptime.objects.all()
-    for q1 in stops:
-        q1.month_start = datetime(this_year, this_month, 1, 7)
-        q1.save()
-    pairs_m = []
-    for j1 in equipment:
-        shifts = j1.shift
-        eq_id = j1.eq_id
-        n = Eq_stoptime.objects.filter(eq_id=eq_id)
-        duration = timedelta(microseconds=0)
-        full_duration = timedelta(microseconds=0)
-        for i in n:
-            if i.start_time == None:
-                i.start_time = datetime.now()
-                i.save()
-                w = 1
-        n = Eq_stoptime.objects.filter(eq_id=eq_id)
-        for i in n:
-            if i.stop_time.month == this_month and i.start_time.month == this_month:
-                if i.stop_time.date() == i.start_time.date():
-                    duration = i.start_time - i.stop_time
-                else:
-                    duration = i.shift_end - i.stop_time
-                    stop = False
-                    i_date = i.stop_time + timedelta(hours=24)
-                    while stop == False:
-                        if i_date.date() == i.start_time.date():
-                            j = i.start_time - i.shift_start
-                        else:
-                            if datetime.isoweekday(i_date.date()) < 6:
-                                # j = i.shift_end - i.start_time
-                                j = timedelta(hours=8) * shifts
-                            else:
-                                j = timedelta(seconds=0)
-                        duration = duration + j
-                        if i_date.date() == i.start_time.date():
-                            stop = True
-                        i_date = i_date + timedelta(hours=24)
-            elif i.start_time.month == this_month:
-                if i.start_time.day == datetime(this_year, this_month, 1).day:
-                    j = i.start_time - i.shift_start
-                else:
-                    duration = i.shift_end - i.stop_time
-                    stop = False
-                    i_date = datetime(this_year, this_month, 2)
-                    while stop == False:
-                        if i_date.date() == i.start_time.date():
-                            j = i.start_time - i.shift_start
-                            stop = True
-                        else:
-                            if datetime.isoweekday(i_date) < 6:
-                                j = timedelta(hours=8) * shifts
-                            else:
-                                j = timedelta(seconds=0)
-                        duration = duration + j
-                        if i_date.date() == i.start_time.date():
-                            stop = True
-                        i_date = i_date + timedelta(hours=24)
-                duration = duration + j
-            full_duration = full_duration + duration
-
-
-        n = list(Eq_stoptime.objects.filter(eq_id=eq_id))
-        try:
-            if w == 1:
-                i = n[-1]
-                i.start_time = None
-                i.save()
-                w = 0
-        except:
-            pass
-        pair2 = (j1.eq_name, full_duration.total_seconds() / 3600, shifts, j1.invnum)
-        pairs_m.append(pair2)
-    pairs_m = sorted(pairs_m, key=lambda x: x[1])  # сортировка по увеличению дней в простое
-    pairs_m.reverse()
-    pairs_m = pairs_m[:10]  # обрезка до 10 штук
-    names_m = []
-    means_m = []
-    sh_m = []
-    invnum = []
-    for j in pairs_m:
-        names_m.append(j[0])
-        means_m.append(j[1])
-        sh_m.append(j[2])
-        invnum.append(j[3])
-    return names_m, means_m, sh_m, invnum
-
-def top10_all(equipment):
-    pairs = []
-    for i1 in equipment:
-        shifts = i1.shift
-        eq_id = i1.eq_id
-        n = Eq_stoptime.objects.filter(eq_id=eq_id)  # блок высчитывает время простоя
-        m = Maintenance.objects.filter(eq_id=eq_id, status='Завершено')
-        duration = timedelta(microseconds=0)  # он добавляет в бд текущее время, а потом удаляет его
-        full_duration = timedelta(microseconds=0)
-        duration_to = timedelta(microseconds=0)
-        full_duration_to = timedelta(microseconds=0)
-        for i in n:
-            i.now = datetime.now()
-            i.save()
-            if i.start_time == None:
-                i.start_time = datetime.now()
-                w = 1
-                i.save()
-
-        n = Eq_stoptime.objects.filter(eq_id=eq_id)  # по новой получаем список, так как он изменился
-        m = Maintenance.objects.filter(eq_id=eq_id, status='Завершено')
-        for i in n:
-            start_year = i.stop_time.year
-            start_month = i.stop_time.month
-            start_day = i.stop_time.day
-            end_year = i.start_time.year
-            end_month = i.start_time.month
-            end_day = i.start_time.day
-            if shifts == 1:
-                i.shift_end = datetime(start_year, start_month, start_day, 15)
-            else:
-                i.shift_end = datetime(start_year, start_month, start_day, 23)
-            i.shift_start = datetime(end_year, end_month, end_day, 7)
-            i.save()
-        for i in m:
-            start_year = i.start_time.year
-            start_month = i.start_time.month
-            start_day = i.start_time.day
-            end_year = i.end_time.year
-            end_month = i.end_time.month
-            end_day = i.end_time.day
-            if shifts == 1:
-                i.shift_end = datetime(start_year, start_month, start_day, 15)
-            else:
-                i.shift_end = datetime(start_year, start_month, start_day, 23)
-            i.shift_start = datetime(end_year, end_month, end_day, 7)
-            i.save()
-
-        n = Eq_stoptime.objects.filter(eq_id=eq_id)  # по новой получаем список, так как он изменился
-        m = Maintenance.objects.filter(eq_id=eq_id, status='Завершено')
-        for i in n:  # главное тело подсчета простоя.
-            if i.stop_time.date() == i.start_time.date():  # если заявка подана и выполнена в 1 день, то сюда
-                duration = i.start_time - i.stop_time
-            else:  # если нет, то сюда
-                duration = i.shift_end - i.stop_time
-                stop = False
-                i_date = i.stop_time + timedelta(hours=24)
-                while stop == False:
-                    if i_date.date() == i.start_time.date():
-                        j = i.start_time - i.shift_start
-                    else:
-                        if datetime.isoweekday(i_date.date()) < 6:
-                            # j = i.shift_end - i.start_time
-                            j = timedelta(hours=8) * shifts
-                        else:
-                            j = timedelta(seconds=0)
-                    duration = duration + j
-                    if i_date.date() == i.start_time.date():
-                        stop = True
-                    i_date = i_date + timedelta(hours=24)
-            full_duration = full_duration + duration
-
-        for i in m:  # главное тело подсчета простоя.
-            if i.start_time.date() == i.end_time.date():  # если ТО выполнена в 1 день, то сюда
-                duration_to = i.end_time - i.start_time
-            else:  # если нет, то сюда
-                duration_to = i.shift_end - i.start_time
-                stop = False
-                i_date = i.start_time + timedelta(hours=24)
-                while stop == False:
-                    if i_date.date() == i.end_time.date():
-                        j = i.end_time - i.shift_start
-                    else:
-                        if datetime.isoweekday(i_date.date()) < 6:
-                            # j = i.shift_end - i.start_time
-                            j = timedelta(hours=8) * shifts
-                        else:
-                            j = timedelta(seconds=0)
-                    duration_to = duration_to + j
-                    if i_date.date() == i.end_time.date():
-                        stop = True
-                    i_date = i_date + timedelta(hours=24)
-            full_duration_to = full_duration_to + duration_to
-
-        m = Maintenance.objects.filter(eq_id=eq_id, status='В процессе')
-        for i in m:
-            i.end_time = datetime.now()
-            i.shift_start = datetime(year=datetime.today().year, month=datetime.today().month, day=datetime.today().day, hour=7)
-            i.shift_end = datetime(year=i.start_time.year, month=i.start_time.month, day=i.start_time.day, hour=15)
-            i.save()
-        m = Maintenance.objects.filter(eq_id=eq_id, status='В процессе')
-
-        for i in m:  # главное тело подсчета простоя.
-            if i.start_time.date() == i.end_time.date():  # если ТО выполнена в 1 день, то сюда
-                duration_to = i.end_time - i.start_time
-            else:  # если нет, то сюда
-                duration_to = i.shift_end - i.start_time
-                stop = False
-                i_date = i.start_time + timedelta(hours=24)
-                while stop == False:
-                    if i_date.date() == i.end_time.date():
-                        j = i.end_time - i.shift_start
-                    else:
-                        if datetime.isoweekday(i_date.date()) < 6:
-                            # j = i.shift_end - i.start_time
-                            j = timedelta(hours=8) * shifts
-                        else:
-                            j = timedelta(seconds=0)
-                    duration_to = duration_to + j
-                    if i_date.date() == i.end_time.date():
-                        stop = True
-                    i_date = i_date + timedelta(hours=24)
-            full_duration_to = full_duration_to + duration_to
-            i.end_time = None
-            i.save()
-
-
-
-        n = list(Eq_stoptime.objects.filter(eq_id=eq_id))
-        try:
-            if w == 1:  # стирает добавленное время "Сейчас", чтобы бд была в том же состоянии
-                i = n[-1]
-                i.start_time = None
-                i.save()
-                w = 0
+            if (date2.date() > query.post_time.date() > date1.date()) or (date2.date() > query.stop_time.date() > date1.date()):
+                emps_dict = json.loads(query.json_emp)
+                doers = emps_dict['doers']
+                for doer in doers:
+                    if employee_id == int(doer):
+                        query_ids.append(query.query_id)
         except: pass
-
-        sum = full_duration.total_seconds() + full_duration_to.total_seconds()
-        pair = (i1.eq_name, full_duration.total_seconds() / 3600, full_duration_to.total_seconds() / 3600, shifts, i1.invnum, sum)
-        pairs.append(pair)
-    pairs = sorted(pairs, key=lambda x: x[5])  # сортировка по увеличению дней в простое
-    pairs.reverse()
-    pairs = pairs[:15]  # обрезка до 10 штук
-    names = []
-    means = []
-    means_to = []
-    sh = []
-    invnum = []
-    for j in pairs:
-        names.append(j[0])
-        means.append(j[1])
-        means_to.append(j[2])
-        sh.append(j[3])
-        invnum.append(j[4])
-    return names, means, means_to, sh, invnum
-
-def top10_all_month(equipment):
-    today = datetime.now()  # топ 10 по простою за месяц
-    this_month = today.month
-    this_year = today.year
-    stops = Eq_stoptime.objects.all()
-    for q1 in stops:
-        q1.month_start = datetime(this_year, this_month, 1, 7)
-        q1.save()
-    maints = Maintenance.objects.all()
-    for q2 in maints:
-        q2.month_start = datetime(this_year, this_month, 1, 7)
-        q2.save()
-    pairs_m = []
-    full_full_duration = timedelta(microseconds=0)
-    full_full_duration_to = timedelta(microseconds=0)
-    for j1 in equipment:
-        shifts = j1.shift
-        eq_id = j1.eq_id
-        n = Eq_stoptime.objects.filter(eq_id=eq_id)
-        duration = timedelta(microseconds=0)
-        full_duration = timedelta(microseconds=0)
-        duration_to = timedelta(microseconds=0)
-        full_duration_to = timedelta(microseconds=0)
-        expected_time = 0
-        for i in n:
-            if i.start_time == None:
-                i.start_time = datetime.now()
-                i.save()
-                w = 1
-        n = Eq_stoptime.objects.filter(eq_id=eq_id)
-        for i in n:
-            if i.stop_time.month == this_month and i.start_time.month == this_month:
-                if i.stop_time.date() == i.start_time.date():
-                    duration = i.start_time - i.stop_time
-                else:
-                    duration = i.shift_end - i.stop_time
-                    stop = False
-                    i_date = i.stop_time + timedelta(hours=24)
-                    while stop == False:
-                        if i_date.date() == i.start_time.date():
-                            j = i.start_time - i.shift_start
-                        else:
-                            if datetime.isoweekday(i_date.date()) < 6:
-                                # j = i.shift_end - i.start_time
-                                j = timedelta(hours=8) * shifts
-                            else:
-                                j = timedelta(seconds=0)
-                        duration = duration + j
-                        if i_date.date() == i.start_time.date():
-                            stop = True
-                        i_date = i_date + timedelta(hours=24)
-            elif i.start_time.month == this_month and i.stop_time.month != this_month:
-                if i.start_time.day == datetime(this_year, this_month, 1).day:
-                    j = i.start_time - i.shift_start
-                else:
-                    #duration = i.shift_end - i.stop_time
-                    stop = False
-                    i_date = i.stop_time + timedelta(hours=24)
-                    while stop == False:
-                        if (i_date.date() == i.start_time.date()) and (datetime.isoweekday(i_date.date()) < 6):
-                            j = i.start_time - i.shift_start
-                        else:
-                            if datetime.isoweekday(i_date.date()) < 6:
-                                # j = i.shift_end - i.start_time
-                                j = timedelta(hours=8) * shifts
-                            else:
-                                j = timedelta(seconds=0)
-                        duration = duration + j
-                        if i_date.date() == i.start_time.date():
-                            stop = True
-                        i_date = i_date + timedelta(hours=24)
-                #duration = duration + j
-            full_duration = full_duration + duration
-        m = Maintenance.objects.filter(eq_id=eq_id, status='Завершено')
-        for i in m:
-            if i.start_time.month == this_month and i.end_time.month == this_month:
-                if i.start_time.date() == i.end_time.date():
-                    duration_to = i.end_time - i.start_time
-                else:
-                    duration_to = i.shift_end - i.start_time
-                    stop = False
-                    i_date = i.start_time + timedelta(hours=24)
-                    while stop == False:
-                        if i_date.date() == i.end_time.date():
-                            j = i.end_time - i.shift_start
-                        else:
-                            if datetime.isoweekday(i_date.date()) < 6:
-                                # j = i.shift_end - i.start_time
-                                j = timedelta(hours=8) * shifts
-                            else:
-                                j = timedelta(seconds=0)
-                        duration_to = duration_to + j
-                        if i_date.date() == i.end_time.date():
-                            stop = True
-                        i_date = i_date + timedelta(hours=24)
-            elif i.end_time.month == this_month:
-                if i.end_time.day == datetime(this_year, this_month, 1).day:
-                    j = i.end_time - i.shift_start
-                else:
-                    duration_to = i.shift_end - i.start_time
-                    stop = False
-                    i_date = datetime(this_year, this_month, 2)
-                    while stop == False:
-                        if i_date.date() == i.end_time.date():
-                            j = i.end_time - i.shift_start
-
-                        else:
-                            if datetime.isoweekday(i_date) < 6:
-                                j = timedelta(hours=8) * shifts
-                            else:
-                                j = timedelta(seconds=0)
-                        duration_to = duration_to + j
-                        if i_date.date() == i.end_time.date():
-                            stop = True
-                        i_date = i_date + timedelta(hours=24)
-                duration_to = duration_to + j
-            full_duration_to = full_duration_to + duration_to
-            expected_time = expected_time + i.expected_time
-
-        m = Maintenance.objects.filter(eq_id=eq_id, status='В процессе')
-        for i in m:
-            i.end_time = datetime.now()
-            i.save()
-        m = Maintenance.objects.filter(eq_id=eq_id, status='В процессе')
-        for i in m:
-            if i.start_time.month == this_month and i.end_time.month == this_month:
-                if i.start_time.date() == i.end_time.date():
-                    duration_to = i.end_time - i.start_time
-                else:
-                    duration_to = i.shift_end - i.start_time
-                    stop = False
-                    i_date = i.start_time + timedelta(hours=24)
-                    while stop == False:
-                        if i_date.date() == i.end_time.date():
-                            j = i.end_time - i.shift_start
-                        else:
-                            if datetime.isoweekday(i_date.date()) < 6:
-                                # j = i.shift_end - i.start_time
-                                j = timedelta(hours=8) * shifts
-                            else:
-                                j = timedelta(seconds=0)
-                        duration_to = duration_to + j
-                        if i_date.date() == i.end_time.date():
-                            stop = True
-                        i_date = i_date + timedelta(hours=24)
-            elif i.end_time.month == this_month:
-                if i.end_time.day == datetime(this_year, this_month, 1).day:
-                    j = i.end_time - i.shift_start
-                else:
-                    duration_to = i.shift_end - i.start_time
-                    stop = False
-                    i_date = datetime(this_year, this_month, 2)
-                    while stop == False:
-                        if i_date.date() == i.end_time.date():
-                            j = i.end_time - i.shift_start
-                            stop = True
-                        else:
-                            if datetime.isoweekday(i_date) < 6:
-                                j = timedelta(hours=8) * shifts
-                            else:
-                                j = timedelta(seconds=0)
-                        duration_to = duration_to + j
-                        if i_date.date() == i.end_time.date():
-                            stop = True
-                        i_date = i_date + timedelta(hours=24)
-                duration_to = duration_to + j
-            full_duration_to = full_duration_to + duration_to
-            i.end_time = None
-            i.save()
-            expected_time = expected_time + i.expected_time
-        full_full_duration = full_full_duration + full_duration
-        full_full_duration_to = full_full_duration_to + full_duration_to
-
-        n = list(Eq_stoptime.objects.filter(eq_id=eq_id))
+    work_ids = []
+    works = Unstated_works.objects.all()
+    for work in works:
         try:
-            if w == 1:
-                i = n[-1]
-                i.start_time = None
-                i.save()
-                w = 0
-        except:
-            pass
-        sum = full_duration.total_seconds() + full_duration_to.total_seconds()
-
-        pair2 = (j1.eq_name, full_duration.total_seconds() / 3600, full_duration_to.total_seconds() / 3600, shifts, j1.invnum, sum, expected_time)
-        pairs_m.append(pair2)
-    pairs_m = sorted(pairs_m, key=lambda x: x[5])  # сортировка по увеличению дней в простое
-    pairs_m.reverse()
-    pairs_m = pairs_m[:15]  # обрезка до 10 штук
-    names_m = []
-    means_m = []
-    means_m_to = []
-    sh_m = []
-    invnum = []
-    expected_times = []
-    for j in pairs_m:
-        names_m.append(j[0])
-        means_m.append(j[1])
-        means_m_to.append(j[2])
-        sh_m.append(j[3])
-        invnum.append(j[4])
-        expected_times.append(j[6])
-    return names_m, means_m, means_m_to, sh_m, invnum, full_full_duration.total_seconds() / 3600, full_full_duration_to.total_seconds() / 3600, expected_times
-
-def last_week_queries_and_to():
-    today = datetime.today()
-    weekday = today.weekday()
-    start_delta = timedelta(days=weekday, weeks=1)
-    last_week_start = today - start_delta - timedelta(days=1)
-    last_week_end = last_week_start + timedelta(days=4)
-    utc = pytz.UTC
-    last_week_start = utc.localize(last_week_start)
-    last_week_end = utc.localize(last_week_end)
-    queries_ids = []
+            if (date2.date() > work.post_time.date() > date1.date()) or (date2.date() > work.stop_time.date() > date1.date()):
+                emps_dict = json.loads(work.json_emp)
+                doers = emps_dict['doers']
+                for doer in doers:
+                    if employee_id == int(doer):
+                        work_ids.append(work.work_id)
+        except: pass
     to_ids = []
-    n = Queries.objects.all()
-    for i in n:
-        if (i.stop_time is not None) and last_week_end >= i.stop_time >= last_week_start:
-            queries_ids.append(i.query_id)
-        elif i.query_status == 'В процессе' and i.post_time <= last_week_end:
-            queries_ids.append(i.query_id)
-        elif i.query_status == 'Приостановлена' and i.post_time <= last_week_end:
-            queries_ids.append(i.query_id)
-        elif (i.stop_time is not None) and i.stop_time >= last_week_end >= i.post_time:
-            queries_ids.append(i.query_id)
+    maints = Maintenance.objects.all()
+    maints = maints.exclude(end_time = None)
+    for maint in maints:
+        #try:
+        if (date2.date() >= maint.end_time.date() >= date1.date()):
+            emps_dict = json.loads(maint.employee_id)
+            doers = emps_dict['doers']
+            for doer in doers:
+                if employee_id == int(doer):
+                    to_ids.append(maint.id)
+        #except: pass
 
-    m = Maintenance.objects.all()
-    for i in m:
-        if i.end_time is not None and last_week_end >= i.end_time >= last_week_start:
-            to_ids.append(i.id)
-        elif i.status == 'В процессе' and i.start_time <= last_week_end:
-            to_ids.append(i.id)
-        elif i.end_time is not None and i.start_time <= last_week_end <= i.end_time:
-            to_ids.append(i.id)
-    return queries_ids, to_ids
+    return query_ids, work_ids, to_ids
+
+#def query_timeline(query_id):
+#    with connection.cursor() as cursor:
+#        cursor.execute("SELECT post_time, appoint_time, start_time, stop_time FROM queries WHERE query_id = %s", [query_id])
+#        times = cursor.fetchone()
+#        times = list(times)
+#        if times[1] == None:
+#            times[1] = datetime.now()
+#
+#
+#        if times[0].date() == times[1].date():
+#            new = times[1] - times[0]
+#            new = new.total_seconds() / 3600
+#        else:
+#            shift_end = times[0].replace(hour=15, minute=30)
+#            d1 = shift_end - times[0]
+#            shift_start = times[1].replace(hour=7, minute=0)
+#            d_last = times[1] - shift_start
+#            delta = times[1] - times[0]
+#
+#            duration = timedelta(hours=0)
+#            i_date = times[0] + timedelta(hours=24)
+#
+#            cancel = False
+#            while cancel == False:
+#                if i_date.date() == times[1].date():
+#                    cancel = True
+#                else:
+#                    if datetime.isoweekday(i_date.date()) < 6:
+#                        duration = duration + timedelta(hours=8)
+#                i_date = i_date + timedelta(hours=24)
+#            new = d1 + duration + d_last
+#            new = new.total_seconds() / 3600
+#
+#
+#        if times[2] != None:
+#            if times[1].date() == times[2].date():
+#                sent = times[2] - times[1]
+#                sent = sent.total_seconds() / 3600
+#            else:
+#                shift_end = times[1].replace(hour=15, minute=30)
+#                d1 = shift_end - times[1]
+#                shift_start = times[2].replace(hour=7, minute=0)
+#                d_last = times[2] - shift_start
+#                delta = times[2] - times[0]
+#                duration2 = timedelta(hours=0)
+#                i_date = times[1] + timedelta(hours=24)
+#                cancel = False
+#                while cancel == False:
+#                    if i_date.date() == times[2].date():
+#                        cancel = True
+#                    else:
+#                        if datetime.isoweekday(i_date.date()) < 6:
+#                            duration2 = duration2 + timedelta(hours=8)
+#                    i_date = i_date + timedelta(hours=24)
+#                sent = d1 + duration2 + d_last
+#                sent = sent.total_seconds() / 3600
+#        else:
+#            sent = 0
+#
+#        if times[3] != None:
+#            if times[2].date() == times[3].date():
+#                process = times[3] - times[2]
+#                process = process.total_seconds() / 3600
+#            else:
+#                shift_end = times[2].replace(hour=15, minute=30)
+#                d1 = shift_end - times[2]
+#                shift_start = times[3].replace(hour=7, minute=0)
+#                d_last = times[3] - shift_start
+#                delta = times[3] - times[0]
+#                duration3 = timedelta(hours=0)
+#                i_date = times[2] + timedelta(hours=24)
+#                cancel = False
+#                while cancel == False:
+#                    if i_date.date() == times[3].date():
+#                        cancel = True
+#                    else:
+#                        if datetime.isoweekday(i_date.date()) < 6:
+#                            duration3 = duration2 + timedelta(hours=8)
+#                    i_date = i_date + timedelta(hours=24)
+#                process = d1 + duration3 + d_last
+#                process = process.total_seconds() / 3600
+#        else:
+#            process = 0
+#
+#        return new, sent, process
+
+def this_month_to_list(month):
+    maints = Maintenance.objects.all()
+    x = []
+    y = []
+    for m in maints:
+        if ((m.plan_date.month == month and m.plan2_date == None) or (m.plan2_date != None and m.plan2_date.month == month)) and (m.status != 'Завершено'):
+            x.append(m.id)
+    for i in x:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT equipment.eq_name, equipment.invnum, equipment.eq_type, equipment.area, "
+                           "maintenance.plan_date, maintenance.comment, maintenance.id, maintenance.status, maintenance.status2, maintenance.type FROM equipment JOIN "
+                           "maintenance ON (equipment.eq_id = maintenance.eq_id) WHERE maintenance.id = %s", [i])
+            res = cursor.fetchone()
+        y.append(list(res))
+    return y
+
 

@@ -24,7 +24,7 @@
 
 <div class="container">
     <br>
-    <p align="right"><a class="btn btn-success btn-info" href="upload_stats">Выгрузить в Excel</a></p>
+
     <br>
     <h1 align="center">Заявки</h1>
 
@@ -73,8 +73,9 @@
             <option value="Малярный">Малярный</option>
             <option value="Крупноузловой сборки">Крупноузловой сборки</option>
             <option value="Инструментальный">Инструментальный</option>
+            <option value="Радиомонтажа">Радиомонтажа</option>
         </select>
-        <input type="submit" class="btn btn-success btn-info" value="Обновить">
+        <input type="submit" class="btn btn-success btn-info" value="Обновить"><button formaction="upload_stats" class="btn btn-success btn-info">Выгрузить в Excel</button>
     </form>
 <br>
 <div id="div_period">
@@ -125,6 +126,24 @@
         </table>
 <br>
 <br>
+<h1 align="center">История<b> нештатных работ </b></h1>
+{%if start%}
+        <h3 align="center">{{start.2}}/{{start.1}}/{{start.0}} - {{end.2}}/{{end.1}}/{{end.0}}</h3>
+    {%endif%}
+        <table class="table" id="myTable3">
+            <thead>
+                    <tr class="table_head"><th width="200vw">Время начала</th><th width="200vw">Время завершения</th><th width="400vw">Работа</th><th width="100vw">Статус работы</th><th></th></tr>
+            </thead>
+            <tbody>
+                {% for i in unstated_works %}
+                    <tr class="tr"><td>{{i.1|date:"d-m-Y в H:i"}}</td><td>{{i.2|date:"d-m-Y в H:i"}}</td><td>{{i.3}}</td><td>{{i.4}}</td>
+                        <td><a class="btn btn-success btn-info" href="/main/works/{{i.0}}">Подробнее</a></td>
+                    </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+<br>
+<br>
 <div>
     <br>
     <h1 align="center">Аварийные поломки/ТО, количество. <b>Участок: {{area_title}}</b></h1>
@@ -160,6 +179,16 @@
 <br>
 <br>
 
+<div>
+    <br>
+    <h1 align="center">Завершенные ТО/Все ТО  <b>Участок: {{area_title}}</b></h1>
+    {%if start%}
+        <h1 align="center">{{start.2}}/{{start.1}}/{{start.0}} - {{end.2}}/{{end.1}}/{{end.0}}</h1>
+    {%endif%}
+    <canvas id="PieChart3"></canvas>
+</div>
+<br>
+<br>
 
 <div id="kpi">
     <br>
@@ -186,7 +215,26 @@
 
 
 
+<div id="kpi_c">
+    <br>
+    <h1 align="center">Коэффицент готовности оборудования <b>категории C</b></h1>
+    {%if start%}
+        <h1 align="center">{{start.2}}/{{start.1}}/{{start.0}} - {{end.2}}/{{end.1}}/{{end.0}}</h1>
+    {%endif%}
+    <canvas id="kpi_c_chart"></canvas>
+     <p>K = (Время полезной работы - Время вынужденного простоя) / (Время полезной работы)</p>
+</div>
 
+
+<div id="kpi_d">
+    <br>
+    <h1 align="center">Коэффицент готовности оборудования <b>категории D</b></h1>
+    {%if start%}
+        <h1 align="center">{{start.2}}/{{start.1}}/{{start.0}} - {{end.2}}/{{end.1}}/{{end.0}}</h1>
+    {%endif%}
+    <canvas id="kpi_d_chart"></canvas>
+     <p>K = (Время полезной работы - Время вынужденного простоя) / (Время полезной работы)</p>
+</div>
 
 
 
@@ -336,17 +384,19 @@ var ctx = document.getElementById('PieChart1').getContext('2d');
 var myChart = new Chart(ctx, {
     type: 'pie',
     data: {
-        labels: ['Аварийные поломки', 'ТО'],
+        labels: ['Аварийные поломки', 'ТО', 'Нештатные работы'],
         datasets: [{
             label: 'Статус оборудования',
-            data: [{{queries_count}}, {{tos_count}}],
+            data: [{{queries_count}}, {{tos_count}}, {{u_count}}],
             backgroundColor: [
             '#DC143C',
-            '#00BFFF'
+            '#00BFFF',
+            '#FF6347'
             ],
             borderColor: [
             '#DC143C',
-            '#00BFFF'
+            '#00BFFF',
+            '#CD5C5C'
             ],
             borderWidth: 1
         }]
@@ -379,6 +429,38 @@ var myChart = new Chart(ctx, {
             borderColor: [
             '#DC143C',
             '#00BFFF'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+</script>       # скрипт пайчарта 2
+
+<script>
+var ctx = document.getElementById('PieChart3').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: ['Невыполненные ТО', 'Выполненные ТО'],
+        datasets: [{
+            label: 'Статус оборудования',
+            data: [{{to_count}}, {{to_done_count}}],
+            backgroundColor: [
+            '#DC143C',
+            '#00FF7F'
+            ],
+            borderColor: [
+            '#DC143C',
+            '#00FF7F'
             ],
             borderWidth: 1
         }]
@@ -533,6 +615,82 @@ var myChart = new Chart(ctx, {
 </script>       # скрипт kpi
 
 <script>
+var ctx = document.getElementById('kpi_c_chart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+    // Точки графиков
+    labels: [
+    {%for i in dates_c%}
+        "{{i}}",
+    {%endfor%}
+    ],
+    // График
+    datasets: [{
+        label: '', // Название
+        borderColor: 'rgb(255, 99, 132)', // Цвет линии
+        data: [
+        {%for i in kpi_list_c%}
+            {{i}},
+        {%endfor%}
+        ] // Данные каждой точки графика
+    }]
+},
+    options: {responsive: true,
+				title: {
+					display: true,
+					text: 'Коэффицент готовности'
+				},
+				tooltips: {
+					mode: 'index',
+					intersect: false,
+				},
+				hover: {
+					mode: 'nearest',
+					intersect: true
+				},}
+});
+</script>       # скрипт kpi
+
+<script>
+var ctx = document.getElementById('kpi_d_chart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+    // Точки графиков
+    labels: [
+    {%for i in dates_d%}
+        "{{i}}",
+    {%endfor%}
+    ],
+    // График
+    datasets: [{
+        label: '', // Название
+        borderColor: 'rgb(255, 99, 132)', // Цвет линии
+        data: [
+        {%for i in kpi_list_d%}
+            {{i}},
+        {%endfor%}
+        ] // Данные каждой точки графика
+    }]
+},
+    options: {responsive: true,
+				title: {
+					display: true,
+					text: 'Коэффицент готовности'
+				},
+				tooltips: {
+					mode: 'index',
+					intersect: false,
+				},
+				hover: {
+					mode: 'nearest',
+					intersect: true
+				},}
+});
+</script>       # скрипт kpi
+
+<script>
 
 var ctx = document.getElementById("period_chart").getContext('2d');
 var myChart = new Chart(ctx, {
@@ -652,7 +810,36 @@ options: {
 
 } );
 </script>
+<script>$(document).ready( function () {
+    $('#myTable3').DataTable({
+    "order": [[0, "desc"]],
+    initComplete: function () {
+            this.api().columns([3]).every( function () {
+                var column = this;
+                var select = $('<select><option value=""></option></select>')
+                    .click( function(e) {
+                        e.stopPropagation();
+                    })
+                    .appendTo( $(column.header()) )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
 
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append('<option value="' + d + '">' + d.substr(0,20) + '</option>')
+                } );
+            } );
+        }
+    });
+
+} );
+</script>
 
 <script>
 var ctx = document.getElementById('PieChart').getContext('2d');
@@ -662,7 +849,7 @@ var myChart = new Chart(ctx, {
         labels: ['Работает', 'Остановлено', 'ТО'],
         datasets: [{
             label: 'Статус оборудования',
-            data: [{{work_count}}, {{stop_count}}, {{to_count}}],
+            data: [{{work_count}}, {{stop_count}}, {{to_process_count}}],
             backgroundColor: [
             'rgba(19, 235, 148, 1)',
             'rgba(237, 55, 91, 1)',

@@ -27,7 +27,8 @@ class Queries(models.Model):
     json_emp = models.CharField(max_length=45, blank=True, null=True)
     multiple = models.IntegerField(blank=True, null=True)
     photo_name = models.CharField(max_length=100, blank=True, null=True)
-
+    confirmed = models.IntegerField(blank=True, null=True)
+    appoint_time = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = True
@@ -79,7 +80,7 @@ class Employees(models.Model):
 
 class Comment(models.Model):
     author = models.CharField(max_length=200)
-    text = models.TextField()
+    text = models.TextField(null=True, blank=True)
     created_date = models.DateTimeField(null=True, blank=True)
     query = models.IntegerField(blank=True, null=True)
     work = models.IntegerField(blank=True, null=True)
@@ -100,7 +101,7 @@ class Maintenance(models.Model):
     start_time = models.DateTimeField(blank=True, null=True)
     end_time = models.DateTimeField(blank=True, null=True)
     employee_id = models.CharField(max_length=50)
-    comment = models.TextField()
+    comment = models.TextField(null=True, blank=True)
     status = models.CharField(max_length=50, null=True, blank=True)
     status2 = models.CharField(max_length=50, null=True, blank=True)
     month_start = models.DateTimeField(blank=True, null=True)
@@ -108,6 +109,9 @@ class Maintenance(models.Model):
     shift_end = models.DateTimeField(blank=True, null=True)
     expected_time = models.IntegerField(blank=True, null=True)
     plan_date = models.DateTimeField(blank=True, null=True)
+    plan2_date = models.DateTimeField(blank=True, null=True)
+    reason = models.TextField(null=True, blank=True)
+    type = models.CharField(max_length=45, null=True, blank=True)
     class Meta:
         managed = True
         db_table = 'maintenance'
@@ -185,3 +189,11 @@ class Daily_tasks(models.Model):
     class Meta:
         managed = True
         db_table = 'daily_tasks'
+
+class Area_masters(models.Model):
+    area = models.CharField(max_length=45, blank=True, null=True)
+    tg_id = models.CharField(max_length=25, blank=True, null=True)
+    fio = models.CharField(max_length=45, blank=True, null=True)
+    class Meta:
+        managed = True
+        db_table = 'area_masters'

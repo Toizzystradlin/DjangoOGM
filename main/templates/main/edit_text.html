@@ -1,0 +1,11 @@
+{% extends "main/wrapper.html" %}
+
+{% block content %}
+<form action="save_text" method="post">
+     {% csrf_token %}
+<textarea id="text" name="text" cols="150" rows="30">
+{{text}}
+</textarea>
+<p><input type="submit" class="btn btn-success btn-info" value="Сохранить"></p>
+    </form>
+{% endblock %}

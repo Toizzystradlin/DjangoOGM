@@ -1,5 +1,6 @@
 {% extends "main/wrapper.html" %}
 
+
 {% block content %}
 <div class="jumbotron">
     <div class="container">
@@ -15,6 +16,10 @@
                 </thead>
                 <tbody>
                 <tr><td>ID заявки: </td><td>{{ query.query_id }}</td></tr>
+                <tr><td>Создатель: </td><td>{{creator}}</td></tr>
+                <tr><td>Дата подачи: </td><td>{{query.post_time|date:"d-m-Y в H:i"}}</td></tr>
+                {%if query.start_time%}<tr><td>Время начала: </td><td>{{query.start_time|date:"d-m-Y в H:i"}}</td></tr>{%endif%}
+                {%if query.stop_time%}<tr><td>Время завершения: </td><td>{{query.stop_time|date:"d-m-Y в H:i"}}</td></tr>{%endif%}
                 <tr><td>Статус заявки: </td>
                     <td>
                         <select name="query_status_select" class="selectpicker" data-width="300px" data-style="btn btn-outline-dark">
@@ -49,8 +54,24 @@
                             <option value="Работает">Работает</option>
                         </select></td>
                 </tr>
-                <tr><td>Назначен на заявку: </td>
+
+                <tr><td>Комментарий ИТР: </td><td><textarea name="comment" rows="3" cols="25">{{query.comment}}</textarea></td></tr>
+                <tr>
                     <td>
+                        <div>
+                            <input type="submit" class="btn btn-success btn-info" value="Сохранить">
+                        </div>
+                    </td>
+                    <td>
+                        <div align="right"><!-- Button trigger modal -->
+                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModal">Удалить заявку</button>
+                            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#exampleModal2">Редактировать время</button>
+                        </div>
+                    </td>
+                </tr>
+        </form>
+                <tr><td>Назначен на заявку: </td>
+                    <td><form action="/{{query.query_id}}/reappoint_query" method="post">{% csrf_token %}
                         <select name="emp_select" multiple class="selectpicker" data-width="300px" data-style="btn btn-outline-dark">
                             {%for i in final_emps %}
                                         <option value="{{i.0}}"
@@ -58,17 +79,44 @@
                                         >{{i.1}}</option>
                             {%endfor%}
                         </select>
-                    </td>
+                        <input type="submit" class="btn btn-success btn-info" value="Назначить">
+                    </td></form>
                 </tr>
-                <tr><td>Комментарий ИТР: </td><td><textarea name="comment" rows="3" cols="25">{{query.comment}}</textarea></td></tr>
                 </tbody>
-            </table><div align="left" style= "float: left;"><input type="submit" class="btn btn-success btn-info" value="Сохранить"></div><div align="right"><!-- Button trigger modal -->
-<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModal">
-  Удалить заявку
-</button></div>
+            </table>
             </div>
+
+
+            <!-- Modal2 -->
+<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <form action="change_query_time" method="post">
+            {% csrf_token %}
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel2">Выберите дату</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            <table>
+                <tr><td>Время начала: </td><td>{{query.start_time|date:"d-m-Y в H:i"}}</td><td><input id="start_datetime" name="start_datetime" type="datetime-local"></td></tr>
+                <tr><td>Время завершения: </td><td>{{query.stop_time|date:"d-m-Y в H:i"}}</td><td><input id="stop_datetime" name="stop_datetime" type="datetime-local"></td></tr>
+            </table>
+            </div>
+            <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+
+
 {%if query.photo_name%}
-<div style="float: left; padding: 10px;">
+<div style="float: left;">
     <img style='border:5px solid #FFDAB9' src="/static/images/query_photos/{{query.photo_name}}" onerror="this.src='/static/images/no_photo_query.jpg'" width="400">
 </div>
             {%else%}
@@ -95,6 +143,11 @@
     </div>
   </div>
 </div>
+<br>
+
+
+
+
 
             <div style="clear: left" class="container" align="center">
             <table class="table3">
@@ -128,6 +181,26 @@
                 <tbody>
                 <br>
 
+
+
+
+                <script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+<figure class="highcharts-figure">
+  <div id="container"></div>
+  <p class="highcharts-description">
+    Chart showing stacked horizontal bars. This type of visualization is
+    great for comparing data that accumulates up to a sum.
+  </p>
+</figure>
+
+
+
+
+
                 <h1>Потраченные ТМЦ: </h1>
                 {% for i in supplies %}
                     <tr class="tr">
@@ -160,7 +233,11 @@
             </table>
             </div>
 
-        </form>
+    {{new}}
+    {{sent}}
+    {{process}}
+
+
 
     </div>
 </div>
@@ -178,4 +255,44 @@
 
 <!-- (Optional) Latest compiled and minified JavaScript translation files -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/i18n/defaults-*.min.js"></script>
+
+<script>
+    Highcharts.chart('container', {
+  chart: {
+    type: 'bar'
+  },
+  title: {
+    text: 'Жизненный цикл заявки'
+  },
+  xAxis: {
+    categories: ['Заявка']
+  },
+  yAxis: {
+    min: 0,
+    title: {
+      text: 'Часы'
+    }
+  },
+  legend: {
+    reversed: true
+  },
+  plotOptions: {
+    series: {
+      stacking: 'normal'
+    }
+  },
+  series: [
+  {
+    name: 'В процессе',
+    data: [{{process}}]
+  }, {
+    name: 'Принята',
+    data: [{{sent}}]
+  }, {
+    name: 'Новая',
+    data: [{{new}}]
+    }
+  ]
+});
+</script>
 {% endblock %}

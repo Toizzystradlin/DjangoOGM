@@ -32,7 +32,6 @@
                                     <tr {%if i.1 == 'Завершена'%}style="background-color:#00FF00; border-radius:10px"{%endif%}><td style="width:60em">
                                         <div>{%if i.1 == 'Завершена'%}<del>{{i.0}}</del>{%else%}{{i.0}}{%endif%}</div>
                                     </td>
-                                        <td><input value="Завершена" name="{{i.2}}" style="width: 40px; height: 40px" type="checkbox" {%if i.1 == 'Завершена'%}checked{%endif%}></td></tr>
                                 {%endfor%}
                 </table></td>
         </tr>
@@ -40,7 +39,6 @@
 </tbody>
         <tfoot class="text-primary">
         <tr>
-            <th></th>
             <th></th>
         </tr>
     </tfoot>
@@ -50,7 +48,7 @@
 
 <script>$(document).ready( function () {
     $('#myTable').DataTable({
-    "order": [[0, "desc"]],
+    "order": [["desc"]],
     initComplete: function () {
             this.api().columns([]).every( function () {
                 var column = this;

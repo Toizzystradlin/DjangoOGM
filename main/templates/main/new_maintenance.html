@@ -15,6 +15,11 @@
                             <option value="Слесарный">Слесарный</option>
                             <option value="Сварочный">Сварочный</option>
                             <option value="Крупноузловой сборки">Крупноузловой сборки</option>
+                            <option value="Малярный">Малярный</option>
+                            <option value="Инструментальный">Инструментальный</option>
+                            <option value="Радиомонтажа">Радиомонтажа</option>
+                            <option value="Сборки">Сборки</option>
+                            <option value="Тарный">Тарный</option>
                     </select>
                 </td>
                 </tr>
@@ -52,7 +57,56 @@
                         {% endfor %}
                     </select>
                     </div>
+                    <div style="display: none" id="div5">
+                        <select class="selectpicker" data-live-search="true" data-style="btn-warning" name="area5" id="area5" data-size="10" data-width="300px">
+                            <option selected></option>
+                        {% for i in area5 %}
+                        <option value="{{i.eq_id}}">{{i.eq_name}} - {{i.invnum}}</option>
+                        {% endfor %}
+                    </select>
+                    </div>
+                    <div style="display: none" id="div6">
+                            <select class="selectpicker" data-live-search="true" data-style="btn-warning" name="area6" id="area6" data-size="10" data-width="300px">
+                            <option value=""></option>
+                            {% for i in area6 %}
+                            <option value="{{i.eq_id}}">{{i.eq_type}} - {{i.eq_name}} - {{i.invnum}}</option>
+                            {% endfor %}
+                    </select>
+                    </div>
+                    <div style="display: none" id="div7">
+                            <select class="selectpicker" data-live-search="true" data-style="btn-warning" name="area7" id="area7" data-size="10" data-width="300px">
+                            <option value=""></option>
+                            {% for i in area7 %}
+                            <option value="{{i.eq_id}}">{{i.eq_type}} - {{i.eq_name}} - {{i.invnum}}</option>
+                            {% endfor %}
+                    </select>
+                    </div>
+                    <div style="display: none" id="div8">
+                            <select class="selectpicker" data-live-search="true" data-style="btn-warning" name="area8" id="area8" data-size="10" data-width="300px">
+                            <option value=""></option>
+                            {% for i in area8 %}
+                            <option value="{{i.eq_id}}">{{i.eq_type}} - {{i.eq_name}} - {{i.invnum}}</option>
+                            {% endfor %}
+                    </select>
+                    </div>
+                    <div style="display: none" id="div9">
+                            <select class="selectpicker" data-live-search="true" data-style="btn-warning" name="area9" id="area9" data-size="10" data-width="300px">
+                            <option value=""></option>
+                            {% for i in area9 %}
+                            <option value="{{i.eq_id}}">{{i.eq_type}} - {{i.eq_name}} - {{i.invnum}}</option>
+                            {% endfor %}
+                    </select>
+                    </div>
 
+                </td></tr>
+
+                <tr><td>Тип: </td><td>
+                    <select class="selectpicker" name="type_select" id="type_select" data-style="btn btn-outline-dark" data-width="300px">
+                        <option value="ТО3">ТО3</option>
+                        <option value="ТО4">ТО4</option>
+                        <option value="Средний ремонт">Средний ремонт</option>
+                        <option value="Капитальный ремонт">Капитальный ремонт</option>
+                    </select>
                 </td></tr>
 
                 <tr><td>Дата: </td>
@@ -106,48 +160,229 @@
     var area2 = document.getElementById('div2');
     var area3 = document.getElementById('div3');
     var area4 = document.getElementById('div4');
+    var area5 = document.getElementById('div5');
+    var area6 = document.getElementById('div6');
+    var area7 = document.getElementById('div7');
+    var area8 = document.getElementById('div8');
+    var area9 = document.getElementById('div9');
         areas.addEventListener('change', function() {
         if(this.value == 'Механической обработки') {
             area1.style.display = "block";
             area2.style.display = "none";
             area3.style.display = "none";
             area4.style.display = "none";
+            area5.style.display = "none";
+            area6.style.display = "none";
+            area7.style.display = "none";
+            area8.style.display = "none";
+            area9.style.display = "none";
             area1.disabled=false;
             area2.disabled=true;
             area3.disabled=true;
             area4.disabled=true;
-
+            area5.disabled=true;
+            area6.disabled=true;
+            area7.disabled=true;
+            area8.disabled=true;
+            area9.disabled=true;
+            document.getElementById("area2").selectedIndex = 0;
+            document.getElementById("area3").selectedIndex = 0;
+            document.getElementById("area4").selectedIndex = 0;
+            document.getElementById("area5").selectedIndex = 0;
+            document.getElementById("area6").selectedIndex = 0;
+            document.getElementById("area7").selectedIndex = 0;
+            document.getElementById("area8").selectedIndex = 0;
+            document.getElementById("area9").selectedIndex = 0;
             }
         if(this.value == 'Слесарный') {
             area1.style.display = 'none';
             area2.style.display = 'block';
             area3.style.display = 'none';
-            area4.style.display = "none";
+            area4.style.display = 'none';
+            area5.style.display = "none";
+            area6.style.display = "none";
+            area7.style.display = "none";
+            area8.style.display = "none";
+            area9.style.display = "none";
             area1.disabled=true;
             area2.disabled=false;
             area3.disabled=true;
             area4.disabled=true;
+            area5.disabled=true;
+            area6.disabled=true;
+            area7.disabled=true;
+            area8.disabled=true;
+            area9.disabled=true;
+            document.getElementById("area3").selectedIndex = 0;
+            document.getElementById("area4").selectedIndex = 0;
+            document.getElementById("area5").selectedIndex = 0;
+            document.getElementById("area6").selectedIndex = 0;
+            document.getElementById("area7").selectedIndex = 0;
+            document.getElementById("area8").selectedIndex = 0;
+            document.getElementById("area9").selectedIndex = 0;
             }
         if(this.value == 'Сварочный') {
             area1.style.display = 'none';
             area2.style.display = 'none';
             area3.style.display = 'block';
-            area4.style.display = "none";
+            area4.style.display = 'none';
+            area5.style.display = "none";
+            area6.style.display = "none";
+            area7.style.display = "none";
+            area8.style.display = "none";
+            area9.style.display = "none";
             area1.disabled=true;
             area2.disabled=true;
             area3.disabled=false;
             area4.disabled=true;
+            area5.disabled=true;
+            area6.disabled=true;
+            area7.disabled=true;
+            area8.disabled=true;
+            area9.disabled=true;
+            document.getElementById("area4").selectedIndex = 0;
+            document.getElementById("area5").selectedIndex = 0;
+            document.getElementById("area6").selectedIndex = 0;
+            document.getElementById("area7").selectedIndex = 0;
+            document.getElementById("area8").selectedIndex = 0;
+            document.getElementById("area9").selectedIndex = 0;
             }
         if(this.value == 'Крупноузловой сборки') {
             area1.style.display = 'none';
             area2.style.display = 'none';
             area3.style.display = 'none';
             area4.style.display = 'block';
+            area5.style.display = "none";
+            area6.style.display = "none";
+            area7.style.display = "none";
+            area8.style.display = "none";
+            area9.style.display = "none";
             area1.disabled=true;
             area2.disabled=true;
             area3.disabled=true;
             area4.disabled=false;
+            area5.disabled=true;
+            area6.disabled=true;
+            area7.disabled=true;
+            area8.disabled=true;
+            area9.disabled=true;
+            document.getElementById("area5").selectedIndex = 0;
+            document.getElementById("area6").selectedIndex = 0;
+            document.getElementById("area7").selectedIndex = 0;
+            document.getElementById("area8").selectedIndex = 0;
+            document.getElementById("area9").selectedIndex = 0;
             }
+        if(this.value == 'Малярный') {
+            area1.style.display = 'none';
+            area2.style.display = 'none';
+            area3.style.display = 'none';
+            area4.style.display = 'none';
+            area5.style.display = "block";
+            area6.style.display = "none";
+            area7.style.display = "none";
+            area8.style.display = "none";
+            area9.style.display = "none";
+            area1.disabled=true;
+            area2.disabled=true;
+            area3.disabled=true;
+            area4.disabled=true;
+            area5.disabled=block;
+            area6.disabled=true;
+            area7.disabled=true;
+            area8.disabled=true;
+            area9.disabled=true;
+            document.getElementById("area6").selectedIndex = 0;
+            document.getElementById("area7").selectedIndex = 0;
+            document.getElementById("area8").selectedIndex = 0;
+            document.getElementById("area9").selectedIndex = 0;
+        }
+        if(this.value == 'Инструментальный') {
+            area1.style.display = 'none';
+            area2.style.display = 'none';
+            area3.style.display = 'none';
+            area4.style.display = 'none';
+            area5.style.display = "none";
+            area6.style.display = "block";
+            area7.style.display = "none";
+            area8.style.display = "none";
+            area9.style.display = "none";
+            area1.disabled=true;
+            area2.disabled=true;
+            area3.disabled=true;
+            area4.disabled=true;
+            area5.disabled=true;
+            area6.disabled=block;
+            area7.disabled=true;
+            area8.disabled=true;
+            area9.disabled=true;
+            document.getElementById("area7").selectedIndex = 0;
+            document.getElementById("area8").selectedIndex = 0;
+            document.getElementById("area9").selectedIndex = 0;
+        }
+        if(this.value == 'Радиомонтажа') {
+            area1.style.display = 'none';
+            area2.style.display = 'none';
+            area3.style.display = 'none';
+            area4.style.display = 'none';
+            area5.style.display = "none";
+            area6.style.display = "none";
+            area7.style.display = "block";
+            area8.style.display = "none";
+            area9.style.display = "none";
+            area1.disabled=true;
+            area2.disabled=true;
+            area3.disabled=true;
+            area4.disabled=true;
+            area5.disabled=true;
+            area6.disabled=true;
+            area7.disabled=block;
+            area8.disabled=true;
+            area9.disabled=true;
+            document.getElementById("area8").selectedIndex = 0;
+            document.getElementById("area9").selectedIndex = 0;
+        }
+        if(this.value == 'Сборки') {
+            area1.style.display = 'none';
+            area2.style.display = 'none';
+            area3.style.display = 'none';
+            area4.style.display = 'none';
+            area5.style.display = "none";
+            area6.style.display = "none";
+            area7.style.display = "none";
+            area8.style.display = "block";
+            area9.style.display = "none";
+            area1.disabled=true;
+            area2.disabled=true;
+            area3.disabled=true;
+            area4.disabled=true;
+            area5.disabled=true;
+            area6.disabled=true;
+            area7.disabled=true;
+            area8.disabled=block;
+            area9.disabled=true;
+            document.getElementById("area9").selectedIndex = 0;
+        }
+        if(this.value == 'Тарный') {
+            area1.style.display = 'none';
+            area2.style.display = 'none';
+            area3.style.display = 'none';
+            area4.style.display = 'none';
+            area5.style.display = "none";
+            area6.style.display = "none";
+            area7.style.display = "none";
+            area8.style.display = "none";
+            area9.style.display = "block";
+            area1.disabled=true;
+            area2.disabled=true;
+            area3.disabled=true;
+            area4.disabled=true;
+            area5.disabled=true;
+            area6.disabled=true;
+            area7.disabled=true;
+            area8.disabled=true;
+            area9.disabled=block;
+        }
+
     });
 </script>
 {% endblock %}

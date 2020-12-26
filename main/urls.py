@@ -1,13 +1,15 @@
 from django.urls import path
 from django.views.generic import ListView, DetailView
 from main.models import Queries
-from . import views
+from . import views, reappoint, maintenance_funcs, query_funcs
 
 urlpatterns = [
     path('', views.main, name='main'),
     path('<int:query_id>/', views.show_query, name='show_query'),
     path('new_query', views.new_query, name='new_query'),
     path('<int:query_id>/edit_query', views.edit_query, name='edit_query'),
+    path('<int:query_id>/reappoint_query', views.reappoint_query, name='reappoint_query'),
+    path('<int:to_id>/reappoint_to', reappoint.reappoint_to, name='reappoint_to'),
     path('equipment', views.show_equipment, name='show_equipment'),
     path('equipment/<int:eq_id>', views.show_eq, name='show_eq'),
     path('equipment/<int:eq_id>/q', views.edit_eq, name='edit_eq'),
@@ -16,7 +18,7 @@ urlpatterns = [
     path('employees/<int:employee_id>', views.show_emp, name='show_emp'),
     path('employees/add_new', views.add_new, name='add_new'),
     path('employees/add_new/save_emp', views.save_emp, name='save_emp'),
-    path('stats', views.stats, name='stats'),
+    #path('stats', views.stats, name='stats'),
     path('stats2', views.stats2, name='stats2'),
     path('stats2/refreshed', views.stats2, name='stats2'),
     path('maintenance', views.maintenance, name='maintenance'),
@@ -25,6 +27,8 @@ urlpatterns = [
     path('maintenance/<int:maintenance_id>', views.show_maintenance, name='show_maintenance'),
     path('main/maintenance/new_maintenance/maintenance_edit', views.maintenance_edit, name='maintenance_edit'),
     path('main/maintenance/new_maintenance/<int:to_id>/maintenance_edit', views.maintenance_edit, name='maintenance_edit'),
+    path('<int:to_id>/move_to', maintenance_funcs.move_to, name='move_to'),
+    path('main/maintenance/<int:to_id>/change_time', maintenance_funcs.change_time, name='change_time'),
     path('tmc', views.tmc, name='tmc'),
     path('works', views.works, name='works'),
     path('works/<int:work_id>', views.show_work, name='show_work'),
@@ -40,8 +44,12 @@ urlpatterns = [
     path('main/settings/add_type', views.add_type, name='add_type'),
     path('delete_reasons', views.delete_reasons, name='delete_reasons'),
     path('delete_types', views.delete_types, name='delete_types'),
-    path('main/upload_stats', views.export__data, name='export__data'),
+    path('upload_stats', views.export__data, name='export__data'),
     path('main/equipment/<int:eq_id>/upload_photo_eq', views.upload_photo_eq, name='upload_photo_eq'),
     path('main/tasks', views.tasks, name='tasks'),
     path('main/tasks/save_tasks', views.save_tasks, name='save_tasks'),
+    path('main/FAQ', views.FAQ, name='FAQ'),
+    path('main/FAQ/edit_text', views.edit_text, name='edit_text'),
+    path('main/FAQ/save_text', views.save_text, name='save_text'),
+    path('main/<int:query_id>/change_query_time', query_funcs.change_time, name='change_query_time'),
 ]
